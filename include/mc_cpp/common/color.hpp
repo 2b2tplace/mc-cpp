@@ -12,7 +12,7 @@ namespace mc {
     using HSVA = std::array<float, 4>;
 
     [[nodiscard]]
-    inline double colorBrightness(const RGBA& rgba) {
+    inline auto colorBrightness(const RGBA& rgba) -> double {
         const auto componentSum = static_cast<uint32_t>(rgba[0])
                                  + static_cast<uint32_t>(rgba[1])
                                  + static_cast<uint32_t>(rgba[2]);
@@ -22,7 +22,7 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline RGBA multiplyColor(const RGBA& rgba, const float fr, const float fg, const float fb, const float fa = 1.0f) {
+    inline auto multiplyColor(const RGBA& rgba, const float fr, const float fg, const float fb, const float fa = 1.0f) -> RGBA {
         return RGBA {
             static_cast<uint8_t>(std::clamp(static_cast<float>(rgba[0]) * fr, 0.0f, 255.0f)),
             static_cast<uint8_t>(std::clamp(static_cast<float>(rgba[1]) * fg, 0.0f, 255.0f)),
@@ -32,12 +32,12 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline RGBA multiplyColor(const RGBA& rgba, const float frgb, const float fa = 1.0f) {
+    inline auto multiplyColor(const RGBA& rgba, const float frgb, const float fa = 1.0f) -> RGBA {
         return multiplyColor(rgba, frgb, frgb, frgb, fa);
     }
 
     [[nodiscard]]
-    inline HSVA toHSVA(const RGBA& rgba) {
+    inline auto toHSVA(const RGBA& rgba) -> HSVA {
         const auto r = static_cast<float>(rgba[0]) / 255.0f;
         const auto g = static_cast<float>(rgba[1]) / 255.0f;
         const auto b = static_cast<float>(rgba[2]) / 255.0f;
@@ -68,7 +68,7 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline RGBA toRGBA(const HSVA& hsva) {
+    inline auto toRGBA(const HSVA& hsva) -> RGBA {
         const auto h = hsva[0];
         const auto s = hsva[1];
         const auto v = hsva[2];
@@ -101,12 +101,12 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline int32_t packARGB(const RGBA& rgba) {
+    inline auto packARGB(const RGBA& rgba) -> int32_t {
         return (rgba[3] & 0xFF) << 24 | (rgba[0] & 0xFF) << 16 | (rgba[1] & 0xFF) << 8 | rgba[2] & 0xFF;
     }
 
     [[nodiscard]]
-    inline RGBA unpackARGB(const int32_t argb) {
+    inline auto unpackARGB(const int32_t argb) -> RGBA {
         return RGBA {
             static_cast<uint8_t>(argb >> 16 & 0xFF),
             static_cast<uint8_t>(argb >> 8 & 0xFF),
@@ -116,7 +116,7 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline RGBA interpolate(const RGBA& rgba1, const RGBA& rgba2, const double interpolationValue) {
+    inline auto interpolate(const RGBA& rgba1, const RGBA& rgba2, const double interpolationValue) -> RGBA {
         const auto t = std::clamp(interpolationValue, 0.0, 1.0);
 
         auto [r1, g1, b1, a1] = rgba1;
@@ -131,7 +131,7 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline RGBA interpolate(const std::vector<RGBA>& colors, const double interpolationValue) {
+    inline auto interpolate(const std::vector<RGBA>& colors, const double interpolationValue) -> RGBA {
         const auto n = colors.size();
         const auto clampedInterpolationValue = std::clamp(interpolationValue, 0.0, 1.0);
         const auto relativeInterpolationValue = clampedInterpolationValue * static_cast<double>(n - 1);
