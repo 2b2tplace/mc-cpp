@@ -11,6 +11,8 @@ namespace mc {
     using RGBA = std::array<uint8_t, 4>;
     using HSVA = std::array<float, 4>;
 
+    static constexpr auto WHITE = RGBA {255, 255, 255, 255};
+
     [[nodiscard]]
     inline auto colorBrightness(const RGBA& rgba) -> float {
         const auto componentSum = static_cast<uint32_t>(rgba[0])
