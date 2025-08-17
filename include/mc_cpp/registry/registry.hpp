@@ -15,7 +15,6 @@ namespace mc {
         int protocolVersion{};
         std::vector<Entry> entries;
 
-        [[nodiscard]]
         auto save(const std::filesystem::path &filepath) const -> void;
 
         [[nodiscard]]
@@ -23,13 +22,21 @@ namespace mc {
 
         [[nodiscard]]
         auto trySave(const std::filesystem::path &filepath) const -> Result<std::monostate, std::string> {
-            if (!save(filepath)) return Err("Failed to save registry to " + filepath.string());
+            try {
+                save(filepath);
+            } catch (const std::exception& e) {
+                return Err("Failed to save registry to " + filepath.string() + ": " + e.what());
+            }
             return {};
         }
 
         [[nodiscard]]
         auto tryLoad(const std::filesystem::path &filepath) -> Result<std::monostate, std::string> {
-            if (!load(filepath)) return Err("Failed to load registry from " + filepath.string());
+            try {
+                if (!load(filepath)) return Err("Failed to load registry from " + filepath.string());
+            } catch (const std::exception& e) {
+                return Err("Failed to load registry from " + filepath.string() + ": " + e.what());
+            }
             return {};
         }
     };
