@@ -12,13 +12,13 @@ namespace mc {
     using HSVA = std::array<float, 4>;
 
     [[nodiscard]]
-    inline auto colorBrightness(const RGBA& rgba) -> double {
+    inline auto colorBrightness(const RGBA& rgba) -> float {
         const auto componentSum = static_cast<uint32_t>(rgba[0])
                                  + static_cast<uint32_t>(rgba[1])
                                  + static_cast<uint32_t>(rgba[2]);
 
         const auto componentAverage = componentSum / 3;
-        return static_cast<double>(componentAverage) / 255.0f;
+        return static_cast<float>(componentAverage) / 255.0f;
     }
 
     [[nodiscard]]
