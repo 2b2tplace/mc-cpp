@@ -83,7 +83,7 @@ static_assert(true, "Forcing ;")
     };                                                                                        \
 static_assert(true, "Forcing ;")
 
-#define NAMED_FIELD_OPTIONAL(Type, Name, DefaultValue)       \
+#define NAMED_FIELD_OPTIONAL(Type, Name, DefaultValue)      \
     Type Name = DefaultValue;                               \
     static constexpr bool Name##_optional = true;           \
     NAMED_FIELD_SET(Type, Name);                            \
