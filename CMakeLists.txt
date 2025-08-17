@@ -31,6 +31,16 @@ FetchContent_Declare(abseil
 )
 FetchContent_MakeAvailable(abseil)
 
+set(DEPLOY_KEY_PATH "~/.ssh/result_repo")
+set(ENV{GIT_SSH_COMMAND} "ssh -i ${DEPLOY_KEY_PATH}")
+FetchContent_Declare(result
+        GIT_REPOSITORY git@github.com:2b2tplace/result-cpp.git
+        GIT_TAG        main
+        GIT_PROGRESS TRUE
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(result)
+
 add_library(mc_cpp ${LIBS})
 target_compile_definitions(mc_cpp PUBLIC $<$<CONFIG:Debug>:DEBUG_MODE> BOTCRAFT_GAME_VERSION="${BOTCRAFT_GAME_VERSION}")
 target_include_directories(mc_cpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
