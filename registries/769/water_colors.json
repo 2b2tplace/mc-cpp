@@ -4,43 +4,43 @@
     "entries": [
         {
             "biomeType": "Default",
-            "color": 1526968
+            "color": -15250248
         },
         {
             "biomeType": "ColdOcean",
-            "color": 4020182
+            "color": -12757034
         },
         {
             "biomeType": "FrozenOcean",
-            "color": 3750089
+            "color": -13027127
         },
         {
             "biomeType": "LukewarmOcean",
-            "color": 4566514
+            "color": -12210702
         },
         {
             "biomeType": "Swamp",
-            "color": 6388580
+            "color": -10388636
         },
         {
             "biomeType": "WarmOcean",
-            "color": 4445678
+            "color": -12331538
         },
         {
             "biomeType": "Meadow",
-            "color": 937679
+            "color": -15839537
         },
         {
             "biomeType": "MangroveSwamp",
-            "color": 3832426
+            "color": -12944790
         },
         {
             "biomeType": "CherryGrove",
-            "color": 6141935
+            "color": -10635281
         },
         {
             "biomeType": "PaleGarden",
-            "color": 7768221
+            "color": -9008995
         }
     ]
 }

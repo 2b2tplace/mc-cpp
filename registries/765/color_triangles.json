@@ -4,15 +4,15 @@
     "entries": [
         {
             "type": "foliage",
-            "topLeft": 1752832,
-            "bottomLeft": 11445290,
-            "bottomRight": 6332795
+            "topLeft": -15024384,
+            "bottomLeft": -5331926,
+            "bottomRight": -10444421
         },
         {
             "type": "grass",
-            "topLeft": 4705587,
-            "bottomLeft": 12564309,
-            "bottomRight": 8434839
+            "topLeft": -12071629,
+            "bottomLeft": -4212907,
+            "bottomRight": -8342377
         }
     ]
 }

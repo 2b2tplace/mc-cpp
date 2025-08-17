@@ -4,19 +4,19 @@
     "entries": [
         {
             "biomeType": "Badlands",
-            "color": 10387789
+            "color": -6389427
         },
         {
             "biomeType": "CherryGrove",
-            "color": 11983713
+            "color": -4793503
         },
         {
             "biomeType": "Swamp",
-            "color": 6975545
+            "color": -9801671
         },
         {
             "biomeType": "MangroveSwamp",
-            "color": 9285927
+            "color": -7491289
         }
     ]
 }
