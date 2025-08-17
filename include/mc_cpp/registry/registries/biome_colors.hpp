@@ -71,10 +71,10 @@ namespace mc {
             triangleCoordinates[1] = localTemperature - localDownfall;
             triangleCoordinates[2] = 1.0f - localTemperature;
 
-            std::array<float, 4> color{};
+            std::array<float, 3> color{};
 
             for (size_t i = 0; i < 3; ++i) {
-                for (size_t j = 0; j < 4; ++j) {
+                for (size_t j = 0; j < 3; ++j) {
                     const auto multiplier = (isGrass ? grassTriangle : foliageTriangle)[i][j];
                     const auto component = triangleCoordinates[i] * static_cast<float>(multiplier);
                     color[j] += std::max(0.0f, std::min(255.0f, component));
@@ -84,7 +84,7 @@ namespace mc {
                 static_cast<uint8_t>(color[0]),
                 static_cast<uint8_t>(color[1]),
                 static_cast<uint8_t>(color[2]),
-                static_cast<uint8_t>(color[3]),
+                0xFF,
             };
         }
 
