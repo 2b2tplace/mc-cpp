@@ -1,0 +1,18 @@
+{
+    "type": "grass_colors",
+    "protocolVersion": 769,
+    "entries": [
+        {
+            "biomeType": "Badlands",
+            "color": 9470285
+        },
+        {
+            "biomeType": "CherryGrove",
+            "color": 11983713
+        },
+        {
+            "biomeType": "PaleGarden",
+            "color": 7832435
+        }
+    ]
+}

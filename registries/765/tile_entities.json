@@ -1,0 +1,170 @@
+{
+	"type": "tile_entities",
+	"protocolVersion": 765,
+	"entries": [
+		{
+			"id": 0,
+			"name": "furnace"
+		},
+		{
+			"id": 1,
+			"name": "chest"
+		},
+		{
+			"id": 2,
+			"name": "trapped_chest"
+		},
+		{
+			"id": 3,
+			"name": "ender_chest"
+		},
+		{
+			"id": 4,
+			"name": "jukebox"
+		},
+		{
+			"id": 5,
+			"name": "dispenser"
+		},
+		{
+			"id": 6,
+			"name": "dropper"
+		},
+		{
+			"id": 7,
+			"name": "sign"
+		},
+		{
+			"id": 8,
+			"name": "hanging_sign"
+		},
+		{
+			"id": 9,
+			"name": "mob_spawner"
+		},
+		{
+			"id": 10,
+			"name": "piston"
+		},
+		{
+			"id": 11,
+			"name": "brewing_stand"
+		},
+		{
+			"id": 12,
+			"name": "enchanting_table"
+		},
+		{
+			"id": 13,
+			"name": "end_portal"
+		},
+		{
+			"id": 14,
+			"name": "beacon"
+		},
+		{
+			"id": 15,
+			"name": "skull"
+		},
+		{
+			"id": 16,
+			"name": "daylight_detector"
+		},
+		{
+			"id": 17,
+			"name": "hopper"
+		},
+		{
+			"id": 18,
+			"name": "comparator"
+		},
+		{
+			"id": 19,
+			"name": "banner"
+		},
+		{
+			"id": 20,
+			"name": "structure_block"
+		},
+		{
+			"id": 21,
+			"name": "end_gateway"
+		},
+		{
+			"id": 22,
+			"name": "command_block"
+		},
+		{
+			"id": 23,
+			"name": "shulker_box"
+		},
+		{
+			"id": 24,
+			"name": "bed"
+		},
+		{
+			"id": 25,
+			"name": "conduit"
+		},
+		{
+			"id": 26,
+			"name": "barrel"
+		},
+		{
+			"id": 27,
+			"name": "smoker"
+		},
+		{
+			"id": 28,
+			"name": "blast_furnace"
+		},
+		{
+			"id": 29,
+			"name": "lectern"
+		},
+		{
+			"id": 30,
+			"name": "bell"
+		},
+		{
+			"id": 31,
+			"name": "jigsaw"
+		},
+		{
+			"id": 32,
+			"name": "campfire"
+		},
+		{
+			"id": 33,
+			"name": "beehive"
+		},
+		{
+			"id": 34,
+			"name": "sculk_sensor"
+		},
+		{
+			"id": 35,
+			"name": "calibrated_sculk_sensor"
+		},
+		{
+			"id": 36,
+			"name": "sculk_catalyst"
+		},
+		{
+			"id": 37,
+			"name": "sculk_shrieker"
+		},
+		{
+			"id": 38,
+			"name": "chiseled_bookshelf"
+		},
+		{
+			"id": 39,
+			"name": "brushable_block"
+		},
+		{
+			"id": 40,
+			"name": "decorated_pot"
+		}
+	]
+}

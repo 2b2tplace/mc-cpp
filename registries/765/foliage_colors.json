@@ -1,0 +1,22 @@
+{
+    "type": "foliage_colors",
+    "protocolVersion": 765,
+    "entries": [
+        {
+            "biomeType": "Badlands",
+            "color": 10387789
+        },
+        {
+            "biomeType": "CherryGrove",
+            "color": 11983713
+        },
+        {
+            "biomeType": "Swamp",
+            "color": 6975545
+        },
+        {
+            "biomeType": "MangroveSwamp",
+            "color": 9285927
+        }
+    ]
+}

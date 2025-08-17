@@ -1,0 +1,414 @@
+{
+    "type": "biome_properties",
+    "protocolVersion": 769,
+    "entries": [
+        {
+            "id": 0,
+            "name": "badlands",
+            "downfall": 0.0,
+            "temperature": 2.0,
+            "biomeType": "Badlands"
+        },
+        {
+            "id": 1,
+            "name": "bamboo_jungle",
+            "downfall": 0.9,
+            "temperature": 0.95
+        },
+        {
+            "id": 2,
+            "name": "basalt_deltas",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 3,
+            "name": "beach",
+            "downfall": 0.4,
+            "temperature": 0.8
+        },
+        {
+            "id": 4,
+            "name": "birch_forest",
+            "downfall": 0.6,
+            "temperature": 0.6
+        },
+        {
+            "id": 5,
+            "name": "cherry_grove",
+            "downfall": 0.8,
+            "temperature": 0.5,
+            "biomeType": "CherryGrove"
+        },
+        {
+            "id": 6,
+            "name": "cold_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5,
+            "biomeType": "ColdOcean"
+        },
+        {
+            "id": 7,
+            "name": "crimson_forest",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 8,
+            "name": "dark_forest",
+            "downfall": 0.8,
+            "temperature": 0.7,
+            "biomeType": "DarkForest"
+        },
+        {
+            "id": 9,
+            "name": "deep_cold_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5,
+            "biomeType": "ColdOcean"
+        },
+        {
+            "id": 10,
+            "name": "deep_dark",
+            "downfall": 0.4,
+            "temperature": 0.8
+        },
+        {
+            "id": 11,
+            "name": "deep_frozen_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5,
+            "biomeType": "FrozenOcean"
+        },
+        {
+            "id": 12,
+            "name": "deep_lukewarm_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5,
+            "biomeType": "LukewarmOcean"
+        },
+        {
+            "id": 13,
+            "name": "deep_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 14,
+            "name": "desert",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 15,
+            "name": "dripstone_caves",
+            "downfall": 0.4,
+            "temperature": 0.8
+        },
+        {
+            "id": 16,
+            "name": "end_barrens",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 17,
+            "name": "end_highlands",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 18,
+            "name": "end_midlands",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 19,
+            "name": "eroded_badlands",
+            "downfall": 0.0,
+            "temperature": 2.0,
+            "biomeType": "Badlands"
+        },
+        {
+            "id": 20,
+            "name": "flower_forest",
+            "downfall": 0.8,
+            "temperature": 0.7
+        },
+        {
+            "id": 21,
+            "name": "forest",
+            "downfall": 0.8,
+            "temperature": 0.7
+        },
+        {
+            "id": 22,
+            "name": "frozen_ocean",
+            "downfall": 0.5,
+            "temperature": 0.0,
+            "biomeType": "FrozenOcean"
+        },
+        {
+            "id": 23,
+            "name": "frozen_peaks",
+            "downfall": 0.9,
+            "temperature": -0.7
+        },
+        {
+            "id": 24,
+            "name": "frozen_river",
+            "downfall": 0.5,
+            "temperature": 0.0,
+            "biomeType": "FrozenOcean"
+        },
+        {
+            "id": 25,
+            "name": "grove",
+            "downfall": 0.8,
+            "temperature": -0.2
+        },
+        {
+            "id": 26,
+            "name": "ice_spikes",
+            "downfall": 0.5,
+            "temperature": 0.0
+        },
+        {
+            "id": 27,
+            "name": "jagged_peaks",
+            "downfall": 0.9,
+            "temperature": -0.7
+        },
+        {
+            "id": 28,
+            "name": "jungle",
+            "downfall": 0.9,
+            "temperature": 0.95
+        },
+        {
+            "id": 29,
+            "name": "lukewarm_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5,
+            "biomeType": "LukewarmOcean"
+        },
+        {
+            "id": 30,
+            "name": "lush_caves",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 31,
+            "name": "mangrove_swamp",
+            "downfall": 0.9,
+            "temperature": 0.8,
+            "biomeType": "MangroveSwamp"
+        },
+        {
+            "id": 32,
+            "name": "meadow",
+            "downfall": 0.8,
+            "temperature": 0.5,
+            "biomeType": "Meadow"
+        },
+        {
+            "id": 33,
+            "name": "mushroom_fields",
+            "downfall": 1.0,
+            "temperature": 0.9
+        },
+        {
+            "id": 34,
+            "name": "nether_wastes",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 35,
+            "name": "ocean",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 36,
+            "name": "old_growth_birch_forest",
+            "downfall": 0.6,
+            "temperature": 0.6,
+            "biomeType": "DarkForest"
+        },
+        {
+            "id": 37,
+            "name": "old_growth_pine_taiga",
+            "downfall": 0.8,
+            "temperature": 0.3
+        },
+        {
+            "id": 38,
+            "name": "old_growth_spruce_taiga",
+            "downfall": 0.8,
+            "temperature": 0.25
+        },
+        {
+            "id": 39,
+            "name": "plains",
+            "downfall": 0.4,
+            "temperature": 0.8
+        },
+        {
+            "id": 40,
+            "name": "river",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 41,
+            "name": "savanna",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 42,
+            "name": "savanna_plateau",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 43,
+            "name": "small_end_islands",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 44,
+            "name": "snowy_beach",
+            "downfall": 0.3,
+            "temperature": 0.05
+        },
+        {
+            "id": 45,
+            "name": "snowy_plains",
+            "downfall": 0.5,
+            "temperature": 0.0
+        },
+        {
+            "id": 46,
+            "name": "snowy_slopes",
+            "downfall": 0.9,
+            "temperature": -0.3
+        },
+        {
+            "id": 47,
+            "name": "snowy_taiga",
+            "downfall": 0.4,
+            "temperature": -0.5
+        },
+        {
+            "id": 48,
+            "name": "soul_sand_valley",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 49,
+            "name": "sparse_jungle",
+            "downfall": 0.8,
+            "temperature": 0.95
+        },
+        {
+            "id": 50,
+            "name": "stony_peaks",
+            "downfall": 0.3,
+            "temperature": 1.0
+        },
+        {
+            "id": 51,
+            "name": "stony_shore",
+            "downfall": 0.3,
+            "temperature": 0.2
+        },
+        {
+            "id": 52,
+            "name": "sunflower_plains",
+            "downfall": 0.4,
+            "temperature": 0.8
+        },
+        {
+            "id": 53,
+            "name": "swamp",
+            "downfall": 0.9,
+            "temperature": 0.8,
+            "biomeType": "Swamp"
+        },
+        {
+            "id": 54,
+            "name": "taiga",
+            "downfall": 0.8,
+            "temperature": 0.25
+        },
+        {
+            "id": 55,
+            "name": "the_end",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 56,
+            "name": "the_void",
+            "downfall": 0.5,
+            "temperature": 0.5
+        },
+        {
+            "id": 57,
+            "name": "warm_ocean",
+            "downfall": 0.5,
+            "temperature": 0.5,
+            "biomeType": "WarmOcean"
+        },
+        {
+            "id": 58,
+            "name": "warped_forest",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 59,
+            "name": "windswept_forest",
+            "downfall": 0.3,
+            "temperature": 0.2
+        },
+        {
+            "id": 60,
+            "name": "windswept_gravelly_hills",
+            "downfall": 0.3,
+            "temperature": 0.2
+        },
+        {
+            "id": 61,
+            "name": "windswept_hills",
+            "downfall": 0.3,
+            "temperature": 0.2
+        },
+        {
+            "id": 62,
+            "name": "windswept_savanna",
+            "downfall": 0.0,
+            "temperature": 2.0
+        },
+        {
+            "id": 63,
+            "name": "wooded_badlands",
+            "downfall": 0.0,
+            "temperature": 2.0,
+            "biomeType": "Badlands"
+        },
+        {
+            "id": 64,
+            "name": "pale_garden",
+            "downfall": 0.8,
+            "temperature": 0.7,
+            "biomeType": "PaleGarden"
+        }
+    ]
+}

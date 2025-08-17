@@ -1,0 +1,42 @@
+{
+    "type": "water_colors",
+    "protocolVersion": 765,
+    "entries": [
+        {
+            "biomeType": "Default",
+            "color": 1526968
+        },
+        {
+            "biomeType": "ColdOcean",
+            "color": 4020182
+        },
+        {
+            "biomeType": "FrozenOcean",
+            "color": 3750089
+        },
+        {
+            "biomeType": "LukewarmOcean",
+            "color": 4566514
+        },
+        {
+            "biomeType": "Swamp",
+            "color": 6388580
+        },
+        {
+            "biomeType": "WarmOcean",
+            "color": 4445678
+        },
+        {
+            "biomeType": "Meadow",
+            "color": 937679
+        },
+        {
+            "biomeType": "MangroveSwamp",
+            "color": 3832426
+        },
+        {
+            "biomeType": "CherryGrove",
+            "color": 6141935
+        }
+    ]
+}

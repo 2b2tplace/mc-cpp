@@ -1,0 +1,18 @@
+{
+    "type": "color_triangles",
+    "protocolVersion": 765,
+    "entries": [
+        {
+            "type": "foliage",
+            "topLeft": 1752832,
+            "bottomLeft": 11445290,
+            "bottomRight": 6332795
+        },
+        {
+            "type": "grass",
+            "topLeft": 4705587,
+            "bottomLeft": 12564309,
+            "bottomRight": 8434839
+        }
+    ]
+}
