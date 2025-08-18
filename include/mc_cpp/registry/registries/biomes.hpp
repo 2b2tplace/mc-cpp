@@ -54,7 +54,9 @@ namespace mc {
 
         [[nodiscard]]
         auto biomeWaterColor(const BiomeEnvironment biomeEnv) const -> const RGBA& {
-            return biomeColors.water.at(biomeEnv);
+            return biomeColors.water.contains(biomeEnv)
+                 ? biomeColors.water.at(biomeEnv)
+                 : biomeColors.water.at(BiomeEnvironment::DEFAULT);
         }
 
         [[nodiscard]]
