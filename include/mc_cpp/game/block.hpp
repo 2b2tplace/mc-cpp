@@ -12,7 +12,7 @@ namespace mc {
         BlockState min;
         BlockState max;
 
-        friend std::ostream& operator<<(std::ostream& os, const BlockType& type);
+        friend std::ostream& operator<<(std::ostream &os, const BlockType &type);
     };
 
     struct BlockStateProperties {
@@ -36,11 +36,11 @@ namespace mc {
         {}
     };
 
-    inline bool operator==(const BlockState state, const BlockType& type) {
+    inline auto operator==(const BlockState state, const BlockType &type) -> bool {
         return state >= type.min && state <= type.max;
     }
 
-    inline std::ostream& operator<<(std::ostream& os, const BlockType& type) {
+    inline auto operator<<(std::ostream &os, const BlockType &type) -> std::ostream & {
         os << '{' << type.min << ", " << type.max << '}';
         return os;
     }

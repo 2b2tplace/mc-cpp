@@ -26,7 +26,7 @@ namespace mc {
 #endif
         }
 
-        void sockBind(const char* address, const uint16_t port, FDR_ON_ERROR) {
+        auto sockBind(const char *address, const uint16_t port, FDR_ON_ERROR) -> void {
             switch (inet_pton(AF_INET, address, &this->address.sin_addr)) {
                 case -1:
                     onError(errno, "Invalid address. Address type not supported.");
@@ -45,9 +45,9 @@ namespace mc {
                 onError(errno, "Cannot bind the socket.");
         }
 
-        void sockBind(const uint16_t port, FDR_ON_ERROR) { this->sockBind("0.0.0.0", port, onError); }
+        auto sockBind(const uint16_t port, FDR_ON_ERROR) -> void { this->sockBind("0.0.0.0", port, onError); }
 
-        void sockListen(FDR_ON_ERROR) {
+        auto sockListen(FDR_ON_ERROR) -> void {
             if (listen(this->sock, 20) == -1) {
                 onError(errno, "Error: Server can't listen the socket.");
                 return;
@@ -57,7 +57,7 @@ namespace mc {
         }
 
     private:
-        static void sockAccept(TCPServer* server, FDR_ON_ERROR) {
+        static auto sockAccept(TCPServer *server, FDR_ON_ERROR) -> void {
             sockaddr_in newSocketInfo{};
             socklen_t newSocketInfoLength = sizeof(newSocketInfo);
 

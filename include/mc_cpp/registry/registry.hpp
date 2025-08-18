@@ -4,8 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <mc_cpp/common/json.hpp>
-
-#include "../../../cmake-build-debug/_deps/result-src/include/result.hpp"
+#include <result.hpp>
 
 namespace mc {
 
@@ -24,7 +23,7 @@ namespace mc {
         auto trySave(const std::filesystem::path &filepath) const -> Result<std::monostate, std::string> {
             try {
                 save(filepath);
-            } catch (const std::exception& e) {
+            } catch (const std::exception &e) {
                 return Err("Failed to save registry to " + filepath.string() + ": " + e.what());
             }
             return {};
@@ -34,7 +33,7 @@ namespace mc {
         auto tryLoad(const std::filesystem::path &filepath) -> Result<std::monostate, std::string> {
             try {
                 if (!load(filepath)) return Err("Failed to load registry from " + filepath.string());
-            } catch (const std::exception& e) {
+            } catch (const std::exception &e) {
                 return Err("Failed to load registry from " + filepath.string() + ": " + e.what());
             }
             return {};

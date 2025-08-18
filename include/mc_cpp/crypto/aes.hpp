@@ -17,13 +17,13 @@ namespace mc {
     public:
         ~AESContext();
 
-        AESContext(const AESContext &) = delete;
+        AESContext(const AESContext&) = delete;
 
-        AESContext(AESContext &&) = delete;
+        AESContext(AESContext&&) = delete;
 
-        auto operator=(const AESContext &) -> AESContext & = delete;
+        auto operator=(const AESContext&) -> AESContext& = delete;
 
-        auto operator=(AESContext &&) -> AESContext & = delete;
+        auto operator=(AESContext&&) -> AESContext& = delete;
 
         explicit AESContext(const ByteBuf &secret);
 

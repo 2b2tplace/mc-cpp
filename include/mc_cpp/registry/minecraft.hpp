@@ -38,7 +38,7 @@ namespace mc {
             }
         }
 
-        static auto load(const std::filesystem::path& parentDirectory) -> Result<MinecraftRegistry, std::string> {
+        static auto load(const std::filesystem::path &parentDirectory) -> Result<MinecraftRegistry, std::string> {
             Registry<BiomeColorEntry>    foliageColorRegistry;
             Registry<BiomeColorEntry>    grassColorRegistry;
             Registry<BiomeColorEntry>    waterColorRegistry;
@@ -104,7 +104,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto blockStateColor(const RGBA& biomeColor, const BlockState state) const -> RGBA {
+        auto blockStateColor(const RGBA &biomeColor, const BlockState state) const -> RGBA {
             const auto textureBrightness = blocks.blockStateProperties(state).textureBrightness;
             if (isWaterBlock(state) || isGrassBlock(state) || isFoliageBlock(state))
                 return multiplyColor(biomeColor, textureBrightness);

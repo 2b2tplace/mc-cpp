@@ -2,7 +2,6 @@
 
 #include <array>
 #include <string>
-#include <mc_cpp/common/color.hpp>
 
 namespace mc {
 
@@ -42,7 +41,7 @@ namespace mc {
     };
 
     [[nodiscard]]
-    inline BiomeEnvironment getBiomeType(const std::string& biomeTypeName)  {
+    inline auto getBiomeType(const std::string &biomeTypeName) -> BiomeEnvironment {
         auto biomeType = BiomeEnvironment::DEFAULT;
         for (size_t i = 0; i < BIOME_ENVIRONMENT_COUNT; i++) {
             if (BiomeTypeNames.at(i) == biomeTypeName) {

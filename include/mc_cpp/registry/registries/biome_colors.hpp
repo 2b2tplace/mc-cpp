@@ -48,7 +48,7 @@ namespace mc {
                                     const Registry<BiomeColorEntry> &waterColors,
                                     const Registry<ColorTriangleEntry> &colorTriangles) {
             for (const auto&[type, topLeft, bottomLeft, bottomRight] : colorTriangles.entries) {
-                auto& triangle = type == "foliage" ? foliageTriangle : grassTriangle;
+                auto &triangle = type == "foliage" ? foliageTriangle : grassTriangle;
 
                 triangle[0] = unpackARGB(topLeft);
                 triangle[1] = unpackARGB(bottomLeft);

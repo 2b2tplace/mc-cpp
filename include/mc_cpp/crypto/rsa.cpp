@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace mc {
-    auto generateRSAKeyPair(const size_t bits) -> EVP_PKEY * {
+    auto generateRSAKeyPair(const size_t bits) -> EVP_PKEY* {
         EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr);
         if (!ctx)
             return nullptr;
@@ -26,7 +26,7 @@ namespace mc {
         return pkey;
     }
 
-    auto loadRSAPrivateKey(const std::filesystem::path &filepath) -> EVP_PKEY * {
+    auto loadRSAPrivateKey(const std::filesystem::path &filepath) -> EVP_PKEY* {
         auto *fp = fopen(filepath.c_str(), "rb");
         if (!fp)
             return nullptr;

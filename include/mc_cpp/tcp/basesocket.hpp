@@ -17,7 +17,7 @@
 #define FDR_UNUSED(expr) \
     { (void)(expr); }
 #define FDR_ON_ERROR \
-    const std::function<void(int, const std::string&)>& onError = [](const int errorCode, const std::string& errorMessage) { \
+    const std::function<void(int, const std::string&)> &onError = [](const int errorCode, const std::string& errorMessage) { \
         FDR_UNUSED(errorCode); \
         FDR_UNUSED(errorMessage); \
     }
@@ -32,7 +32,7 @@ namespace mc {
     public:
         sockaddr_in address{};
 
-        void sockClose() const {
+        auto sockClose() const -> void {
 #if defined(_WIN32)
             shutdown(this->sock, SD_BOTH);
             closesocket(this->sock);
@@ -44,17 +44,17 @@ namespace mc {
         }
 
         [[nodiscard]]
-        std::string remoteAddress() const {
+        auto remoteAddress() const -> std::string {
             return ipToString(this->address);
         }
 
         [[nodiscard]]
-        int remotePort() const {
+        auto remotePort() const -> int {
             return ntohs(this->address.sin_port);
         }
 
         [[nodiscard]]
-        int fileDescriptor() const {
+        auto fileDescriptor() const -> int {
             return this->sock;
         }
 
@@ -62,7 +62,7 @@ namespace mc {
         int sock = 0;
 
         [[nodiscard]]
-        static std::string ipToString(const sockaddr_in &addr) {
+        static auto ipToString(const sockaddr_in &addr) -> std::string {
             char ip[16];
 #if defined(__linux__) || defined(__APPLE__)
             inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);

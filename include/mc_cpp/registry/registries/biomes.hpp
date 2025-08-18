@@ -40,7 +40,7 @@ namespace mc {
 
         [[nodiscard]]
         auto biomeFoliageColor(const BiomeType biomeType, const int16_t yLevel, const bool isGrass) const -> const RGBA& {
-            const auto& cache = isGrass ? biomeGrassColors.at(biomeType) : biomeFoliageColors.at(biomeType);
+            const auto &cache = isGrass ? biomeGrassColors.at(biomeType) : biomeFoliageColors.at(biomeType);
             if (cache.size() == 1) return cache.at(0); // biome overrides only store y = 0 as they don't depend on y
 
             const auto y = std::clamp(yLevel - SEA_LEVEL, 0, MAX_Y_LEVEL - SEA_LEVEL - 1);

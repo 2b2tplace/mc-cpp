@@ -17,19 +17,20 @@ namespace mc {
 
         explicit TCPSocket(FDR_ON_ERROR, const int socketId = -1) : BaseSocket(onError, socketId) {}
 
-        void sockSend(const char* bytes, const size_t length) const {
+        auto sockSend(const char *bytes, const size_t length) const -> void {
             send(this->sock, bytes, length, 0);
         }
 
-        void sockSend(const std::vector<uint8_t>& bytes) const {
+        auto sockSend(const std::vector<uint8_t> &bytes) const -> void {
             send(this->sock, bytes.data(), bytes.size(), 0);
         }
 
-        void sockSend(const std::string& message) const {
+        auto sockSend(const std::string &message) const -> void {
             sockSend(message.c_str(), message.length());
         }
 
-        void sockConnect(uint32_t ipv4, const uint16_t port, const std::function<void()>& onConnected = [] {}, FDR_ON_ERROR) {
+        auto sockConnect(uint32_t ipv4, const uint16_t port, const std::function<void()> &onConnected = [] {
+                         }, FDR_ON_ERROR) -> void {
             this->address.sin_family = AF_INET;
             this->address.sin_port = htons(port);
             this->address.sin_addr.s_addr = ipv4;
@@ -47,7 +48,8 @@ namespace mc {
             this->sockListen();
         }
 
-        void sockConnect(const char* host, const uint16_t port, const std::function<void()>& onConnected = [] {}, FDR_ON_ERROR) {
+        auto sockConnect(const char *host, const uint16_t port, const std::function<void()> &onConnected = [] {
+                         }, FDR_ON_ERROR) -> void {
             addrinfo hints{}, *res;
             memset(&hints, 0, sizeof(hints));
             hints.ai_family = AF_INET;
@@ -57,7 +59,7 @@ namespace mc {
                 onError(errno, "Invalid address." + std::string(gai_strerror(status)));
                 return;
             }
-            for (const addrinfo* it = res; it != nullptr; it = it->ai_next) {
+            for (const addrinfo *it = res; it != nullptr; it = it->ai_next) {
                 if (it->ai_family == AF_INET) {
                     memcpy(static_cast<void*>(&this->address), it->ai_addr, sizeof(sockaddr_in));
                     break;
@@ -67,17 +69,18 @@ namespace mc {
             this->sockConnect(this->address.sin_addr.s_addr, port, onConnected, onError);
         }
 
-        void sockConnect(const std::string &host, const uint16_t port, const std::function<void()>& onConnected = [] {}, FDR_ON_ERROR) {
+        auto sockConnect(const std::string &host, const uint16_t port, const std::function<void()> &onConnected = [] {
+                         }, FDR_ON_ERROR) -> void {
             this->sockConnect(host.c_str(), port, onConnected, onError);
         }
 
-        void sockListen() {
+        auto sockListen() -> void {
             std::thread t(sockReceive, this);
             t.detach();
         }
 
     private:
-        static void sockReceive(const TCPSocket* socket) {
+        static auto sockReceive(const TCPSocket *socket) -> void {
             char tempBuffer[BUFFER_SIZE + 1];
             ssize_t messageLength;
 
@@ -94,7 +97,7 @@ namespace mc {
                 socket->onSocketClosed(errno);
         }
 
-        void setTimeout(const int seconds) const {
+        auto setTimeout(const int seconds) const -> void {
             timeval tv{};
             tv.tv_sec = seconds;
             tv.tv_usec = 0;

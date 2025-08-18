@@ -11,15 +11,15 @@ namespace mc {
     public:
         DaftSha1();
 
-        DaftSha1(const DaftSha1 &) = delete;
+        DaftSha1(const DaftSha1&) = delete;
 
-        DaftSha1(DaftSha1 &&) = delete;
+        DaftSha1(DaftSha1&&) = delete;
 
-        auto operator=(const DaftSha1 &) -> DaftSha1 & = delete;
+        auto operator=(const DaftSha1&) -> DaftSha1& = delete;
 
-        auto operator=(DaftSha1 &&) -> DaftSha1 & = delete;
+        auto operator=(DaftSha1&&) -> DaftSha1& = delete;
 
-        auto update(const mc::ByteBuf &in) -> void;
+        auto update(const ByteBuf &in) -> void;
 
         auto update(const std::string &in) -> void;
 
