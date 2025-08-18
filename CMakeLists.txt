@@ -48,6 +48,7 @@ target_link_libraries(mc_cpp
         PUBLIC absl::flat_hash_map
         PUBLIC protocolCraft
         PUBLIC fmt
+        PUBLIC result_cpp
 )
 
 add_executable(mc_cpp_run main.cpp)
