@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <absl/container/flat_hash_map.h>
 #include <mc_cpp/common/macro_magic.hpp>
 #include <mc_cpp/common/json.hpp>
 #include <mc_cpp/registry/registry.hpp>
@@ -33,15 +32,20 @@ namespace mc {
     DEFINE_ENTRY_TO_JSON(BiomeColorEntry);
 
     using ColorTriangle = std::array<RGBA, 3>;
-    using BiomeColors = absl::flat_hash_map<BiomeEnvironment, RGBA>;
+    using BiomeColors = std::array<RGBA, BIOME_ENVIRONMENT_COUNT>;
+    using BiomeColorOverrides = std::array<bool, BIOME_ENVIRONMENT_COUNT>;
 
     struct BiomeColorRegistry {
         ColorTriangle grassTriangle{};
         ColorTriangle foliageTriangle{};
 
-        BiomeColors foliage;
-        BiomeColors grass;
-        BiomeColors water;
+        BiomeColors foliage{};
+        BiomeColors grass{};
+        BiomeColors water{};
+
+        BiomeColorOverrides foliageOverrides{};
+        BiomeColorOverrides grassOverrides{};
+        BiomeColorOverrides waterOverrides{};
 
         explicit BiomeColorRegistry(const Registry<BiomeColorEntry> &foliageColors,
                                     const Registry<BiomeColorEntry> &grassColors,
@@ -54,9 +58,9 @@ namespace mc {
                 triangle[1] = unpackARGB(bottomLeft);
                 triangle[2] = unpackARGB(bottomRight);
             }
-            setBiomeColors(foliage, foliageColors);
-            setBiomeColors(grass, grassColors);
-            setBiomeColors(water, waterColors);
+            setBiomeColors(foliage, foliageOverrides, foliageColors);
+            setBiomeColors(grass, grassOverrides, grassColors);
+            setBiomeColors(water, waterOverrides, waterColors);
         }
 
         [[nodiscard]]
@@ -87,10 +91,22 @@ namespace mc {
         }
 
     private:
-        static auto setBiomeColors(BiomeColors &colors, const Registry<BiomeColorEntry> &registry) -> void {
-            colors.reserve(registry.entries.size());
-            for (const auto&[biomeType, color] : registry.entries) {
-                colors[getBiomeType(biomeType)] = unpackARGB(color);
+        static auto setBiomeColors(BiomeColors &colors, BiomeColorOverrides &overrides, const Registry<BiomeColorEntry> &registry) -> void {
+            RGBA defaultColor;
+
+            for (size_t biomeEnv = 0; biomeEnv < BIOME_ENVIRONMENT_COUNT; biomeEnv++) {
+                RGBA color = defaultColor;
+                bool useOverride{};
+                for (const auto&[biomeTypeStr, colorPacked] : registry.entries) {
+                    if (const auto biomeEnvEntry = getBiomeType(biomeTypeStr); static_cast<size_t>(biomeEnvEntry) == biomeEnv) {
+                        color = unpackARGB(colorPacked);
+                        useOverride = true;
+                        break;
+                    }
+                }
+                if (biomeEnv == 0) defaultColor = color;
+                colors[biomeEnv] = color;
+                overrides[biomeEnv] = useOverride;
             }
         }
     };

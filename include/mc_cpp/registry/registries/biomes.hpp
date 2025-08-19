@@ -8,8 +8,11 @@ namespace mc {
 
     class BiomeRegistry {
 
-        absl::flat_hash_map<BiomeType, absl::flat_hash_map<int16_t, RGBA>> biomeFoliageColors;
-        absl::flat_hash_map<BiomeType, absl::flat_hash_map<int16_t, RGBA>> biomeGrassColors;
+        std::array<RGBA, UINT16_MAX> biomeFoliageColors{};
+        std::array<RGBA, UINT16_MAX> biomeGrassColors{};
+
+        std::array<bool, UINT8_MAX> biomeFoliageOverrides{};
+        std::array<bool, UINT8_MAX> biomeGrassOverrides{};
 
     public:
         BiomeColorRegistry biomeColors;
@@ -24,27 +27,30 @@ namespace mc {
             biomeProperties(BiomePropertyRegistry { biomePropertyRegistry }) {
 
             for (const auto&[id, properties] : biomeProperties.properties) {
-                const auto env = properties.environment;
-                if (biomeColors.grass.contains(env))
-                    biomeGrassColors[id][0] = biomeColors.grass.at(env);
+                const auto environment = properties.environment;
+                const auto env = static_cast<size_t>(environment);
+                if (biomeColors.grassOverrides[env])
+                    biomeGrassColors[id] = biomeColors.grass.at(env);
 
-                if (biomeColors.foliage.contains(env))
-                    biomeFoliageColors[id][0] = biomeColors.foliage.at(env);
+                if (biomeColors.foliageOverrides[env])
+                    biomeFoliageColors[id] = biomeColors.foliage.at(env);
 
-                for (int16_t y = 0; y < MAX_Y_LEVEL - SEA_LEVEL; y++) {
-                    biomeGrassColors  [id][y] = biomeColors.biomeColorMultiplier(properties.temperature, properties.downfall, y, true);
-                    biomeFoliageColors[id][y] = biomeColors.biomeColorMultiplier(properties.temperature, properties.downfall, y, false);
+                for (int16_t y = 0; y < UINT8_MAX; y++) {
+                    biomeGrassColors  [id + UINT8_MAX * y] = biomeColors.biomeColorMultiplier(properties.temperature, properties.downfall, y, true);
+                    biomeFoliageColors[id + UINT8_MAX * y] = biomeColors.biomeColorMultiplier(properties.temperature, properties.downfall, y, false);
                 }
             }
         }
 
         [[nodiscard]]
         auto biomeFoliageColor(const BiomeType biomeType, const int16_t yLevel, const bool isGrass) const -> const RGBA& {
-            const auto &cache = isGrass ? biomeGrassColors.at(biomeType) : biomeFoliageColors.at(biomeType);
-            if (cache.size() == 1) return cache.at(0); // biome overrides only store y = 0 as they don't depend on y
+            if (isGrass ? biomeGrassOverrides[biomeType] : biomeFoliageOverrides[biomeType])
+                // biome overrides only store y = 0 as they don't depend on y
+                return isGrass ? biomeGrassColors  [biomeType] : biomeFoliageColors[biomeType];
 
-            const auto y = std::clamp(yLevel - SEA_LEVEL, 0, MAX_Y_LEVEL - SEA_LEVEL - 1);
-            return cache.at(static_cast<int16_t>(y));
+            const auto y = std::clamp(yLevel - SEA_LEVEL, 0, UINT8_MAX);
+            return isGrass ? biomeGrassColors  [biomeType + UINT8_MAX * y]
+                           : biomeFoliageColors[biomeType + UINT8_MAX * y];
         }
 
         [[nodiscard]]
@@ -54,9 +60,7 @@ namespace mc {
 
         [[nodiscard]]
         auto biomeWaterColor(const BiomeEnvironment biomeEnv) const -> const RGBA& {
-            return biomeColors.water.contains(biomeEnv)
-                 ? biomeColors.water.at(biomeEnv)
-                 : biomeColors.water.at(BiomeEnvironment::DEFAULT);
+            return biomeColors.water[static_cast<size_t>(biomeEnv)];
         }
 
         [[nodiscard]]
