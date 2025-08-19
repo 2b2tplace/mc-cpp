@@ -118,28 +118,29 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline auto interpolate(const RGBA &rgba1, const RGBA &rgba2, const double interpolationValue) -> RGBA {
-        const auto t = std::clamp(interpolationValue, 0.0, 1.0);
+    inline auto interpolate(const RGBA &rgba1, const RGBA &rgba2, const float interpolationValue) -> RGBA {
+        const auto t = std::clamp(interpolationValue, 0.0f, 1.0f);
+        const auto tInv = 1.0f - t;
 
         auto [r1, g1, b1, a1] = rgba1;
         auto [r2, g2, b2, a2] = rgba2;
 
         return RGBA {
-            static_cast<uint8_t>((1.0 - t) * r1 + t * r2),
-            static_cast<uint8_t>((1.0 - t) * g1 + t * g2),
-            static_cast<uint8_t>((1.0 - t) * b1 + t * b2),
-            static_cast<uint8_t>((1.0 - t) * a1 + t * a2)
+            static_cast<uint8_t>(tInv * static_cast<float>(r1) + t * static_cast<float>(r2)),
+            static_cast<uint8_t>(tInv * static_cast<float>(g1) + t * static_cast<float>(g2)),
+            static_cast<uint8_t>(tInv * static_cast<float>(b1) + t * static_cast<float>(b2)),
+            static_cast<uint8_t>(tInv * static_cast<float>(a1) + t * static_cast<float>(a2))
         };
     }
 
     [[nodiscard]]
-    inline auto interpolate(const std::vector<RGBA> &colors, const double interpolationValue) -> RGBA {
+    inline auto interpolate(const std::vector<RGBA> &colors, const float interpolationValue) -> RGBA {
         const auto n = colors.size();
-        const auto clampedInterpolationValue = std::clamp(interpolationValue, 0.0, 1.0);
-        const auto relativeInterpolationValue = clampedInterpolationValue * static_cast<double>(n - 1);
+        const auto clampedInterpolationValue = std::clamp(interpolationValue, 0.0f, 1.0f);
+        const auto relativeInterpolationValue = clampedInterpolationValue * static_cast<float>(n - 1);
 
         const auto i = static_cast<size_t>(floor(relativeInterpolationValue));
-        const auto t = relativeInterpolationValue - static_cast<double>(i);
+        const auto t = relativeInterpolationValue - static_cast<float>(i);
 
         if (i >= n - 1) return colors[n - 1];
 
