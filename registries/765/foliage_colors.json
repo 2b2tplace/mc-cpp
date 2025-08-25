@@ -17,6 +17,10 @@
         {
             "biomeType": "MangroveSwamp",
             "color": -7491289
+        },
+        {
+            "biomeType": "DarkForest",
+            "color": -11503054
         }
     ]
 }
