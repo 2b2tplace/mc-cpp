@@ -29,15 +29,18 @@ namespace mc {
             for (const auto&[id, properties] : biomeProperties.properties) {
                 const auto environment = properties.environment;
                 const auto env = static_cast<size_t>(environment);
-                if (biomeColors.grassOverrides[env])
-                    biomeGrassColors[id] = biomeColors.grass.at(env);
-
-                if (biomeColors.foliageOverrides[env])
-                    biomeFoliageColors[id] = biomeColors.foliage.at(env);
 
                 for (int16_t y = 0; y < UINT8_MAX; y++) {
                     biomeGrassColors  [id + UINT8_MAX * y] = biomeColors.biomeColorMultiplier(properties.temperature, properties.downfall, y, true);
                     biomeFoliageColors[id + UINT8_MAX * y] = biomeColors.biomeColorMultiplier(properties.temperature, properties.downfall, y, false);
+                }
+                if (biomeColors.grassOverrides[env]) {
+                    biomeGrassOverrides[id] = true;
+                    biomeGrassColors[id] = biomeColors.grass.at(env);
+                }
+                if (biomeColors.foliageOverrides[env]) {
+                    biomeFoliageOverrides[id] = true;
+                    biomeFoliageColors[id] = biomeColors.foliage.at(env);
                 }
             }
         }
@@ -46,7 +49,7 @@ namespace mc {
         auto biomeFoliageColor(const BiomeType biomeType, const int16_t yLevel, const bool isGrass) const -> const RGBA& {
             if (isGrass ? biomeGrassOverrides[biomeType] : biomeFoliageOverrides[biomeType])
                 // biome overrides only store y = 0 as they don't depend on y
-                return isGrass ? biomeGrassColors  [biomeType] : biomeFoliageColors[biomeType];
+                return isGrass ? biomeGrassColors[biomeType] : biomeFoliageColors[biomeType];
 
             const auto y = std::clamp(yLevel - SEA_LEVEL, 0, UINT8_MAX);
             return isGrass ? biomeGrassColors  [biomeType + UINT8_MAX * y]
