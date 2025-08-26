@@ -7,6 +7,9 @@ namespace mc {
         template<class...> class WL=std::unique_lock,
         template<class...> class RL=std::unique_lock>
     struct Mutex {
+        template<typename... Args>
+        explicit Mutex(Args&&... args): data(std::forward<Args>(args)...) {}
+
         auto read(const auto &readFunction) const {
             const auto lock = readLock();
             return readFunction(data);
@@ -29,8 +32,7 @@ namespace mc {
 
         Mutex() = default;
 
-        explicit Mutex(T in): data(std::move(in)) {
-        }
+        explicit Mutex(T in): data(std::move(in)) {}
 
     private:
         mutable M mtx;
