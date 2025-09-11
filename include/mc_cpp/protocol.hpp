@@ -7,8 +7,6 @@
 namespace mc {
     namespace pc = ProtocolCraft;
 
-    static constexpr auto PROXY_PROTOCOL = 0;
-
     static constexpr int PROTOCOL = PROTOCOL_VERSION;
     static const std::string MINECRAFT_VERSION = BOTCRAFT_GAME_VERSION;
 

@@ -11,12 +11,12 @@
 namespace mc {
 
     template<typename Packet>
-    using PacketHandler = std::function<void(const Packet &)>;
+    using PacketHandler = std::function<void(const Packet&)>;
 
-    using BufferHandler = std::function<void(ReadIter &, size_t &)>;
-    using DefaultHandler = std::function<void(int32_t, const ByteBuf &, ReadIter &, size_t &)>;
+    using BufferHandler = std::function<void(ReadIter&, size_t&)>;
+    using DefaultHandler = std::function<void(int32_t, const ByteBuf&, ReadIter&, size_t&)>;
 
-    template<typename Side, typename State>
+    template<typename PacketType, typename State>
     class PacketListener {
         std::unordered_map<int32_t, BufferHandler> handlers;
         std::optional<DefaultHandler> defaultHandler;
@@ -41,7 +41,7 @@ namespace mc {
 
         template<typename Packet>
         auto accept(const PacketHandler<Packet> &packetHandler) -> PacketListener& {
-            const auto packetID = PacketType<Side>::template get<State, Packet>;
+            const auto packetID = PacketType::template get<State, Packet>;
             const BufferHandler handler = [packetHandler](ReadIter &it, size_t &len) {
                 Packet packet;
                 packet.Read(it, len);
@@ -61,16 +61,16 @@ namespace mc {
         }
     };
 
-    template<typename Side>
+    template<typename PacketType>
     class ConnectionListener {
     public:
         state::StateType connectionState{state::StateType::HANDSHAKE};
 
-        PacketListener<Side, state::Handshake> handshake;
-        PacketListener<Side, state::Status> status;
-        PacketListener<Side, state::Login> login;
-        PacketListener<Side, state::Play> play;
-        PacketListener<Side, state::Config> config;
+        PacketListener<PacketType, state::Handshake> handshake;
+        PacketListener<PacketType, state::Status> status;
+        PacketListener<PacketType, state::Login> login;
+        PacketListener<PacketType, state::Play> play;
+        PacketListener<PacketType, state::Config> config;
 
         auto handlePacket(const ByteBuf &packetBuffer) const -> void {
             handlePacketWithArgs(packetBuffer);
@@ -103,11 +103,11 @@ namespace mc {
         }
     };
 
-    template<typename Side>
+    template<typename Side, typename Listener = ConnectionListener<PacketType<Side>>>
     class TCPConnection {
     public:
         Logger &logger;
-        ConnectionListener<Side> listener;
+        Listener listener;
         std::shared_ptr<TCPSocket<>> socket;
         Mutex<ByteBuf> packetBuilder;
         int32_t compressionThreshold{-1};
