@@ -3,6 +3,7 @@
 #include <mc_cpp/common/json.hpp>
 #include <mc_cpp/nbt/nbt.hpp>
 #include <utility>
+#include <fmt/format.h>
 
 namespace mc {
 
@@ -11,19 +12,19 @@ namespace mc {
     struct NbtSerializable {
         virtual ~NbtSerializable() = default;
 
-        virtual void writeToNbt(NbtCompound &compound) const = 0;
+        virtual auto writeToNbt(NbtCompound &compound) const -> void = 0;
 
-        virtual void writeToJson(nlohmann::json &json) const = 0;
+        virtual auto writeToJson(nlohmann::json &json) const -> void = 0;
 
         [[nodiscard]]
-        NbtCompound createCompound() const {
+        auto createCompound() const -> NbtCompound {
             NbtCompound compound;
             writeToNbt(compound);
             return compound;
         }
 
         [[nodiscard]]
-        nlohmann::json createJson() const {
+        auto createJson() const -> nlohmann::json {
             nlohmann::json json;
             writeToJson(json);
             return json;
@@ -34,11 +35,11 @@ namespace mc {
     struct TextColor {
         std::string color;
 
-        static TextColor of(const uint32_t argb) {
+        static auto of(const uint32_t argb) -> TextColor {
             return of(argb >> 16 & 0xFF, argb >> 8 & 0xFF, argb & 0xFF);
         }
 
-        static TextColor of(const uint8_t r, const uint8_t g, const uint8_t b) {
+        static auto of(const uint8_t r, const uint8_t g, const uint8_t b) -> TextColor {
             std::ostringstream oss;
             oss << '#' << std::hex
                 << std::setw(2) << std::setfill('0') << static_cast<int>(r)
@@ -77,42 +78,42 @@ namespace mc {
         Option<bool> strikethrough;
         Option<bool> obfuscated;
 
-        TextStyle &withColor(const TextColor &colorNew) {
+        auto withColor(const TextColor &colorNew) -> TextStyle& {
             color = colorNew;
             return *this;
         }
 
-        TextStyle &withFont(const std::string &fontNew) {
+        auto withFont(const std::string &fontNew) -> TextStyle& {
             font = fontNew;
             return *this;
         }
 
-        TextStyle &withBold(const bool boldNew) {
+        auto withBold(const bool boldNew) -> TextStyle& {
             bold = boldNew;
             return *this;
         }
 
-        TextStyle &withItalic(const bool italicNew) {
+        auto withItalic(const bool italicNew) -> TextStyle& {
             italic = italicNew;
             return *this;
         }
 
-        TextStyle &withUnderlined(const bool underlinedNew) {
+        auto withUnderlined(const bool underlinedNew) -> TextStyle& {
             underlined = underlinedNew;
             return *this;
         }
 
-        TextStyle &withStrikethrough(const bool strikethroughNew) {
+        auto withStrikethrough(const bool strikethroughNew) -> TextStyle& {
             strikethrough = strikethroughNew;
             return *this;
         }
 
-        TextStyle &withObfuscated(const bool obfuscatedNew) {
+        auto withObfuscated(const bool obfuscatedNew) -> TextStyle& {
             obfuscated = obfuscatedNew;
             return *this;
         }
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             if (color)
                 compound.put("color", color->color);
             if (font)
@@ -129,7 +130,7 @@ namespace mc {
                 compound.put("obfuscated", obfuscated.value());
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             if (color)
                 json["color"] = color->color;
             if (font)
@@ -163,7 +164,7 @@ namespace mc {
         explicit TextClickEvent(const TextClickAction action, std::string value): action(action), value(std::move(value)) {}
 
         [[nodiscard]]
-        std::string actionKey() const {
+        auto actionKey() const -> std::string {
             switch (action) {
                 case TextClickAction::OPEN_URL: return "open_url";
                 case TextClickAction::OPEN_FILE: return "open_file";
@@ -182,7 +183,7 @@ namespace mc {
             compound.putNbt("clickEvent", clickEvent);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             nlohmann::json clickEvent;
             clickEvent["action"] = actionKey();
             clickEvent["value"] = value;
@@ -197,23 +198,23 @@ namespace mc {
         Option<TextClickEvent> clickEvent;
         std::shared_ptr<TextHoverEvent> hoverEvent;
 
-        TextInteractivity &withInsertion(const std::string &insertionNew) {
+        auto withInsertion(const std::string &insertionNew) -> TextInteractivity& {
             insertion = insertionNew;
             return *this;
         }
 
-        TextInteractivity &withClickEvent(const TextClickEvent &clickEventNew) {
+        auto withClickEvent(const TextClickEvent &clickEventNew) -> TextInteractivity& {
             clickEvent = clickEventNew;
             return *this;
         }
 
-        TextInteractivity &withClickEvent(const TextClickAction action, const std::string &value) {
+        auto withClickEvent(const TextClickAction action, const std::string &value) -> TextInteractivity& {
             return withClickEvent(TextClickEvent{action, value});
         }
 
-        TextInteractivity &withHoverText(const Text &hoverEventNew);
+        auto withHoverText(const Text &hoverEventNew) -> TextInteractivity &;
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             if (insertion)
                 compound.put("insertion", insertion.value());
             if (clickEvent)
@@ -222,7 +223,7 @@ namespace mc {
                 hoverEvent->writeToNbt(compound);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             if (insertion)
                 json["insertion"] = insertion.value();
             if (clickEvent)
@@ -240,67 +241,67 @@ namespace mc {
 
         explicit Text(const std::shared_ptr<NbtSerializable> &content): content(content) {}
 
-        Text &append(const Text &sibling) {
+        auto append(const Text &sibling) -> Text& {
             siblings.push_back(sibling);
             return *this;
         }
 
-        Text &color(const TextColor &colorNew) {
+        auto color(const TextColor &colorNew) -> Text& {
             style.withColor(colorNew);
             return *this;
         }
 
-        Text &font(const std::string &fontNew) {
+        auto font(const std::string &fontNew) -> Text& {
             style.withFont(fontNew);
             return *this;
         }
 
-        Text &bold(const bool boldNew) {
+        auto bold(const bool boldNew) -> Text& {
             style.withBold(boldNew);
             return *this;
         }
 
-        Text &italic(const bool italicNew) {
+        auto italic(const bool italicNew) -> Text& {
             style.withItalic(italicNew);
             return *this;
         }
 
-        Text &underlined(const bool underlinedNew) {
+        auto underlined(const bool underlinedNew) -> Text& {
             style.withUnderlined(underlinedNew);
             return *this;
         }
 
-        Text &strikethrough(const bool strikethroughNew) {
+        auto strikethrough(const bool strikethroughNew) -> Text& {
             style.withStrikethrough(strikethroughNew);
             return *this;
         }
 
-        Text &obfuscated(const bool obfuscatedNew) {
+        auto obfuscated(const bool obfuscatedNew) -> Text& {
             style.withObfuscated(obfuscatedNew);
             return *this;
         }
 
-        Text &insertion(const std::string &insertionNew) {
+        auto insertion(const std::string &insertionNew) -> Text& {
             interactivity.withInsertion(insertionNew);
             return *this;
         }
 
-        Text &clickEvent(const TextClickEvent &clickEventNew) {
+        auto clickEvent(const TextClickEvent &clickEventNew) -> Text& {
             interactivity.withClickEvent(clickEventNew);
             return *this;
         }
 
-        Text &clickEvent(const TextClickAction action, const std::string &value) {
+        auto clickEvent(const TextClickAction action, const std::string &value) -> Text& {
             interactivity.withClickEvent(action, value);
             return *this;
         }
 
-        Text &hoverText(const Text &hoverEventNew) {
+        auto hoverText(const Text &hoverEventNew) -> Text& {
             interactivity.withHoverText(hoverEventNew);
             return *this;
         }
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             content->writeToNbt(compound);
 
             NbtList extra;
@@ -313,7 +314,7 @@ namespace mc {
             interactivity.writeToNbt(compound);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             content->writeToJson(json);
 
             std::vector<nlohmann::json> extra;
@@ -327,12 +328,12 @@ namespace mc {
         }
 
         [[nodiscard]]
-        std::string serializeNbt() const {
+        auto serializeNbt() const -> std::string {
             return stringifyNbt(createCompound(), false);
         }
 
         [[nodiscard]]
-        std::string serialize() const {
+        auto serialize() const -> std::string {
             return createJson().dump();
         }
     };
@@ -343,14 +344,14 @@ namespace mc {
 
         explicit TextHoverEventShowText(Text contents): contents(std::move(contents)) {}
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             NbtCompound hoverEvent;
             hoverEvent.put("action", "show_text");
             hoverEvent.putNbt("contents", contents.createCompound());
             compound.putNbt("hoverEvent", hoverEvent);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             nlohmann::json hoverEvent;
             hoverEvent["action"] = "show_text";
             hoverEvent["contents"] = contents.createJson();
@@ -364,11 +365,11 @@ namespace mc {
 
         explicit PlainTextContent(std::string text): text(std::move(text)) {}
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             compound.put("text", text);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             json["text"] = text;
         }
     };
@@ -380,17 +381,17 @@ namespace mc {
 
         explicit TranslatableTextContent(std::string translate): translate(std::move(translate)) {}
 
-        TranslatableTextContent &withFallback(const std::string &fallbackNew) {
+        auto withFallback(const std::string &fallbackNew) -> TranslatableTextContent& {
             fallback = fallbackNew;
             return *this;
         }
 
-        TranslatableTextContent &withArgs(const std::vector<Text> &withNew) {
+        auto withArgs(const std::vector<Text> &withNew) -> TranslatableTextContent& {
             with = withNew;
             return *this;
         }
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             compound.put("translate", translate);
             if (fallback)
                 compound.put("fallback", fallback.value());
@@ -403,7 +404,7 @@ namespace mc {
             }
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             json["translate"] = translate;
             if (fallback)
                 json["fallback"] = fallback.value();
@@ -423,14 +424,14 @@ namespace mc {
 
         explicit ScoreTextContent(std::string name, std::string objective): name(std::move(name)), objective(std::move(objective)) {}
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             NbtCompound score;
             score.put("name", name);
             score.put("objective", objective);
             compound.putNbt("score", score);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             nlohmann::json score;
             score["name"] = name;
             score["objective"] = objective;
@@ -444,18 +445,18 @@ namespace mc {
 
         explicit SelectorTextContent(std::string selector): selector(std::move(selector)) {}
 
-        SelectorTextContent &withSeparator(const Text &separatorNew) {
+        auto withSeparator(const Text &separatorNew) -> SelectorTextContent& {
             separator = separatorNew;
             return *this;
         }
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             compound.put("selector", selector);
             if (separator)
                 compound.putNbt("separator", separator->createCompound());
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             json["selector"] = selector;
             if (separator)
                 json["separator"] = separator->createJson();
@@ -467,11 +468,11 @@ namespace mc {
 
         explicit KeybindTextContent(std::string keybind): keybind(std::move(keybind)) {}
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             compound.put("keybind", keybind);
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             json["keybind"] = keybind;
         }
     };
@@ -492,17 +493,17 @@ namespace mc {
         explicit NbtTextContent(const NbtSourceType sourceType, std::string nbt, std::string source):
             sourceType(sourceType), nbt(std::move(nbt)), source(std::move(source)) {}
 
-        NbtTextContent &withInterpret(const bool interpretNew) {
+        auto withInterpret(const bool interpretNew) -> NbtTextContent& {
             interpret = interpretNew;
             return *this;
         }
 
-        NbtTextContent &withSeparator(const Text &separatorNew) {
+        auto withSeparator(const Text &separatorNew) -> NbtTextContent& {
             separator = separatorNew;
             return *this;
         }
 
-        void writeToNbt(NbtCompound &compound) const override {
+        auto writeToNbt(NbtCompound &compound) const -> void override {
             compound.put("nbt", this->nbt);
             if (interpret)
                 compound.put("interpret", interpret.value());
@@ -523,7 +524,7 @@ namespace mc {
             }
         }
 
-        void writeToJson(nlohmann::json &json) const override {
+        auto writeToJson(nlohmann::json &json) const -> void override {
             json["nbt"] = this->nbt;
             if (interpret)
                 json["interpret"] = interpret.value();
@@ -546,32 +547,38 @@ namespace mc {
     };
 
     [[nodiscard]]
-    inline Text text(const std::string &text) {
+    inline auto text(const std::string &text) -> Text {
         return Text{std::make_shared<PlainTextContent>(text)};
     }
 
+    template<typename... T>
     [[nodiscard]]
-    inline Text score(const std::string &name, const std::string &objective) {
+    auto fmt(fmt::format_string<T...> fmt, T &&... args) -> Text {
+        return text(fmt::vformat(fmt, fmt::make_format_args(args...)));
+    }
+
+    [[nodiscard]]
+    inline auto score(const std::string &name, const std::string &objective) -> Text {
         return Text{std::make_shared<ScoreTextContent>(name, objective)};
     }
 
     [[nodiscard]]
-    inline Text selector(const std::string &selector) {
+    inline auto selector(const std::string &selector) -> Text {
         return Text{std::make_shared<SelectorTextContent>(selector)};
     }
 
     [[nodiscard]]
-    inline Text keybind(const std::string &keybind) {
+    inline auto keybind(const std::string &keybind) -> Text {
         return Text{std::make_shared<KeybindTextContent>(keybind)};
     }
 
     [[nodiscard]]
-    inline Text translate(const std::string &translate) {
+    inline auto translate(const std::string &translate) -> Text {
         return Text{std::make_shared<TranslatableTextContent>(translate)};
     }
 
     [[nodiscard]]
-    inline Text nbtText(const NbtSourceType sourceType, const std::string &nbt, const std::string &source) {
+    inline auto nbtText(const NbtSourceType sourceType, const std::string &nbt, const std::string &source) -> Text {
         return Text{std::make_shared<NbtTextContent>(sourceType, nbt, source)};
     }
 

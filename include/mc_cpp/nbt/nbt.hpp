@@ -39,16 +39,16 @@ namespace mc {
         virtual ~NbtElement() = default;
 
         [[nodiscard]]
-        virtual NbtType getType() const = 0;
+        virtual auto getType() const -> NbtType = 0;
 
         [[nodiscard]]
-        virtual size_t size() const = 0;
+        virtual auto size() const -> size_t = 0;
     };
 
     class AbstractNbtList : public NbtElement {
 
         [[nodiscard]]
-        virtual NbtType getHeldType() const = 0;
+        virtual auto getHeldType() const -> NbtType = 0;
 
     };
 
@@ -62,12 +62,12 @@ namespace mc {
         explicit NbtPrimitive(const T value): value(value) {}
 
         [[nodiscard]]
-        NbtType getType() const override {
+        auto getType() const -> NbtType override {
             return TYPE;
         }
 
         [[nodiscard]]
-        size_t size() const override {
+        auto size() const -> size_t override {
             return FULL_SIZE;
         }
 
@@ -83,12 +83,12 @@ namespace mc {
         explicit NbtString(std::string value): value(std::move(value)) {}
 
         [[nodiscard]]
-        NbtType getType() const override {
+        auto getType() const -> NbtType override {
             return NbtType::STRING;
         }
 
         [[nodiscard]]
-        size_t size() const override {
+        auto size() const -> size_t override {
             return SIZE + 2 * value.length();
         }
 
@@ -101,12 +101,12 @@ namespace mc {
         NbtEnd() = default;
 
         [[nodiscard]]
-        NbtType getType() const override {
+        auto getType() const -> NbtType override {
             return NbtType::END;
         }
 
         [[nodiscard]]
-        size_t size() const override {
+        auto size() const -> size_t override {
             return SIZE;
         }
 
@@ -123,17 +123,17 @@ namespace mc {
         explicit NbtPrimitiveArray(const std::vector<T> &value): value(value) {}
 
         [[nodiscard]]
-        NbtType getType() const override {
+        auto getType() const -> NbtType override {
             return TYPE;
         }
 
         [[nodiscard]]
-        size_t size() const override {
+        auto size() const -> size_t override {
             return SIZE + HELD_SIZE * value.size();
         }
 
         [[nodiscard]]
-        NbtType getHeldType() const override {
+        auto getHeldType() const -> NbtType override {
             return HELD_TYPE;
         }
 
@@ -275,12 +275,12 @@ namespace mc {
         explicit NbtList(const NbtType type): type(type) {}
 
         [[nodiscard]]
-        NbtType getType() const override {
+        auto getType() const -> NbtType override {
             return NbtType::LIST;
         }
 
         [[nodiscard]]
-        size_t size() const override {
+        auto size() const -> size_t override {
             auto size = SIZE + 4 * values.size();
             for (const auto &element : values)
                 size += element->size();
@@ -288,7 +288,7 @@ namespace mc {
         }
 
         template<typename NbtTag>
-        bool add(const NbtTag &tag) {
+        auto add(const NbtTag &tag) -> bool {
             const auto heldType = tag.getType();
             if (heldType == NbtType::END || (type != NbtType::END && type != heldType)) return false;
 
@@ -298,17 +298,17 @@ namespace mc {
         }
 
         [[nodiscard]]
-        const NbtElement &get(const size_t index) const {
+        auto get(const size_t index) const -> const NbtElement& {
             return *values[index];
         }
 
         [[nodiscard]]
-        size_t length() const {
+        auto length() const -> size_t {
             return values.size();
         }
 
         [[nodiscard]]
-        NbtType getHeldType() const override {
+        auto getHeldType() const -> NbtType override {
             return type;
         }
 
@@ -316,13 +316,13 @@ namespace mc {
 
     template<typename Tag>
     [[nodiscard]]
-    const Tag &getAsTag(const NbtElement &element) {
+    auto getAsTag(const NbtElement &element) -> const Tag& {
         return *dynamic_cast<const Tag*>(&element);
     }
 
     template<typename T>
     [[nodiscard]]
-    const T &get(const NbtElement &element) {
+    auto get(const NbtElement &element) -> const T& {
         return getAsTag<typename UnderlyingType<T>::TypeNbt>(element).value;
     }
 
@@ -334,12 +334,12 @@ namespace mc {
         NbtCompound() = default;
 
         [[nodiscard]]
-        NbtType getType() const override {
+        auto getType() const -> NbtType override {
             return NbtType::COMPOUND;
         }
 
         [[nodiscard]]
-        size_t size() const override {
+        auto size() const -> size_t override {
             auto size = SIZE + 36 * entries.size();
             for (const auto &[key, value] : entries)
                 size += 28 + 2 * key.length() + value->size();
@@ -347,7 +347,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        std::vector<std::string> getKeys() const {
+        auto getKeys() const -> std::vector<std::string> {
             std::vector<std::string> keys;
             keys.reserve(entries.size());
             for (const auto &key : entries | std::views::keys)
@@ -356,39 +356,39 @@ namespace mc {
         }
 
         template<typename NbtTag>
-        void putNbt(const std::string_view key, const NbtTag &tag) {
+        auto putNbt(const std::string_view key, const NbtTag &tag) -> void {
             entries[key] = std::make_shared<NbtTag>(tag);
         }
 
         template<typename T>
-        void put(const std::string_view key, const T &value) {
+        auto put(const std::string_view key, const T &value) -> void {
             putNbt(key, typename UnderlyingType<T>::TypeNbt{value});
         }
 
         [[nodiscard]]
-        OptionCRef<NbtElement> at(const std::string_view key) const {
+        auto at(const std::string_view key) const -> OptionCRef<NbtElement> {
             if (!contains(key)) return None;
             return *entries.at(key);
         }
 
         [[nodiscard]]
-        OptionRef<NbtElement> get(const std::string_view key) {
+        auto get(const std::string_view key) -> OptionRef<NbtElement> {
             if (!contains(key)) return None;
             return *entries[key];
         }
 
         [[nodiscard]]
-        Option<NbtType> getType(const std::string_view key) const {
+        auto getType(const std::string_view key) const -> Option<NbtType> {
             return at(key).transform([](const NbtElement &element) { return element.getType(); });
         }
 
         [[nodiscard]]
-        bool contains(const std::string_view key) const {
+        auto contains(const std::string_view key) const -> bool {
             return entries.contains(key);
         }
 
         [[nodiscard]]
-        bool contains(const std::string_view key, const NbtType type) const {
+        auto contains(const std::string_view key, const NbtType type) const -> bool {
             return getType(key)
                 .transform([type](const NbtType elemType) { return type == elemType; })
                 .value_or(false);
@@ -396,7 +396,7 @@ namespace mc {
 
         template<typename T>
         [[nodiscard]]
-        T get(const std::string_view key) const {
+        auto get(const std::string_view key) const -> T {
             if (!contains(key, UnderlyingType<T>::TypeEnum)) return {};
             const auto *element = dynamic_cast<const UnderlyingType<T>::TypeNbt*>(entries.at(key).get());
             if (!element) return {};
@@ -405,7 +405,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        NbtCompound getCompound(const std::string_view key) const {
+        auto getCompound(const std::string_view key) const -> NbtCompound {
             if (!contains(key, NbtType::COMPOUND)) return {};
             const auto *element = dynamic_cast<const NbtCompound*>(entries.at(key).get());
             if (!element) return {};
@@ -414,7 +414,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        NbtList getList(const std::string_view key) const {
+        auto getList(const std::string_view key) const -> NbtList {
             if (!contains(key, NbtType::LIST)) return {};
             const auto *element = dynamic_cast<const NbtList*>(entries.at(key).get());
             if (!element) return {};
@@ -426,7 +426,8 @@ namespace mc {
 
     template<typename T>
     [[nodiscard]]
-    std::string stringifyNbtArray(const NbtElement &element, const char arrayPrefix, const std::string_view valueSuffix) {
+    auto stringifyNbtArray(const NbtElement &element, const char arrayPrefix,
+                           const std::string_view valueSuffix) -> std::string {
         std::string result = "[" + std::to_string(arrayPrefix) + ";";
         const std::vector<T> &array = dynamic_cast<const UnderlyingType<std::vector<T>>::TypeNbt*>(&element)->value;
         for (size_t i = 0; i < array.size(); i++) {
@@ -438,7 +439,7 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline std::string escapeNbtString(const std::string &str, const bool alwaysEscape = true) {
+    inline auto escapeNbtString(const std::string &str, const bool alwaysEscape = true) -> std::string {
         std::string result = " ";
         char quoteChar{};
 
@@ -468,7 +469,7 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline std::string stringifyNbt(const NbtElement &element, const bool alwaysEscapeCompoundKeys = true) {
+    inline auto stringifyNbt(const NbtElement &element, const bool alwaysEscapeCompoundKeys = true) -> std::string {
         switch (element.getType()) {
             case NbtType::END:
                 return "END";
