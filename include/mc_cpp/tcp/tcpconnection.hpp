@@ -11,9 +11,9 @@
 namespace mc {
 
     template<typename Packet>
-    using PacketHandler = std::function<void(const Packet&)>;
+    using PacketHandler = std::function<bool(const Packet&)>;
 
-    using BufferHandler = std::function<void(ReadIter&, size_t&)>;
+    using BufferHandler = std::function<bool(ReadIter&, size_t&)>;
     using DefaultHandler = std::function<void(int32_t, const ByteBuf&, ReadIter&, size_t&)>;
 
     template<typename PacketType, typename State>
@@ -31,10 +31,9 @@ namespace mc {
         }
 
         auto handlePacket(const int packetID, const ByteBuf &packetBuffer, ReadIter &it, size_t &len) const -> void {
-            if (handlers.contains(packetID)) {
-                handlers.at(packetID)(it, len);
+            if (handlers.contains(packetID) && !handlers.at(packetID)(it, len))
                 return;
-            }
+
             if (defaultHandler)
                 (*defaultHandler)(packetID, packetBuffer, it, len);
         }
@@ -45,7 +44,7 @@ namespace mc {
             const BufferHandler handler = [packetHandler](ReadIter &it, size_t &len) {
                 Packet packet;
                 packet.Read(it, len);
-                packetHandler(packet);
+                return packetHandler(packet);
             };
             return accept(packetID, handler);
         }
