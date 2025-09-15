@@ -18,8 +18,8 @@ namespace mc {
             totalBytesRecv = other.totalBytesRecv.load();
         }
 
-        auto setParent(const TCPTraffic &parentNew) -> void {
-            parent = std::make_shared<TCPTraffic>(parentNew);
+        auto setParent(const std::shared_ptr<TCPTraffic> &parentNew) -> void {
+            parent = parentNew;
         }
 
         auto incrementRecv(const size_t amount) -> void {
