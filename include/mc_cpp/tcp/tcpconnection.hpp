@@ -212,7 +212,7 @@ namespace mc {
                         break;
                     }
                     if (measureTraffic)
-                        measureTraffic->totalBytesRecv += dataPacket.size();
+                        measureTraffic->incrementRecv(dataPacket.size());
 
                     try {
                         handlePacket(dataPacket);
@@ -239,7 +239,7 @@ namespace mc {
 
             // AES encryption does not change the packet size, just calculate here
             if (measureTraffic)
-                measureTraffic->totalBytesSend += packetBuffer.size();
+                measureTraffic->incrementSend(packetBuffer.size());
 
             if (!aesContext) {
                 socket->sockSend(packetBuffer);
