@@ -10,6 +10,16 @@ namespace mc {
         std::atomic<size_t> totalBytesRecv;
 
     public:
+        TCPTraffic(const TCPTraffic &other) {
+            parent = other.parent;
+            totalBytesSend = other.totalBytesSend.load();
+            totalBytesRecv = other.totalBytesRecv.load();
+        }
+
+        auto setParent(const TCPTraffic &parentNew) -> void {
+            parent = std::make_shared<TCPTraffic>(parentNew);
+        }
+
         auto incrementRecv(const size_t amount) -> void {
             if (parent) parent->incrementRecv(amount);
             totalBytesRecv += amount;
