@@ -10,6 +10,8 @@ namespace mc {
         std::atomic<size_t> totalBytesRecv;
 
     public:
+        TCPTraffic() = default;
+
         TCPTraffic(const TCPTraffic &other) {
             parent = other.parent;
             totalBytesSend = other.totalBytesSend.load();
