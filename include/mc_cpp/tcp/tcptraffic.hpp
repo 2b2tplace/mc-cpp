@@ -27,9 +27,17 @@ namespace mc {
             totalBytesRecv += amount;
         }
 
+        auto recv() -> size_t {
+            return totalBytesRecv;
+        }
+
         auto incrementSend(const size_t amount) -> void {
             if (parent) parent->incrementSend(amount);
             totalBytesSend += amount;
+        }
+
+        auto send() -> size_t {
+            return totalBytesSend;
         }
     };
 
