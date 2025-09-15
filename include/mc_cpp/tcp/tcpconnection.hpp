@@ -62,8 +62,10 @@ namespace mc {
 
     template<typename PacketType>
     class ConnectionListener {
+        static constexpr auto defaultState = state::StateType::HANDSHAKE;
+
     public:
-        state::StateType connectionState{state::StateType::HANDSHAKE};
+        state::StateType connectionState{defaultState};
 
         PacketListener<PacketType, state::Handshake> handshake;
         PacketListener<PacketType, state::Status> status;
@@ -77,6 +79,10 @@ namespace mc {
 
         auto handlePacket(const int packetID, ReadIter &it, size_t &len) const -> void {
             handlePacketWithArgs(packetID, it, len);
+        }
+
+        auto resetState() -> void {
+            connectionState = defaultState;
         }
 
     private:
