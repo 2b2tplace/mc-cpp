@@ -130,23 +130,25 @@ namespace mc {
         }
 
         auto sendPacketWithCompression(const ByteBuf &packetBuffer) const -> void {
-            if (compressionThreshold == -1) {
-                sendPacket(packetBuffer);
-                return;
-            }
+            sendRawPacket(compressPacketIfNeeded(packetBuffer));
+        }
+
+        auto compressPacketIfNeeded(const ByteBuf &packetBuffer) const -> ByteBuf {
+            if (compressionThreshold == -1)
+                return packetBuffer;
+
             if (packetBuffer.size() < compressionThreshold) {
                 ByteBuf uncompressedPacket;
                 pc::WriteData<pc::VarInt>(0, uncompressedPacket);
                 uncompressedPacket.insert(uncompressedPacket.end(), packetBuffer.begin(), packetBuffer.end());
-                sendPacket(uncompressedPacket);
-                return;
+                return uncompressedPacket;
             }
             ByteBuf compressedPacket;
             pc::WriteData<pc::VarInt>(static_cast<int>(packetBuffer.size()), compressedPacket);
 
             auto compressedData = compress(packetBuffer);
             compressedPacket.insert(compressedPacket.end(), compressedData.begin(), compressedData.end());
-            sendPacket(compressedPacket);
+            return compressedPacket;
         }
 
         auto append(const char *rawMessage, const size_t length) -> void {
@@ -226,8 +228,7 @@ namespace mc {
             });
         }
 
-    private:
-        auto sendPacket(const ByteBuf &packetWithID) const -> void {
+        auto sendRawPacket(const ByteBuf &packetWithID) const -> void {
             const auto packetLength = static_cast<int>(packetWithID.size());
 
             ByteBuf packetBuffer;
