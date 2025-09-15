@@ -7,6 +7,7 @@
 #include <mc_cpp/crypto/rsa.hpp>
 #include <mc_cpp/crypto/aes.hpp>
 #include <mc_cpp/tcp/tcpsocket.hpp>
+#include <mc_cpp/tcp/tcptraffic.hpp>
 
 namespace mc {
 
@@ -117,10 +118,10 @@ namespace mc {
         Mutex<ByteBuf> packetBuilder;
         int32_t compressionThreshold{-1};
         std::shared_ptr<AESContext> aesContext;
+        std::shared_ptr<TCPTraffic> measureTraffic;
 
-        explicit TCPConnection(Logger &logger, const std::shared_ptr<TCPSocket<>> &socket): logger(logger),
-            socket(socket) {
-        }
+        explicit TCPConnection(Logger &logger, const std::shared_ptr<TCPSocket<>> &socket):
+            logger(logger), socket(socket) {}
 
         auto sendPacket(const pc::Packet &packet) const -> void {
             ByteBuf packetBuffer;
@@ -210,6 +211,9 @@ namespace mc {
                         logger.log<ERROR>("dataPacket.size() was 0: {} / {}", packetLength, dataPacket.size());
                         break;
                     }
+                    if (measureTraffic)
+                        measureTraffic->totalBytesRecv += dataPacket.size();
+
                     try {
                         handlePacket(dataPacket);
                     } catch (const std::runtime_error &err) {
@@ -232,6 +236,11 @@ namespace mc {
 
             logger.log<DEBUG>("Sending packet to {}bound with encryption enabled = {}", Side::source,
                               aesContext != nullptr);
+
+            // AES encryption does not change the packet size, just calculate here
+            if (measureTraffic)
+                measureTraffic->totalBytesSend += packetBuffer.size();
+
             if (!aesContext) {
                 socket->sockSend(packetBuffer);
                 return;
