@@ -366,19 +366,19 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto at(const std::string_view key) const -> OptionCRef<NbtElement> {
-            if (!contains(key)) return None;
+        auto at(const std::string_view key) const -> result::OptionCRef<NbtElement> {
+            if (!contains(key)) return result::None;
             return *entries.at(key);
         }
 
         [[nodiscard]]
-        auto get(const std::string_view key) -> OptionRef<NbtElement> {
-            if (!contains(key)) return None;
+        auto get(const std::string_view key) -> result::OptionRef<NbtElement> {
+            if (!contains(key)) return result::None;
             return *entries[key];
         }
 
         [[nodiscard]]
-        auto getType(const std::string_view key) const -> Option<NbtType> {
+        auto getType(const std::string_view key) const -> result::Option<NbtType> {
             return at(key).transform([](const NbtElement &element) { return element.getType(); });
         }
 

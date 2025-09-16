@@ -70,13 +70,13 @@ namespace mc {
     }
 
     struct TextStyle final : NbtSerializable {
-        Option<TextColor> color;
-        Option<std::string> font;
-        Option<bool> bold;
-        Option<bool> italic;
-        Option<bool> underlined;
-        Option<bool> strikethrough;
-        Option<bool> obfuscated;
+        result::Option<TextColor> color;
+        result::Option<std::string> font;
+        result::Option<bool> bold;
+        result::Option<bool> italic;
+        result::Option<bool> underlined;
+        result::Option<bool> strikethrough;
+        result::Option<bool> obfuscated;
 
         auto withColor(const TextColor &colorNew) -> TextStyle& {
             color = colorNew;
@@ -194,8 +194,8 @@ namespace mc {
     struct TextHoverEvent : NbtSerializable {};
 
     struct TextInteractivity final : NbtSerializable {
-        Option<std::string> insertion;
-        Option<TextClickEvent> clickEvent;
+        result::Option<std::string> insertion;
+        result::Option<TextClickEvent> clickEvent;
         std::shared_ptr<TextHoverEvent> hoverEvent;
 
         auto withInsertion(const std::string &insertionNew) -> TextInteractivity& {
@@ -376,8 +376,8 @@ namespace mc {
 
     struct TranslatableTextContent final : NbtSerializable {
         std::string translate;
-        Option<std::string> fallback;
-        Option<std::vector<Text>> with;
+        result::Option<std::string> fallback;
+        result::Option<std::vector<Text>> with;
 
         explicit TranslatableTextContent(std::string translate): translate(std::move(translate)) {}
 
@@ -441,7 +441,7 @@ namespace mc {
 
     struct SelectorTextContent final : NbtSerializable {
         std::string selector;
-        Option<Text> separator;
+        result::Option<Text> separator;
 
         explicit SelectorTextContent(std::string selector): selector(std::move(selector)) {}
 
@@ -487,8 +487,8 @@ namespace mc {
         NbtSourceType sourceType;
         std::string nbt;
         std::string source;
-        Option<bool> interpret;
-        Option<Text> separator;
+        result::Option<bool> interpret;
+        result::Option<Text> separator;
 
         explicit NbtTextContent(const NbtSourceType sourceType, std::string nbt, std::string source):
             sourceType(sourceType), nbt(std::move(nbt)), source(std::move(source)) {}

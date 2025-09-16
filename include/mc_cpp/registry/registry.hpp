@@ -20,21 +20,21 @@ namespace mc {
         auto load(const std::filesystem::path &filepath) -> bool;
 
         [[nodiscard]]
-        auto trySave(const std::filesystem::path &filepath) const -> Result<std::monostate, std::string> {
+        auto trySave(const std::filesystem::path &filepath) const -> result::Result<std::monostate, std::string> {
             try {
                 save(filepath);
             } catch (const std::exception &e) {
-                return Err("Failed to save registry to " + filepath.string() + ": " + e.what());
+                return ERR("Failed to save registry to " + filepath.string() + ": " + e.what());
             }
             return {};
         }
 
         [[nodiscard]]
-        auto tryLoad(const std::filesystem::path &filepath) -> Result<std::monostate, std::string> {
+        auto tryLoad(const std::filesystem::path &filepath) -> result::Result<std::monostate, std::string> {
             try {
-                if (!load(filepath)) return Err("Failed to load registry from " + filepath.string());
+                if (!load(filepath)) return ERR("Failed to load registry from " + filepath.string());
             } catch (const std::exception &e) {
-                return Err("Failed to load registry from " + filepath.string() + ": " + e.what());
+                return ERR("Failed to load registry from " + filepath.string() + ": " + e.what());
             }
             return {};
         }

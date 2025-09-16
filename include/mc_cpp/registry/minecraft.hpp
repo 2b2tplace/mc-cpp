@@ -38,7 +38,7 @@ namespace mc {
             }
         }
 
-        static auto load(const std::filesystem::path &parentDirectory) -> Result<MinecraftRegistry, std::string> {
+        static auto load(const std::filesystem::path &parentDirectory) -> result::Result<MinecraftRegistry, std::string> {
             Registry<BiomeColorEntry>    foliageColorRegistry;
             Registry<BiomeColorEntry>    grassColorRegistry;
             Registry<BiomeColorEntry>    waterColorRegistry;
@@ -46,12 +46,12 @@ namespace mc {
             Registry<BiomePropertyEntry> biomePropertyRegistry;
             Registry<BlockStateEntry>    blockStateRegistry;
 
-            Try(foliageColorRegistry .tryLoad(parentDirectory / "foliage_colors.json"));
-            Try(grassColorRegistry   .tryLoad(parentDirectory / "grass_colors.json"));
-            Try(waterColorRegistry   .tryLoad(parentDirectory / "water_colors.json"));
-            Try(colorTriangleRegistry.tryLoad(parentDirectory / "color_triangles.json"));
-            Try(biomePropertyRegistry.tryLoad(parentDirectory / "biome_properties.json"));
-            Try(blockStateRegistry   .tryLoad(parentDirectory / "blockstates.json"));
+            TRY(foliageColorRegistry .tryLoad(parentDirectory / "foliage_colors.json"));
+            TRY(grassColorRegistry   .tryLoad(parentDirectory / "grass_colors.json"));
+            TRY(waterColorRegistry   .tryLoad(parentDirectory / "water_colors.json"));
+            TRY(colorTriangleRegistry.tryLoad(parentDirectory / "color_triangles.json"));
+            TRY(biomePropertyRegistry.tryLoad(parentDirectory / "biome_properties.json"));
+            TRY(blockStateRegistry   .tryLoad(parentDirectory / "blockstates.json"));
 
             return MinecraftRegistry {
                 foliageColorRegistry,
