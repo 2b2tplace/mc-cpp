@@ -3,8 +3,7 @@
 #include <absl/container/flat_hash_set.h>
 #include <mc_cpp/registry/registries/biomes.hpp>
 #include <mc_cpp/registry/registries/blockstates.hpp>
-
-#include "../../../cmake-build-debug/_deps/result-src/include/result.hpp"
+#include <result.hpp>
 
 namespace mc {
 
@@ -16,7 +15,7 @@ namespace mc {
     public:
         BiomeRegistry biomes;
         BlockRegistry blocks;
-  // TileEntityRegistry tileEntities;
+        // TileEntityRegistry tileEntities;
 
         explicit MinecraftRegistry(const Registry<BiomeColorEntry> &foliageColors,
                                    const Registry<BiomeColorEntry> &grassColors,
