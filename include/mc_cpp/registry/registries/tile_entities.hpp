@@ -13,8 +13,8 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
-    DEFINE_ENTRY_FROM_JSON(TileEntityEntry);
-    DEFINE_ENTRY_TO_JSON(TileEntityEntry);
+    inline DEFINE_ENTRY_FROM_JSON(TileEntityEntry);
+    inline DEFINE_ENTRY_TO_JSON(TileEntityEntry);
 
 
 

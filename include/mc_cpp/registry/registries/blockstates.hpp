@@ -19,8 +19,8 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
-    DEFINE_ENTRY_FROM_JSON(BlockStateEntry);
-    DEFINE_ENTRY_TO_JSON(BlockStateEntry);
+    inline DEFINE_ENTRY_FROM_JSON(BlockStateEntry);
+    inline DEFINE_ENTRY_TO_JSON(BlockStateEntry);
 
     class BlockRegistry {
         absl::flat_hash_map<BlockState, BlockStateProperties> properties;

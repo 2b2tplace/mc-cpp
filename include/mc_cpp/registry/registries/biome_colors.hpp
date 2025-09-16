@@ -18,8 +18,8 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
-    DEFINE_ENTRY_FROM_JSON(ColorTriangleEntry);
-    DEFINE_ENTRY_TO_JSON(ColorTriangleEntry);
+    inline DEFINE_ENTRY_FROM_JSON(ColorTriangleEntry);
+    inline DEFINE_ENTRY_TO_JSON(ColorTriangleEntry);
 
     struct BiomeColorEntry {
         NAMED_FIELD(std::string, biomeType);
@@ -28,8 +28,8 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
-    DEFINE_ENTRY_FROM_JSON(BiomeColorEntry);
-    DEFINE_ENTRY_TO_JSON(BiomeColorEntry);
+    inline DEFINE_ENTRY_FROM_JSON(BiomeColorEntry);
+    inline DEFINE_ENTRY_TO_JSON(BiomeColorEntry);
 
     using ColorTriangle = std::array<RGBA, 3>;
     using BiomeColors = std::array<RGBA, BIOME_ENVIRONMENT_COUNT>;

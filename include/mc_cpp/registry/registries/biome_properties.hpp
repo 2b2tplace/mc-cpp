@@ -18,8 +18,8 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
-    DEFINE_ENTRY_FROM_JSON(BiomePropertyEntry);
-    DEFINE_ENTRY_TO_JSON(BiomePropertyEntry);
+    inline DEFINE_ENTRY_FROM_JSON(BiomePropertyEntry);
+    inline DEFINE_ENTRY_TO_JSON(BiomePropertyEntry);
 
     struct BiomePropertyRegistry {
         absl::flat_hash_map<BiomeType, BiomeProperties> properties;
