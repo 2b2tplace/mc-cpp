@@ -252,7 +252,8 @@
             "id": 39,
             "name": "pale_garden",
             "downfall": 0.8,
-            "temperature": 0.7
+            "temperature": 0.7,
+            "biomeType": "PaleGarden"
         },
         {
             "id": 40,
