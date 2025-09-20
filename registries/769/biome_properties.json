@@ -233,8 +233,7 @@
             "id": 36,
             "name": "old_growth_birch_forest",
             "downfall": 0.6,
-            "temperature": 0.6,
-            "biomeType": "DarkForest"
+            "temperature": 0.6
         },
         {
             "id": 37,
