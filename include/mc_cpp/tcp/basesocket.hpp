@@ -1,4 +1,5 @@
 #pragma once
+#include <netinet/tcp.h>
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <arpa/inet.h>
@@ -91,6 +92,10 @@ namespace mc {
 
             if (this->sock == -1)
                 onError(errno, "Socket creating error.");
+
+            static constexpr int flag = 1;
+            if (setsockopt(this->sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag)) < 0)
+                onError(errno, "Failed to enable TCP_NODELAY.");
         }
 
         virtual ~BaseSocket() = default;
