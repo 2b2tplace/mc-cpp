@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 project(mc_cpp)
+cmake_policy(SET CMP0167 NEW)
 
 set(CMAKE_CXX_STANDARD 23)
 set(BOTCRAFT_BUILD_DOC OFF)
@@ -8,6 +9,7 @@ set(BOTCRAFT_GAME_VERSION "1.21.4" CACHE STRING "Minecraft game version")
 file(GLOB_RECURSE LIBS "include/*.hpp" "include/*.h" "include/*.cpp" "include/*.c")
 include_directories(mc_cpp ${CMAKE_CURRENT_SOURCE_DIR}/include)
 find_package(fmt REQUIRED)
+find_package(Boost REQUIRED COMPONENTS iostreams)
 link_libraries(z sqlite3 crypto)
 if(WIN32)
     link_libraries(ws2_32)
@@ -50,6 +52,7 @@ target_link_libraries(mc_cpp
         PUBLIC protocolCraft
         PUBLIC fmt
         PUBLIC result_cpp
+        PUBLIC "${Boost_IOSTREAMS_LIBRARY}"
 )
 
 add_executable(mc_cpp_run main.cpp)
