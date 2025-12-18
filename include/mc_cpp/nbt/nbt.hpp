@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <mc_cpp/endian.hpp>
 #include <absl/container/flat_hash_map.h>
 
 namespace mc {
@@ -26,6 +27,10 @@ namespace mc {
         LONG_ARRAY = 12
     };
 
+    enum class Compression {
+        NO_COMPRESSION = 0, GZIP = 1, ZLIB = 2
+    };
+
     static constexpr size_t END_SIZE = 0;
     static constexpr size_t BYTE_SIZE = 1;
     static constexpr size_t SHORT_SIZE = 2;
@@ -33,6 +38,8 @@ namespace mc {
     static constexpr size_t LONG_SIZE = 8;
     static constexpr size_t FLOAT_SIZE = 4;
     static constexpr size_t DOUBLE_SIZE = 8;
+
+    static const std::string DEFAULT_NBT_ELEMENT_NAME = "";
 
     class NbtElement {
     public:
@@ -43,7 +50,20 @@ namespace mc {
 
         [[nodiscard]]
         virtual auto size() const -> size_t = 0;
+
+        virtual auto read(std::istream& stream) -> NbtElement& {
+            return *this;
+        }
+
+        virtual auto write(std::ostream& stream, const bool writeType = true,
+                           const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void {
+            if (writeType) writeBE(stream, static_cast<int8_t>(getType()));
+            if (writeName) writeBEString(stream, name);
+        }
+
     };
+
+    using NbtElementPtr = std::shared_ptr<NbtElement>;
 
     class AbstractNbtList : public NbtElement {
 
@@ -56,7 +76,7 @@ namespace mc {
     class NbtPrimitive final : public NbtElement {
         static constexpr auto FULL_SIZE = 8 + SIZE;
     public:
-        T value;
+        T value{};
 
         NbtPrimitive() = default;
         explicit NbtPrimitive(const T value): value(value) {}
@@ -69,6 +89,17 @@ namespace mc {
         [[nodiscard]]
         auto size() const -> size_t override {
             return FULL_SIZE;
+        }
+
+        auto read(std::istream& stream) -> NbtElement& override {
+            value = readBE<T>(stream);
+            return *this;
+        }
+
+        auto write(std::ostream& stream, const bool writeType = true,
+                   const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override {
+            NbtElement::write(stream, writeType, writeName, name);
+            writeBE<T>(stream, value);
         }
 
     };
@@ -90,6 +121,17 @@ namespace mc {
         [[nodiscard]]
         auto size() const -> size_t override {
             return SIZE + 2 * value.length();
+        }
+
+        auto read(std::istream& stream) -> NbtElement& override {
+            value = readBEString(stream);
+            return *this;
+        }
+
+        auto write(std::ostream& stream, const bool writeType = true,
+                   const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override {
+            NbtElement::write(stream, writeType, writeName, name);
+            writeBEString(stream, value);
         }
 
     };
@@ -135,6 +177,30 @@ namespace mc {
         [[nodiscard]]
         auto getHeldType() const -> NbtType override {
             return HELD_TYPE;
+        }
+
+        auto read(std::istream& stream) -> NbtElement& override {
+            const auto length = readBE<int32_t>(stream);
+            value.resize(length);
+            if (std::is_same_v<T, int8_t>) {
+                stream.read(reinterpret_cast<char*>(&value[0]), length * sizeof(T));
+            } else {
+                for (int32_t i = 0; i < length; i++)
+                    value[i] = readBE<T>(stream);
+            }
+            return *this;
+        }
+
+        auto write(std::ostream& stream, const bool writeType = true,
+                   const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override {
+            NbtElement::write(stream, writeType, writeName, name);
+            writeBE<int32_t>(stream, value.size());
+            if (std::is_same_v<T, int8_t>) {
+                stream.write(reinterpret_cast<const char*>(&value[0]), value.size() * sizeof(T));
+            } else {
+                for (size_t i = 0; i < value.size(); i++)
+                    writeBE<T>(stream, value[i]);
+            }
         }
 
     };
@@ -267,7 +333,7 @@ namespace mc {
     class NbtList final : public AbstractNbtList {
         static constexpr auto SIZE = 37;
 
-        std::vector<std::shared_ptr<NbtElement>> values{};
+        std::vector<NbtElementPtr> values{};
     public:
         NbtType type{NbtType::END};
 
@@ -312,6 +378,11 @@ namespace mc {
             return type;
         }
 
+        auto read(std::istream &stream) -> NbtElement& override;
+
+        auto write(std::ostream &stream, bool writeType = true,
+                   bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override;
+
     };
 
     template<typename Tag>
@@ -326,10 +397,10 @@ namespace mc {
         return getAsTag<typename UnderlyingType<T>::TypeNbt>(element).value;
     }
 
-    class NbtCompound final : public NbtElement {
+    class NbtCompound : public NbtElement {
         static constexpr size_t SIZE = 48;
 
-        absl::flat_hash_map<std::string, std::shared_ptr<NbtElement>> entries;
+        absl::flat_hash_map<std::string, NbtElementPtr> entries;
     public:
         NbtCompound() = default;
 
@@ -421,6 +492,11 @@ namespace mc {
 
             return *element;
         }
+
+        auto read(std::istream &stream) -> NbtElement& override;
+
+        auto write(std::ostream &stream, bool writeType = true,
+                   bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override;
 
     };
 
@@ -521,5 +597,55 @@ namespace mc {
         return "";
     }
 
+    inline auto createTag(const NbtType type) -> NbtElementPtr {
+        switch (type) {
+            case NbtType::BYTE:
+                return std::make_shared<NbtByte>();
+            case NbtType::SHORT:
+                return std::make_shared<NbtShort>();
+            case NbtType::INT:
+                return std::make_shared<NbtInt>();
+            case NbtType::LONG:
+                return std::make_shared<NbtLong>();
+            case NbtType::FLOAT:
+                return std::make_shared<NbtFloat>();
+            case NbtType::DOUBLE:
+                return std::make_shared<NbtDouble>();
+            case NbtType::BYTE_ARRAY:
+                return std::make_shared<NbtByteArray>();
+            case NbtType::STRING:
+                return std::make_shared<NbtString>();
+            case NbtType::LIST:
+                return std::make_shared<NbtList>();
+            case NbtType::COMPOUND:
+                return std::make_shared<NbtCompound>();
+            case NbtType::INT_ARRAY:
+                return std::make_shared<NbtIntArray>();
+            case NbtType::LONG_ARRAY:
+                return std::make_shared<NbtLongArray>();
+            case NbtType::END:
+                return std::make_shared<NbtEnd>();
+            default:
+                std::unreachable();
+        }
+    }
+
+    class NbtFile final : public NbtCompound {
+        static void decompressStream(std::istream& stream, std::stringstream& decompressed,
+                                     Compression compression);
+
+        std::string compoundName{};
+    public:
+        void readCompressed(std::istream& stream, Compression compression = Compression::GZIP);
+        void readNBT(std::istream& stream, Compression compression = Compression::GZIP);
+        void readNBT(const char* filename, Compression compression = Compression::GZIP);
+        void readNBT(const char* buffer, size_t len, Compression compression = Compression::GZIP);
+
+        void writeNBT(std::ostream& stream, Compression compression = Compression::GZIP) const;
+        void writeNBT(const char* filename, Compression compression = Compression::GZIP) const;
+
+        auto write(std::ostream &stream, bool writeType = true,
+                   bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override;
+    };
 
 }
