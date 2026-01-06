@@ -157,7 +157,7 @@ namespace mc::anvil {
     struct Chunk {
         std::vector<ChunkSection> sections;
 
-        auto writeSections_1_18(NbtCompound &chunkNBT, const MinecraftRegistry &registry) const -> void {
+        auto writeSections(NbtCompound &chunkNBT, const MinecraftRegistry &registry) const -> void {
             NbtList sectionsNBT;
 
             for (const auto &section : sections) {
@@ -225,8 +225,7 @@ namespace mc::anvil {
         }
 
         [[nodiscard]]
-        static auto readSections_1_18(const NbtCompound &chunkNBT,
-                                      const MinecraftRegistry &registry) -> result::Option<Chunk> {
+        static auto readSections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk> {
             const auto &sections = chunkNBT.readNbt<NbtList>("sections");
             Chunk chunk;
             chunk.sections.reserve(sections.length());
