@@ -8,10 +8,26 @@
 #include <mc_cpp/registry/minecraft.hpp>
 
 namespace mc::anvil {
-    static constexpr size_t SECTION_SIDELENGTH_BLOCKS = 16;
+
+    struct Pos {
+        int32_t x{};
+        int32_t z{};
+
+        [[nodiscard]]
+        auto localX(const int32_t parentSidelength) const -> int32_t {
+            return x % parentSidelength < 0 ? x % parentSidelength + parentSidelength : x % parentSidelength;
+        }
+
+        [[nodiscard]]
+        auto localZ(const int32_t parentSidelength) const -> int32_t {
+            return z % parentSidelength < 0 ? z % parentSidelength + parentSidelength : z % parentSidelength;
+        }
+    };
+
+    static constexpr auto SECTION_SIDELENGTH_BLOCKS = 16;
     static constexpr size_t SECTION_SIZE_BLOCKS = SECTION_SIDELENGTH_BLOCKS * SECTION_SIDELENGTH_BLOCKS * SECTION_SIDELENGTH_BLOCKS;
 
-    static constexpr size_t SECTION_SIDELENGTH_BIOMES = 4;
+    static constexpr auto SECTION_SIDELENGTH_BIOMES = 4;
     static constexpr size_t SECTION_SIZE_BIOMES = SECTION_SIDELENGTH_BIOMES * SECTION_SIDELENGTH_BIOMES * SECTION_SIDELENGTH_BIOMES;
 
     static constexpr size_t SECTION_SIZE_LIGHT = 2048;
@@ -154,10 +170,24 @@ namespace mc::anvil {
         }
     };
 
+    static void prepareTileEntity(NbtCompound &tileEntityNBT, const std::string_view tileEntityName,
+                                  const Pos &localizeBlockPos, const int32_t yLevel) {
+        tileEntityNBT.put("x", localizeBlockPos.localX(SECTION_SIZE_BLOCKS));
+        tileEntityNBT.put("z", localizeBlockPos.localZ(SECTION_SIZE_BLOCKS));
+        tileEntityNBT.put("y", yLevel);
+        tileEntityNBT.put("keepPacked", false);
+
+        auto tileEntityNameNamespaced = std::string(tileEntityName);
+        prependMinecraftNamespace(&tileEntityNameNamespaced);
+        tileEntityNBT.put("id", tileEntityNameNamespaced);
+    }
+
     struct Chunk {
         std::vector<ChunkSection> sections;
+        NbtList tileEntities;
 
         auto writeSections(NbtCompound &chunkNBT, const MinecraftRegistry &registry) const -> void {
+            chunkNBT.putNbt("block_entities", tileEntities);
             NbtList sectionsNBT;
 
             for (const auto &section : sections) {
@@ -228,11 +258,12 @@ namespace mc::anvil {
         static auto readSections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk> {
             const auto &sections = chunkNBT.readNbt<NbtList>("sections");
             Chunk chunk;
+            chunk.tileEntities = chunkNBT.readNbt<NbtList>("block_entities");
             chunk.sections.reserve(sections.length());
 
             for (int i = 0; i < sections.length(); i++) {
                 const auto section = sections.readNbt<NbtCompound>(i);
-                if (!section.contains("block_states") || !section.contains("Y")) return result::None;
+                if (!section.contains("Y")) return result::None;
 
                 chunk.sections.emplace_back(registry, section.read<int8_t>("Y"));
                 auto &chunkSection = chunk.sections[i];

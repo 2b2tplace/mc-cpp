@@ -13,21 +13,6 @@ namespace mc::anvil {
     static constexpr auto REGION_SIDELENGTH_CHUNKS = 32;
     static constexpr auto REGION_SIZE_CHUNKS = REGION_SIDELENGTH_CHUNKS * REGION_SIDELENGTH_CHUNKS;
 
-    struct Pos {
-        int32_t x{};
-        int32_t z{};
-
-        [[nodiscard]]
-        auto localX(const int32_t parentSidelength) const -> int32_t {
-            return x % parentSidelength < 0 ? x % parentSidelength + parentSidelength : x % parentSidelength;
-        }
-
-        [[nodiscard]]
-        auto localZ(const int32_t parentSidelength) const -> int32_t {
-            return z % parentSidelength < 0 ? z % parentSidelength + parentSidelength : z % parentSidelength;
-        }
-    };
-
     enum class RegionReadResult {
         OK,
         FILE_HANDLE_CLOSED,
@@ -102,7 +87,6 @@ namespace mc::anvil {
             chunkNBT.put("zPos", absZ);
             chunkNBT.put("yPos", minY);
             chunkNBT.put("Status", "full");
-            chunkNBT.putNbt("block_entities", NbtList{NbtType::COMPOUND});
             chunkNBT.putNbt("block_ticks", NbtList{NbtType::COMPOUND});
             chunkNBT.putNbt("fluid_ticks", NbtList{NbtType::COMPOUND});
             chunkNBT.put("isLightOn", true);
