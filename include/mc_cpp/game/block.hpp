@@ -15,7 +15,7 @@ namespace mc {
         friend std::ostream& operator<<(std::ostream &os, const BlockType &type);
     };
 
-    struct BlockStateProperties {
+    struct BlockStateRenderProperties {
         BlockState id;
         std::string name;
         RGBA color;
@@ -26,8 +26,11 @@ namespace mc {
 
     static constexpr auto MISSING_BLOCK_STATE = UINT16_MAX;
     static constexpr auto MISSING_BLOCK_TYPE = BlockType{MISSING_BLOCK_STATE, MISSING_BLOCK_STATE};
+    static const std::string MISSING_BLOCK_NAME = ":unknown";
 
-    static const auto MISSING_BLOCK_PROPERTIES = BlockStateProperties {
+    static const absl::flat_hash_map<std::string, std::string> MISSING_BLOCK_PROPERTY_MAP = {};
+
+    static const auto MISSING_BLOCK_RENDER_PROPERTIES = BlockStateRenderProperties {
         MISSING_BLOCK_STATE,
         "unknown",
         {},

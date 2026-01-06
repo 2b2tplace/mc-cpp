@@ -22,9 +22,14 @@ namespace mc {
     inline DEFINE_ENTRY_FROM_JSON(BlockStateEntry);
     inline DEFINE_ENTRY_TO_JSON(BlockStateEntry);
 
+    using BlockStatePropertyMap = absl::flat_hash_map<std::string, std::string>;
+
     class BlockRegistry {
-        absl::flat_hash_map<BlockState, BlockStateProperties> properties;
+    public:
+        absl::flat_hash_map<BlockState, BlockStateRenderProperties> renderProperties;
         absl::flat_hash_map<std::string, BlockState> blockStateByName;
+        absl::flat_hash_map<BlockState, std::string> blockNameByState;
+        absl::flat_hash_map<BlockState, BlockStatePropertyMap> blockStatePropertyMaps;
 
         absl::flat_hash_map<std::string, size_t> blockTypeByName;
         absl::flat_hash_map<BlockState, size_t> blockTypeByState;
@@ -32,9 +37,8 @@ namespace mc {
         std::vector<BlockType> blockTypes;
         size_t currentBlockTypeId{};
 
-    public:
         explicit BlockRegistry(const Registry<BlockStateEntry> &registry) {
-            properties.reserve(registry.entries.size());
+            renderProperties.reserve(registry.entries.size());
             blockStateByName.reserve(registry.entries.size());
             for (const auto&[id, name, color, lightLevel] : registry.entries) {
                 const auto rgba = unpackARGB(color);
@@ -48,18 +52,26 @@ namespace mc {
                     hsv[2] = std::clamp(hsv[2] * brightnessMultiplier, 0.0f, 1.0f);
                     illuminatedColor = toRGBA(hsv);
                 }
-                properties[id] = BlockStateProperties { id, name, rgba, colorBrightness(rgba), lightLevel, illuminatedColor };
+                renderProperties[id] = BlockStateRenderProperties { id, name, rgba, colorBrightness(rgba), lightLevel, illuminatedColor };
                 blockStateByName[name] = id;
                 extendBlockType(id, name);
             }
         }
 
         [[nodiscard]]
-        auto blockStateProperties(const BlockState state) const -> const BlockStateProperties& {
-            if (!properties.contains(state))
-                return MISSING_BLOCK_PROPERTIES;
+        auto blockStateRenderProperties(const BlockState state) const -> const BlockStateRenderProperties& {
+            if (!renderProperties.contains(state))
+                return MISSING_BLOCK_RENDER_PROPERTIES;
 
-            return properties.at(state);
+            return renderProperties.at(state);
+        }
+
+        [[nodiscard]]
+        auto blockStatePropertyMap(const BlockState state) const -> const BlockStatePropertyMap& {
+            if (!blockStatePropertyMaps.contains(state))
+                return MISSING_BLOCK_PROPERTY_MAP;
+
+            return blockStatePropertyMaps.at(state);
         }
 
         [[nodiscard]]
@@ -71,8 +83,24 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto blockStateProperties(const std::string_view name) const -> const BlockStateProperties& {
-            return blockStateProperties(blockState(name));
+        auto blockStateRenderProperties(const std::string_view name) const -> const BlockStateRenderProperties& {
+            return blockStateRenderProperties(blockState(name));
+        }
+
+        [[nodiscard]]
+        auto blockName(const BlockType &type) const -> const std::string& {
+            if (!blockNameByState.contains(type.min))
+                return MISSING_BLOCK_NAME;
+
+            return blockNameByState.at(type.min);
+        }
+
+        [[nodiscard]]
+        auto blockName(const BlockState state) const -> const std::string& {
+            if (!blockNameByState.contains(state))
+                return MISSING_BLOCK_NAME;
+
+            return blockNameByState.at(state);
         }
 
         [[nodiscard]]
@@ -93,8 +121,27 @@ namespace mc {
 
     private:
         auto extendBlockType(const BlockState additionalState, const std::string &stateName) -> void {
-            const auto pos = stateName.find('[');
-            const auto blockName = pos != std::string::npos ? stateName.substr(0, pos) : stateName;
+            const auto open = stateName.find('[');
+            const auto close = stateName.find(']');
+            const auto blockName = open == std::string::npos ? stateName : stateName.substr(0, open);
+            const auto blockPropertiesStr = close == std::string_view::npos || close < open ? "" : stateName.substr(open + 1, close - open - 1);
+
+            absl::flat_hash_map<std::string, std::string> properties;
+            if (!blockPropertiesStr.empty() && blockPropertiesStr != "-") {
+                std::istringstream ss(blockPropertiesStr);
+                for (std::string token; std::getline(ss, token, ',');) {
+                    if (token.empty()) continue;
+
+                    const auto index = token.find('=');
+                    if (index == std::string::npos) continue;
+
+                    const auto key = token.substr(0, index);
+                    const auto value = token.substr(index + 1);
+                    properties[key] = value;
+                }
+            }
+            blockStatePropertyMaps[additionalState] = properties;
+            blockNameByState[additionalState] = blockName;
 
             if (!blockTypeByName.contains(blockName)) {
                 blockTypeByName[blockName] = currentBlockTypeId;

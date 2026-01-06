@@ -3,28 +3,65 @@
 #include <absl/container/flat_hash_set.h>
 #include <mc_cpp/registry/registries/biomes.hpp>
 #include <mc_cpp/registry/registries/blockstates.hpp>
+#include <mc_cpp/registry/registries/tile_entities.hpp>
 #include <result.hpp>
 
 namespace mc {
+
+    enum SupportedMinecraftVersion {
+        RELEASE_1_19_4,
+        RELEASE_1_20_4,
+        RELEASE_1_21_4,
+        _SUPPORTED_MINECRAFT_VERSION_COUNT
+    };
+
+    static constexpr std::array<uint16_t, _SUPPORTED_MINECRAFT_VERSION_COUNT> DATA_VERSIONS = {
+        3337,
+        3700,
+        4189
+    };
+
+    static constexpr std::array<uint16_t, _SUPPORTED_MINECRAFT_VERSION_COUNT> PROTOCOL_VERSIONS = {
+        762,
+        765,
+        769
+    };
+
+    inline auto stripMinecraftNamespace(std::string_view *namespacedId) -> void {
+        if (const auto delimiter = namespacedId->find(':');
+            delimiter != std::string::npos && namespacedId->starts_with("minecraft:"))
+            *namespacedId = namespacedId->substr(delimiter + 1);
+    }
+
+    inline auto prependMinecraftNamespace(std::string *namespacedId) -> void {
+        if (const auto delimiter = namespacedId->find(':');
+            delimiter == std::string::npos)
+            *namespacedId = "minecraft:" + *namespacedId;
+    }
 
     class MinecraftRegistry {
         BlockType waterBlock{};
         BlockType grassBlock{};
         absl::flat_hash_set<BlockState> foliage;
+        SupportedMinecraftVersion version;
 
     public:
         BiomeRegistry biomes;
         BlockRegistry blocks;
-        // TileEntityRegistry tileEntities;
+        TileEntityRegistry tileEntities;
 
-        explicit MinecraftRegistry(const Registry<BiomeColorEntry> &foliageColors,
+        explicit MinecraftRegistry(const SupportedMinecraftVersion version,
+                                   const Registry<BiomeColorEntry> &foliageColors,
                                    const Registry<BiomeColorEntry> &grassColors,
                                    const Registry<BiomeColorEntry> &waterColors,
                                    const Registry<ColorTriangleEntry> &colorTriangles,
                                    const Registry<BiomePropertyEntry> &biomePropertyRegistry,
-                                   const Registry<BlockStateEntry> &blockStateRegistry):
+                                   const Registry<BlockStateEntry> &blockStateRegistry,
+                                   const Registry<TileEntityEntry> &tileEntityRegistry):
+            version(version),
             biomes(BiomeRegistry { foliageColors, grassColors, waterColors, colorTriangles, biomePropertyRegistry }),
-            blocks(BlockRegistry { blockStateRegistry }) {
+            blocks(BlockRegistry { blockStateRegistry }),
+            tileEntities(TileEntityRegistry { tileEntityRegistry }) {
 
             waterBlock = blocks.blockType("water");
             grassBlock = blocks.blockType("grass_block");
@@ -37,28 +74,49 @@ namespace mc {
             }
         }
 
-        static auto load(const std::filesystem::path &parentDirectory) -> result::Result<MinecraftRegistry, std::string> {
+        [[nodiscard]]
+        auto minecraftVersion() const -> SupportedMinecraftVersion {
+            return version;
+        }
+
+        [[nodiscard]]
+        auto dataVersion() const -> int32_t {
+            return DATA_VERSIONS[version];
+        }
+
+        [[nodiscard]]
+        auto protocolVersion() const -> int32_t {
+            return PROTOCOL_VERSIONS[version];
+        }
+
+        static auto load(const std::filesystem::path &parentDirectory, const SupportedMinecraftVersion version) -> result::Result<MinecraftRegistry, std::string> {
             Registry<BiomeColorEntry>    foliageColorRegistry;
             Registry<BiomeColorEntry>    grassColorRegistry;
             Registry<BiomeColorEntry>    waterColorRegistry;
             Registry<ColorTriangleEntry> colorTriangleRegistry;
             Registry<BiomePropertyEntry> biomePropertyRegistry;
             Registry<BlockStateEntry>    blockStateRegistry;
+            Registry<TileEntityEntry>    tileEntityRegistry;
 
-            TRY(foliageColorRegistry .tryLoad(parentDirectory / "foliage_colors.json"));
-            TRY(grassColorRegistry   .tryLoad(parentDirectory / "grass_colors.json"));
-            TRY(waterColorRegistry   .tryLoad(parentDirectory / "water_colors.json"));
-            TRY(colorTriangleRegistry.tryLoad(parentDirectory / "color_triangles.json"));
-            TRY(biomePropertyRegistry.tryLoad(parentDirectory / "biome_properties.json"));
-            TRY(blockStateRegistry   .tryLoad(parentDirectory / "blockstates.json"));
+            const auto directory = parentDirectory / std::to_string(PROTOCOL_VERSIONS[version]);
+
+            TRY(foliageColorRegistry .tryLoad(directory / "foliage_colors.json"));
+            TRY(grassColorRegistry   .tryLoad(directory / "grass_colors.json"));
+            TRY(waterColorRegistry   .tryLoad(directory / "water_colors.json"));
+            TRY(colorTriangleRegistry.tryLoad(directory / "color_triangles.json"));
+            TRY(biomePropertyRegistry.tryLoad(directory / "biome_properties.json"));
+            TRY(blockStateRegistry   .tryLoad(directory / "blockstates.json"));
+            TRY(tileEntityRegistry   .tryLoad(directory / "tile_entities.json"));
 
             return MinecraftRegistry {
+                version,
                 foliageColorRegistry,
                 grassColorRegistry,
                 waterColorRegistry,
                 colorTriangleRegistry,
                 biomePropertyRegistry,
-                blockStateRegistry
+                blockStateRegistry,
+                tileEntityRegistry
             };
         }
 
@@ -78,8 +136,8 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto blockStateProperties(const BlockState state) const -> const BlockStateProperties& {
-            return blocks.blockStateProperties(state);
+        auto blockStateRenderProperties(const BlockState state) const -> const BlockStateRenderProperties& {
+            return blocks.blockStateRenderProperties(state);
         }
 
         [[nodiscard]]
@@ -88,8 +146,23 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto blockStateProperties(const std::string_view name) const -> const BlockStateProperties& {
-            return blocks.blockStateProperties(name);
+        auto blockStatePropertyMap(const BlockState state) const -> const BlockStatePropertyMap& {
+            return blocks.blockStatePropertyMap(state);
+        }
+
+        [[nodiscard]]
+        auto blockStateRenderProperties(const std::string_view name) const -> const BlockStateRenderProperties& {
+            return blocks.blockStateRenderProperties(name);
+        }
+
+        [[nodiscard]]
+        auto blockName(const BlockType &type) const -> const std::string& {
+            return blocks.blockName(type);
+        }
+
+        [[nodiscard]]
+        auto blockName(const BlockState state) const -> const std::string& {
+            return blocks.blockName(state);
         }
 
         [[nodiscard]]
@@ -104,11 +177,11 @@ namespace mc {
 
         [[nodiscard]]
         auto blockStateColor(const RGBA &biomeColor, const BlockState state) const -> RGBA {
-            const auto textureBrightness = blocks.blockStateProperties(state).textureBrightness;
+            const auto textureBrightness = blocks.blockStateRenderProperties(state).textureBrightness;
             if (isWaterBlock(state) || isGrassBlock(state) || isFoliageBlock(state))
                 return multiplyColor(biomeColor, textureBrightness);
 
-            return blocks.blockStateProperties(state).illuminatedColor;
+            return blocks.blockStateRenderProperties(state).illuminatedColor;
         }
 
         [[nodiscard]]
@@ -169,6 +242,30 @@ namespace mc {
             return biomes.biomeProperties.biomeType(biomeName);
         }
 
+        [[nodiscard]]
+        auto biomeName(const BiomeType biomeType) const -> const std::string& {
+            return biomes.biomeProperties.biomeName(biomeType);
+        }
+
+        [[nodiscard]]
+        auto tileEntity(const uint16_t tileEntityId) const -> const TileEntityEntry& {
+            return tileEntities.tileEntity(tileEntityId);
+        }
+
+        [[nodiscard]]
+        auto tileEntity(const std::string_view tileEntityName) const -> const TileEntityEntry& {
+            return tileEntities.tileEntity(tileEntityName);
+        }
+
+        [[nodiscard]]
+        auto tileEntityId(const std::string_view tileEntityName) const -> uint16_t {
+            return tileEntities.tileEntityId(tileEntityName);
+        }
+
+        [[nodiscard]]
+        auto tileEntityName(const uint16_t tileEntityId) const -> const std::string& {
+            return tileEntities.tileEntityName(tileEntityId);
+        }
     };
 
 }

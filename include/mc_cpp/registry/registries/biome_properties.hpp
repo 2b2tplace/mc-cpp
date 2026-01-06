@@ -24,14 +24,17 @@ namespace mc {
     struct BiomePropertyRegistry {
         absl::flat_hash_map<BiomeType, BiomeProperties> properties;
         absl::flat_hash_map<std::string, BiomeType> biomeIdByName;
+        absl::flat_hash_map<BiomeType, std::string> biomeNameById;
 
         explicit BiomePropertyRegistry(const Registry<BiomePropertyEntry> &registry) {
             properties.reserve(registry.entries.size());
             biomeIdByName.reserve(registry.entries.size());
+            biomeNameById.reserve(registry.entries.size());
 
             for (const auto&[id, name, downfall, temperature, biomeType] : registry.entries) {
                 properties[id] = BiomeProperties{ getBiomeType(biomeType), temperature, downfall };
                 biomeIdByName[name] = id;
+                biomeNameById[id] = name;
             }
         }
 
@@ -48,6 +51,11 @@ namespace mc {
         [[nodiscard]]
         auto biomeType(const std::string_view biomeName) const -> BiomeType {
             return biomeIdByName.at(biomeName);
+        }
+
+        [[nodiscard]]
+        auto biomeName(const BiomeType biomeType) const -> const std::string& {
+            return biomeNameById.at(biomeType);
         }
 
     };
