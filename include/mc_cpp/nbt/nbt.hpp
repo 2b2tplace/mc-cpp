@@ -39,7 +39,7 @@ namespace mc {
     static constexpr size_t FLOAT_SIZE = 4;
     static constexpr size_t DOUBLE_SIZE = 8;
 
-    static const std::string DEFAULT_NBT_ELEMENT_NAME = "";
+    static const std::string DEFAULT_NBT_ELEMENT_NAME;
 
     class NbtElement {
     public:
@@ -55,10 +55,13 @@ namespace mc {
             return *this;
         }
 
-        virtual auto write(std::ostream& stream, const bool writeType = true,
-                           const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void {
+        virtual auto write(std::ostream& stream, const bool writeType, const bool writeName, const std::string &name) const -> void {
             if (writeType) writeBE(stream, static_cast<int8_t>(getType()));
             if (writeName) writeBEString(stream, name);
+        }
+
+        virtual auto writeWithType(std::ostream& stream) const -> void {
+            write(stream, true, false, DEFAULT_NBT_ELEMENT_NAME);
         }
 
     };
@@ -76,6 +79,8 @@ namespace mc {
     class NbtPrimitive final : public NbtElement {
         static constexpr auto FULL_SIZE = 8 + SIZE;
     public:
+        static constexpr auto TypeEnum = TYPE;
+
         T value{};
 
         NbtPrimitive() = default;
@@ -91,13 +96,12 @@ namespace mc {
             return FULL_SIZE;
         }
 
-        auto read(std::istream& stream) -> NbtElement& override {
+        auto read(std::istream& stream) -> NbtPrimitive& override {
             value = readBE<T>(stream);
             return *this;
         }
 
-        auto write(std::ostream& stream, const bool writeType = true,
-                   const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override {
+        auto write(std::ostream& stream, const bool writeType, const bool writeName, const std::string &name) const -> void override {
             NbtElement::write(stream, writeType, writeName, name);
             writeBE<T>(stream, value);
         }
@@ -123,13 +127,12 @@ namespace mc {
             return SIZE + 2 * value.length();
         }
 
-        auto read(std::istream& stream) -> NbtElement& override {
+        auto read(std::istream& stream) -> NbtString& override {
             value = readBEString(stream);
             return *this;
         }
 
-        auto write(std::ostream& stream, const bool writeType = true,
-                   const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override {
+        auto write(std::ostream& stream, const bool writeType, const bool writeName, const std::string &name) const -> void override {
             NbtElement::write(stream, writeType, writeName, name);
             writeBEString(stream, value);
         }
@@ -159,6 +162,7 @@ namespace mc {
         static constexpr auto SIZE = 24;
 
     public:
+        static constexpr auto TypeEnum = TYPE;
         std::vector<T> value;
 
         NbtPrimitiveArray() = default;
@@ -179,7 +183,7 @@ namespace mc {
             return HELD_TYPE;
         }
 
-        auto read(std::istream& stream) -> NbtElement& override {
+        auto read(std::istream& stream) -> NbtPrimitiveArray& override {
             const auto length = readBE<int32_t>(stream);
             value.resize(length);
             if (std::is_same_v<T, int8_t>) {
@@ -191,8 +195,7 @@ namespace mc {
             return *this;
         }
 
-        auto write(std::ostream& stream, const bool writeType = true,
-                   const bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override {
+        auto write(std::ostream& stream, const bool writeType, const bool writeName, const std::string &name) const -> void override {
             NbtElement::write(stream, writeType, writeName, name);
             writeBE<int32_t>(stream, value.size());
             if (std::is_same_v<T, int8_t>) {
@@ -330,11 +333,30 @@ namespace mc {
         using Type = bool;
     };
 
+    template<typename Tag>
+    [[nodiscard]]
+    auto getAsTag(const NbtElement &element) -> const Tag& {
+        return dynamic_cast<const Tag&>(element);
+    }
+
+    template<typename Tag>
+    [[nodiscard]]
+    auto getAsTag(NbtElement *element) -> Tag* {
+        return dynamic_cast<Tag*>(element);
+    }
+
+    template<typename T>
+    [[nodiscard]]
+    auto get(const NbtElement &element) -> const T& {
+        return getAsTag<typename UnderlyingType<T>::TypeNbt>(element).value;
+    }
+
     class NbtList final : public AbstractNbtList {
         static constexpr auto SIZE = 37;
 
-        std::vector<NbtElementPtr> values{};
     public:
+        std::vector<NbtElementPtr> values{};
+        static constexpr auto TypeEnum = NbtType::LIST;
         NbtType type{NbtType::END};
 
         NbtList() = default;
@@ -363,9 +385,38 @@ namespace mc {
             return true;
         }
 
+        template<typename T>
         [[nodiscard]]
-        auto get(const size_t index) const -> const NbtElement& {
-            return *values[index];
+        auto read(const size_t index) const -> T {
+            if (values[index]->getType() != UnderlyingType<T>::TypeEnum) return {};
+            const auto *element = getAsTag<typename UnderlyingType<T>::TypeNbt>(values[index].get());
+            if (!element) return {};
+
+            return element->value;
+        }
+
+        template<typename T>
+        [[nodiscard]]
+        auto readNbt(const size_t index) const -> T {
+            if (values[index]->getType() != T::TypeEnum) return {};
+            const auto *element = getAsTag<T>(values[index].get());
+            if (!element) return {};
+
+            return *element;
+        }
+
+        template<typename T>
+        [[nodiscard]]
+        auto get(const size_t index) -> UnderlyingType<T>::TypeNbt* {
+            if (values[index]->getType() != UnderlyingType<T>::TypeEnum) return nullptr;
+            return getAsTag<typename UnderlyingType<T>::TypeNbt>(values[index].get());
+        }
+
+        template<typename T>
+        [[nodiscard]]
+        auto getNbt(const size_t index) -> T* {
+            if (values[index]->getType() != T::TypeEnum) return nullptr;
+            return getAsTag<T>(values[index].get());
         }
 
         [[nodiscard]]
@@ -378,30 +429,19 @@ namespace mc {
             return type;
         }
 
-        auto read(std::istream &stream) -> NbtElement& override;
+        auto read(std::istream &stream) -> NbtList& override;
 
-        auto write(std::ostream &stream, bool writeType = true,
-                   bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override;
+        auto write(std::ostream &stream, bool writeType, bool writeName, const std::string &name) const -> void override;
 
     };
-
-    template<typename Tag>
-    [[nodiscard]]
-    auto getAsTag(const NbtElement &element) -> const Tag& {
-        return *dynamic_cast<const Tag*>(&element);
-    }
-
-    template<typename T>
-    [[nodiscard]]
-    auto get(const NbtElement &element) -> const T& {
-        return getAsTag<typename UnderlyingType<T>::TypeNbt>(element).value;
-    }
 
     class NbtCompound : public NbtElement {
         static constexpr size_t SIZE = 48;
 
-        absl::flat_hash_map<std::string, NbtElementPtr> entries;
     public:
+        static constexpr auto TypeEnum = NbtType::COMPOUND;
+        absl::flat_hash_map<std::string, NbtElementPtr> entries;
+
         NbtCompound() = default;
 
         [[nodiscard]]
@@ -467,36 +507,47 @@ namespace mc {
 
         template<typename T>
         [[nodiscard]]
-        auto get(const std::string_view key) const -> T {
+        auto contains(const std::string_view key) const -> bool {
+            return contains(key, T::TypeEnum);
+        }
+
+        template<typename T>
+        [[nodiscard]]
+        auto read(const std::string_view key) const -> T {
             if (!contains(key, UnderlyingType<T>::TypeEnum)) return {};
-            const auto *element = dynamic_cast<const UnderlyingType<T>::TypeNbt*>(entries.at(key).get());
+            const auto *element = getAsTag<typename UnderlyingType<T>::TypeNbt>(entries.at(key).get());
             if (!element) return {};
 
             return element->value;
         }
 
+        template<typename T>
         [[nodiscard]]
-        auto getCompound(const std::string_view key) const -> NbtCompound {
-            if (!contains(key, NbtType::COMPOUND)) return {};
-            const auto *element = dynamic_cast<const NbtCompound*>(entries.at(key).get());
+        auto readNbt(const std::string_view key) const -> T {
+            if (!contains(key, T::TypeEnum)) return {};
+            const auto *element = getAsTag<T>(entries.at(key).get());
             if (!element) return {};
 
             return *element;
         }
 
+        template<typename T>
         [[nodiscard]]
-        auto getList(const std::string_view key) const -> NbtList {
-            if (!contains(key, NbtType::LIST)) return {};
-            const auto *element = dynamic_cast<const NbtList*>(entries.at(key).get());
-            if (!element) return {};
-
-            return *element;
+        auto get(const std::string_view key) -> UnderlyingType<T>::TypeNbt* {
+            if (!contains(key, UnderlyingType<T>::TypeEnum)) return nullptr;
+            return getAsTag<typename UnderlyingType<T>::TypeNbt>(entries.at(key).get());
         }
 
-        auto read(std::istream &stream) -> NbtElement& override;
+        template<typename T>
+        [[nodiscard]]
+        auto getNbt(const std::string_view key) -> T* {
+            if (!contains(key, T::TypeEnum)) return {};
+            return getAsTag<T>(entries.at(key).get());
+        }
 
-        auto write(std::ostream &stream, bool writeType = true,
-                   bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override;
+        auto read(std::istream &stream) -> NbtCompound& override;
+
+        auto write(std::ostream &stream, bool writeType, bool writeName, const std::string &name) const -> void override;
 
     };
 
@@ -574,7 +625,7 @@ namespace mc {
                 std::string result = "[";
                 for (size_t i = 0; i < list.length(); i++) {
                     if (i != 0) result += ',';
-                    result += stringifyNbt(list.get(i), alwaysEscapeCompoundKeys);
+                    result += stringifyNbt(*list.values[i], alwaysEscapeCompoundKeys);
                 }
                 result += ']';
                 return result;
@@ -644,8 +695,7 @@ namespace mc {
         void writeNBT(std::ostream& stream, Compression compression = Compression::GZIP) const;
         void writeNBT(const char* filename, Compression compression = Compression::GZIP) const;
 
-        auto write(std::ostream &stream, bool writeType = true,
-                   bool writeName = false, const std::string &name = DEFAULT_NBT_ELEMENT_NAME) const -> void override;
+        auto write(std::ostream &stream, bool writeType, bool writeName, const std::string &name) const -> void override;
     };
 
 }

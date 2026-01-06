@@ -1,4 +1,5 @@
 #include <fstream>
+#include <ostream>
 #include <mc_cpp/nbt/nbt.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
@@ -6,7 +7,7 @@
 #include <boost/iostreams/filter/zlib.hpp>
 
 namespace mc {
-	auto NbtList::read(std::istream &stream) -> NbtElement& {
+	auto NbtList::read(std::istream &stream) -> NbtList& {
 		type = static_cast<NbtType>(readBE<int8_t>(stream));
 		const auto length = readBE<int32_t>(stream);
 
@@ -27,11 +28,11 @@ namespace mc {
 		writeBE<int8_t>(stream, static_cast<int8_t>(type));
 		writeBE<int32_t>(stream, static_cast<int32_t>(values.size()));
 		for (const auto &value : values) {
-			value->write(stream, false);
+			value->write(stream, false, false, DEFAULT_NBT_ELEMENT_NAME);
 		}
 	}
 
-	auto NbtCompound::read(std::istream& stream) -> NbtElement& {
+	auto NbtCompound::read(std::istream& stream) -> NbtCompound& {
 		while (true) {
 			const auto type = static_cast<NbtType>(readBE<int8_t>(stream));
 			if (type == NbtType::END) break;
@@ -85,11 +86,11 @@ namespace mc {
 	void NbtFile::readCompressed(std::istream& stream, const Compression compression) {
 		std::stringstream decompressed(std::ios::in | std::ios::out | std::ios::binary);
 		decompressStream(stream, decompressed, compression);
-		if (const auto type = static_cast<NbtByte&>(NbtByte().read(decompressed)).value;
+		if (const auto type = NbtByte{}.read(decompressed).value;
 			static_cast<NbtType>(type) != NbtType::COMPOUND)
 			throw std::runtime_error("first tag is not a tag compound");
 
-		compoundName = static_cast<NbtString&>(NbtString().read(decompressed)).value;
+		compoundName = NbtString{}.read(decompressed).value;
 		NbtCompound::read(decompressed);
 	}
 
@@ -107,7 +108,7 @@ namespace mc {
 
 	void NbtFile::readNBT(const char* buffer, const size_t len, const Compression compression) {
 		std::stringstream stream(std::ios::in | std::ios::out | std::ios::binary);
-		stream.write(buffer, len);
+		stream.write(buffer, static_cast<std::streamsize>(len));
 		readCompressed(stream, compression);
 	}
 
@@ -119,11 +120,11 @@ namespace mc {
 		} else if (compression == Compression::ZLIB) {
 			out.push(boost::iostreams::zlib_compressor());
 		} else {
-			write(stream);
+			writeWithType(stream);
 			return;
 		}
 		out.push(in);
-		write(in);
+		writeWithType(in);
 		boost::iostreams::copy(out, stream);
 	}
 
