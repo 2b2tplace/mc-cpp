@@ -9,7 +9,7 @@ namespace mc {
         DEBUG, FLAT, NOISE
     };
 
-    struct DebugWorldGenerator final : public ToCompound {
+    struct DebugWorldGenerator final : ToCompound {
         static constexpr std::string_view identifier = "minecraft:debug";
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
@@ -21,10 +21,10 @@ namespace mc {
         }
     };
 
-    struct FlatWorldGenerator final : public ToCompound {
+    struct FlatWorldGenerator final : ToCompound {
         static constexpr std::string_view identifier = "minecraft:flat";
 
-        struct Layer final : public ToCompound {
+        struct Layer final : ToCompound {
             int32_t height;
             BlockType block;
 
@@ -99,10 +99,10 @@ namespace mc {
         }
     };
 
-    struct NoiseWorldGenerator final : public ToCompound {
+    struct NoiseWorldGenerator final : ToCompound {
         static constexpr std::string_view identifier = "minecraft:noise";
 
-        struct BiomeSource final : public ToCompound {
+        struct BiomeSource final : ToCompound {
             result::Option<std::string> preset;
             std::string type;
 
@@ -175,7 +175,7 @@ namespace mc {
         }
     };
 
-    struct WorldGenerator final : public ToCompound {
+    struct WorldGenerator final : ToCompound {
 
         DimensionType dimension{};
 
@@ -258,7 +258,7 @@ namespace mc {
         std::shared_ptr<ToCompound> worldGeneratorPtr;
     };
 
-    struct WorldGeneratorSettings final : public ToCompound {
+    struct WorldGeneratorSettings final : ToCompound {
         bool bonusChest{};
         int64_t seed{};
         bool generateFeatures{true};

@@ -10,9 +10,9 @@ namespace mc {
         SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR
     };
 
-    struct PlayerData final : public ToCompound {
+    struct PlayerData final : ToCompound {
 
-        struct Abilities final : public ToCompound {
+        struct Abilities final : ToCompound {
             bool flying{};
             float flySpeed{0.05f};
             bool instaBuild{};
@@ -42,7 +42,7 @@ namespace mc {
             }
         };
 
-        struct RecipeBook final : public ToCompound {
+        struct RecipeBook final : ToCompound {
             NbtList recipes{NbtType::STRING};
             NbtList toBeDisplayed{NbtType::STRING};
             bool isBlastingFurnaceFilteringCraftable;

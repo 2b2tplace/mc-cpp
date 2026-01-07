@@ -5,7 +5,7 @@
 
 namespace mc {
 
-    struct DragonFight final : public ToCompound {
+    struct DragonFight final : ToCompound {
         result::Option<NbtUUID> dragonUUID;
         bool dragonKilled{};
         NbtIntArray exitPortalLocation{};

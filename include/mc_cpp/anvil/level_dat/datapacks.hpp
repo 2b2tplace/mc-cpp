@@ -4,7 +4,7 @@
 
 namespace mc {
 
-    struct DataPacks final : public ToCompound {
+    struct DataPacks final : ToCompound {
         absl::flat_hash_map<std::string, bool> dataPacks;
 
         DataPacks() {

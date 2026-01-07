@@ -5,7 +5,7 @@
 
 namespace mc {
 
-    struct Location : public ToCompound {
+    struct Location : ToCompound {
         DimensionType dimension;
         int32_t x;
         int32_t y;
@@ -30,7 +30,7 @@ namespace mc {
         }
     };
 
-    struct LocationRotation final : public Location {
+    struct LocationRotation final : Location {
 
         float yaw{};
         float pitch{};

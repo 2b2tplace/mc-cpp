@@ -5,7 +5,7 @@
 
 namespace mc {
 
-    struct CustomBossEvents final : public ToCompound {
+    struct CustomBossEvents final : ToCompound {
 
         enum Overlay {
             PROGRESS, NOTCHED_6, NOTCHED_10, NOTCHED_12, NOTCHED_20
@@ -19,7 +19,7 @@ namespace mc {
             "notched_20",
         };
 
-        struct Event final : public ToCompound {
+        struct Event final : ToCompound {
             std::vector<NbtUUID> playerUUIDs{};
             std::string color{"white"};
             bool createWorldFog{};

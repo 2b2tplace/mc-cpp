@@ -4,7 +4,7 @@
 
 namespace mc {
 
-    struct GameRules final : public ToCompound {
+    struct GameRules final : ToCompound {
         bool doFireTick{true};
         bool mobGriefing{true};
         bool keepInventory{};
