@@ -291,7 +291,6 @@ namespace mc {
                 dimensionsNBT.putNbt(dimension, generator.createCompound(registry));
 
             compound.putNbt("dimensions", dimensionsNBT);
-            std::cout << stringifyNbt(dimensionsNBT) << '\n';
         }
 
         auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
