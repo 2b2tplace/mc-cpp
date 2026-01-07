@@ -10,6 +10,8 @@ namespace mc {
 
         [[nodiscard]]
         virtual auto createCompound(const MinecraftRegistry &registry) const -> NbtCompound = 0;
+
+        virtual auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void = 0;
     };
 
 }
