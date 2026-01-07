@@ -9,7 +9,13 @@ namespace mc {
         virtual ~ToCompound() = default;
 
         [[nodiscard]]
-        virtual auto createCompound(const MinecraftRegistry &registry) const -> NbtCompound = 0;
+        virtual auto createCompound(const MinecraftRegistry &registry) const -> NbtCompound {
+            NbtCompound compound;
+            writeCompound(registry, compound);
+            return compound;
+        }
+
+        virtual auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void = 0;
 
         virtual auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void = 0;
     };
