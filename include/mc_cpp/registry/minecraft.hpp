@@ -299,8 +299,8 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline auto getRegistry(const SupportedMinecraftVersion version) -> std::shared_ptr<MinecraftRegistry> {
-        return REGISTRIES.at(version);
+    inline auto getRegistry(const SupportedMinecraftVersion version) -> const MinecraftRegistry& {
+        return *REGISTRIES.at(version);
     }
 
     [[nodiscard]]
