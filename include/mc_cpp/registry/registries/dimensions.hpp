@@ -53,4 +53,11 @@ namespace mc {
         return DIMENSION_NAMES[type];
     }
 
+    [[nodiscard]]
+    inline auto getNamespacedDimension(const DimensionType type) -> std::string {
+        auto dimensionName = std::string{getDimensionName(type)};
+        prependMinecraftNamespace(&dimensionName);
+        return dimensionName;
+    }
+
 }
