@@ -89,7 +89,7 @@ namespace mc {
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
-            return TYPE;
+            return TypeEnum;
         }
 
         [[nodiscard]]
@@ -113,6 +113,8 @@ namespace mc {
         static constexpr size_t SIZE = 36;
 
     public:
+        static constexpr auto TypeEnum = NbtType::STRING;
+
         std::string value;
 
         NbtString() = default;
@@ -120,7 +122,7 @@ namespace mc {
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
-            return NbtType::STRING;
+            return TypeEnum;
         }
 
         [[nodiscard]]
@@ -144,11 +146,12 @@ namespace mc {
         static constexpr size_t SIZE = 8;
 
     public:
+        static constexpr auto TypeEnum = NbtType::END;
         NbtEnd() = default;
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
-            return NbtType::END;
+            return TypeEnum;
         }
 
         [[nodiscard]]
@@ -171,7 +174,7 @@ namespace mc {
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
-            return TYPE;
+            return TypeEnum;
         }
 
         [[nodiscard]]
@@ -365,7 +368,7 @@ namespace mc {
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
-            return NbtType::LIST;
+            return TypeEnum;
         }
 
         [[nodiscard]]
@@ -447,7 +450,7 @@ namespace mc {
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
-            return NbtType::COMPOUND;
+            return TypeEnum;
         }
 
         [[nodiscard]]
