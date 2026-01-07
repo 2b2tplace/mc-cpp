@@ -279,7 +279,7 @@ namespace mc::anvil {
                     stripMinecraftNamespace(&name);
 
                     BlockStatePropertyMap map;
-                    if (compound.contains("Properties", NbtType::COMPOUND)) {
+                    if (compound.contains<NbtCompound>("Properties")) {
                         const auto &properties = compound.readNbt<NbtCompound>("Properties");
                         map.reserve(properties.entries.size());
                         for (const auto &[key, value] : properties.entries) {
