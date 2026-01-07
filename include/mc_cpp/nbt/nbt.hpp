@@ -511,8 +511,14 @@ namespace mc {
 
         template<typename T>
         [[nodiscard]]
-        auto contains(const std::string_view key) const -> bool {
+        auto containsNbt(const std::string_view key) const -> bool {
             return contains(key, T::TypeEnum);
+        }
+
+        template<typename T>
+        [[nodiscard]]
+        auto contains(const std::string_view key) const -> bool {
+            return containsNbt<typename UnderlyingType<T>::TypeNbt>(key);
         }
 
         template<typename T>
