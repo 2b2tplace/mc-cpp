@@ -50,7 +50,7 @@ namespace mc {
         virtual auto getType() const -> NbtType = 0;
 
         [[nodiscard]]
-        virtual auto size() const -> size_t = 0;
+        virtual auto byteSize() const -> size_t = 0;
 
         virtual auto read(std::istream& stream) -> NbtElement& {
             return *this;
@@ -93,7 +93,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto size() const -> size_t override {
+        auto byteSize() const -> size_t override {
             return FULL_SIZE;
         }
 
@@ -126,7 +126,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto size() const -> size_t override {
+        auto byteSize() const -> size_t override {
             return SIZE + 2 * value.length();
         }
 
@@ -155,7 +155,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto size() const -> size_t override {
+        auto byteSize() const -> size_t override {
             return SIZE;
         }
 
@@ -178,7 +178,7 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto size() const -> size_t override {
+        auto byteSize() const -> size_t override {
             return SIZE + HELD_SIZE * value.size();
         }
 
@@ -372,10 +372,10 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto size() const -> size_t override {
+        auto byteSize() const -> size_t override {
             auto size = SIZE + 4 * values.size();
             for (const auto &element : values)
-                size += element->size();
+                size += element->byteSize();
             return size;
         }
 
@@ -454,10 +454,10 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto size() const -> size_t override {
+        auto byteSize() const -> size_t override {
             auto size = SIZE + 36 * entries.size();
             for (const auto &[key, value] : entries)
-                size += 28 + 2 * key.length() + value->size();
+                size += 28 + 2 * key.length() + value->byteSize();
             return size;
         }
 
