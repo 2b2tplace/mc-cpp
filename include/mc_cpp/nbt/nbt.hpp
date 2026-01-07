@@ -8,6 +8,7 @@
 #include <vector>
 #include <mc_cpp/endian.hpp>
 #include <absl/container/flat_hash_map.h>
+#include <fmt/format.h>
 
 namespace mc {
 
@@ -555,7 +556,7 @@ namespace mc {
     [[nodiscard]]
     auto stringifyNbtArray(const NbtElement &element, const char arrayPrefix,
                            const std::string_view valueSuffix) -> std::string {
-        std::string result = "[" + std::to_string(arrayPrefix) + ";";
+        std::string result = fmt::format("[{};", arrayPrefix);
         const std::vector<T> &array = dynamic_cast<const UnderlyingType<std::vector<T>>::TypeNbt*>(&element)->value;
         for (size_t i = 0; i < array.size(); i++) {
             if (i != 0) result += ',';
