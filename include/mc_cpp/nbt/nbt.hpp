@@ -513,6 +513,16 @@ namespace mc {
         }
 
         template<typename T>
+        auto read(const std::string_view key, T &into) const -> void {
+            into = read<T>(key);
+        }
+
+        template<typename T>
+        auto readNbt(const std::string_view key, T &into) const {
+            into = readNbt<T>(key);
+        }
+
+        template<typename T>
         [[nodiscard]]
         auto read(const std::string_view key) const -> T {
             if (!contains(key, UnderlyingType<T>::TypeEnum)) return {};
