@@ -1,6 +1,7 @@
 #pragma once
 
 #include <spanstream>
+#include <fmt/format.h>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/device/back_inserter.hpp>
 #include <boost/iostreams/stream.hpp>
