@@ -106,7 +106,7 @@ namespace mc {
             return PROTOCOL_VERSIONS[version];
         }
 
-        static auto load(const std::filesystem::path &parentDirectory, const SupportedMinecraftVersion version) -> result::Result<MinecraftRegistry, std::string> {
+        static auto load(const std::filesystem::path &parentDirectory, const SupportedMinecraftVersion version) -> result::Result<std::shared_ptr<MinecraftRegistry>, std::string> {
             Registry<BiomeColorEntry>    foliageColorRegistry;
             Registry<BiomeColorEntry>    grassColorRegistry;
             Registry<BiomeColorEntry>    waterColorRegistry;
@@ -125,7 +125,7 @@ namespace mc {
             TRY(blockStateRegistry   .tryLoad(directory / "blockstates.json"));
             TRY(tileEntityRegistry   .tryLoad(directory / "tile_entities.json"));
 
-            return MinecraftRegistry {
+            return std::make_shared<MinecraftRegistry>(
                 version,
                 foliageColorRegistry,
                 grassColorRegistry,
@@ -134,7 +134,7 @@ namespace mc {
                 biomePropertyRegistry,
                 blockStateRegistry,
                 tileEntityRegistry
-            };
+            );
         }
 
         [[nodiscard]]
@@ -284,5 +284,37 @@ namespace mc {
             return tileEntities.tileEntityName(tileEntityId);
         }
     };
+
+    using RegistryHolder = absl::flat_hash_map<SupportedMinecraftVersion, std::shared_ptr<MinecraftRegistry>>;
+
+    inline auto REGISTRIES = RegistryHolder{};
+
+    [[nodiscard]]
+    inline auto loadRegistries(const std::filesystem::path &parentDirectory,
+                               const std::vector<SupportedMinecraftVersion> &mcVersions) -> result::Result<std::monostate, std::string> {
+        for (const auto mcVersion : mcVersions)
+            REGISTRIES.emplace(mcVersion, TRY(MinecraftRegistry::load(parentDirectory, mcVersion)));
+
+        return {};
+    }
+
+    [[nodiscard]]
+    inline auto getRegistry(const SupportedMinecraftVersion version) -> std::shared_ptr<MinecraftRegistry> {
+        return REGISTRIES.at(version);
+    }
+
+    [[nodiscard]]
+    inline auto getRegistry(const int32_t dataVersion) -> std::shared_ptr<MinecraftRegistry> {
+        for (size_t i = 0; i < DATA_VERSIONS.size(); i++) {
+            const auto version = static_cast<SupportedMinecraftVersion>(i);
+            if (DATA_VERSIONS[i] == dataVersion && REGISTRIES.contains(version)) {
+                const auto registry = REGISTRIES.at(version);
+                if (!registry) continue;
+
+                return registry;
+            }
+        }
+        return nullptr;
+    }
 
 }
