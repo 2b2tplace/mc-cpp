@@ -279,7 +279,7 @@ namespace mc::anvil {
                     stripMinecraftNamespace(&name);
 
                     BlockStatePropertyMap map;
-                    if (compound.contains<NbtCompound>("Properties")) {
+                    if (compound.containsNbt<NbtCompound>("Properties")) {
                         const auto &properties = compound.readNbt<NbtCompound>("Properties");
                         map.reserve(properties.entries.size());
                         for (const auto &[key, value] : properties.entries) {
@@ -300,14 +300,14 @@ namespace mc::anvil {
                     }
                     blockStatePalette.push_back(foundState);
                 }
-                if (blockStates.contains<NbtLongArray>("data")) {
+                if (blockStates.containsNbt<NbtLongArray>("data")) {
                     const auto &data = blockStates.readNbt<NbtLongArray>("data");
                     mc::anvil::unpackPalettedData<Blocks>(data.value, blockStatePalette, chunkSection.unpackedBlockData);
                 } else if (!blockStatePalette.empty()) {
                     chunkSection.unpackedBlockData.fill(blockStatePalette[0]);
                 }
 
-                if (section.contains<NbtCompound>("biomes")) {
+                if (section.containsNbt<NbtCompound>("biomes")) {
                     const auto &biomes = section.readNbt<NbtCompound>("biomes");
                     const auto &biomePalette = biomes.readNbt<NbtList>("palette");
                     Palette biomeIdPalette;
@@ -320,14 +320,14 @@ namespace mc::anvil {
 
                         biomeIdPalette.push_back(registry.biomeType(name));
                     }
-                    if (biomes.contains<NbtLongArray>("data")) {
+                    if (biomes.containsNbt<NbtLongArray>("data")) {
                         const auto &data = biomes.readNbt<NbtLongArray>("data");
                         mc::anvil::unpackPalettedData<Biomes>(data.value, biomeIdPalette, chunkSection.unpackedBiomeData);
                     } else if (!biomeIdPalette.empty()) {
                         chunkSection.unpackedBiomeData.fill(biomeIdPalette[0]);
                     }
                 }
-                if (section.contains<NbtByteArray>("BlockLight")) {
+                if (section.containsNbt<NbtByteArray>("BlockLight")) {
                     const auto &blockLight = section.readNbt<NbtByteArray>("BlockLight");
                     std::ranges::copy_n(
                         blockLight.value.begin(),
@@ -335,7 +335,7 @@ namespace mc::anvil {
                         chunkSection.packedBlockLightData.begin()
                     );
                 }
-                if (section.contains<NbtByteArray>("SkyLight")) {
+                if (section.containsNbt<NbtByteArray>("SkyLight")) {
                     const auto &skyLight = section.readNbt<NbtByteArray>("SkyLight");
                     std::ranges::copy_n(
                         skyLight.value.begin(),
