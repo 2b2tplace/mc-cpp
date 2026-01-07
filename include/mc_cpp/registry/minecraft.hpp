@@ -33,6 +33,12 @@ namespace mc {
             *namespacedId = namespacedId->substr(delimiter + 1);
     }
 
+    inline auto stripMinecraftNamespace(std::string *namespacedId) -> void {
+        if (const auto delimiter = namespacedId->find(':');
+            delimiter != std::string::npos && namespacedId->starts_with("minecraft:"))
+            *namespacedId = namespacedId->substr(delimiter + 1);
+    }
+
     inline auto prependMinecraftNamespace(std::string *namespacedId) -> void {
         if (const auto delimiter = namespacedId->find(':');
             delimiter == std::string::npos)
