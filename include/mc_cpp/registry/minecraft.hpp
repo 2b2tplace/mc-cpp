@@ -27,6 +27,12 @@ namespace mc {
         769
     };
 
+    static constexpr std::array<std::string_view, _SUPPORTED_MINECRAFT_VERSION_COUNT> NAMED_VERSIONS = {
+        "1.19.4",
+        "1.20.4",
+        "1.21.4"
+    };
+
     inline auto stripMinecraftNamespace(std::string_view *namespacedId) -> void {
         if (const auto delimiter = namespacedId->find(':');
             delimiter != std::string::npos && namespacedId->starts_with("minecraft:"))
@@ -83,6 +89,11 @@ namespace mc {
         [[nodiscard]]
         auto minecraftVersion() const -> SupportedMinecraftVersion {
             return version;
+        }
+
+        [[nodiscard]]
+        auto namedVersion() const -> std::string_view {
+            return NAMED_VERSIONS[version];
         }
 
         [[nodiscard]]
