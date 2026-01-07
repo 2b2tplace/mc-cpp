@@ -67,6 +67,10 @@ namespace mc {
             level.dragonFight = DragonFight::finishedFight();
             level.gameRules = GameRules::staticGameRules();
             level.worldGeneratorSettings.generateFeatures = false;
+            for (auto &generator : level.worldGeneratorSettings.dimensions | std::views::values) {
+                const auto flat = generator.asFlat();
+                flat->layers.emplace_back(registry, 1);
+            }
             return level;
         }
 
