@@ -72,10 +72,6 @@ namespace mc::anvil {
 
         [[nodiscard]]
         auto createChunk(const Pos chunkPos, const int32_t minY, const MinecraftRegistry &registry) const -> NbtFile {
-            auto emptyPostProcessing = NbtList{NbtType::LIST};
-            for (size_t i = 0; i < 24; i++)
-                emptyPostProcessing.add(NbtList{NbtType::SHORT});
-
             const auto [absX, absZ] = absoluteChunkPos(chunkPos);
 
             NbtFile chunkNBT;
@@ -83,11 +79,10 @@ namespace mc::anvil {
             chunkNBT.putNbt("Heightmaps", NbtCompound{});
             chunkNBT.put("InhabitedTime", 0L);
             chunkNBT.put("LastUpdate", 0L);
-            chunkNBT.putNbt("PostProcessing", emptyPostProcessing);
             chunkNBT.put("xPos", absX);
             chunkNBT.put("zPos", absZ);
             chunkNBT.put("yPos", minY);
-            chunkNBT.put("Status", "full");
+            chunkNBT.put("Status", "minecraft:full");
             chunkNBT.putNbt("block_ticks", NbtList{NbtType::COMPOUND});
             chunkNBT.putNbt("fluid_ticks", NbtList{NbtType::COMPOUND});
             chunkNBT.put("isLightOn", true);
