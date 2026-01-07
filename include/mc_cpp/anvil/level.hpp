@@ -62,6 +62,14 @@ namespace mc {
             worldGeneratorSettings = generator(registry);
         }
 
+        static auto createStaticEmptyLevel(const std::string &levelName, const MinecraftRegistry &registry) -> Level {
+            Level level{levelName, SPECTATOR, registry, WorldGeneratorSettings::emptyWorld};
+            level.dragonFight = DragonFight::finishedFight();
+            level.gameRules = GameRules::staticGameRules();
+            level.worldGeneratorSettings.generateFeatures = false;
+            return level;
+        }
+
         Level() = default;
 
         auto readCompound(const NbtCompound &compound) -> void {

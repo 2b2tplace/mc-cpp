@@ -59,6 +59,31 @@ namespace mc {
         int32_t minecartMaxSpeed{8};
         int32_t spawnChunkRadius{2};
 
+        static auto staticGameRules() -> GameRules {
+            GameRules gameRules{};
+            gameRules.doFireTick = false;
+            gameRules.mobGriefing = false;
+            gameRules.doMobSpawning = false;
+            gameRules.doMobLoot = false;
+            gameRules.projectilesCanBreakBlocks = false;
+            gameRules.naturalRegeneration = false;
+            gameRules.doDaylightCycle = false;
+            gameRules.randomTickSpeed = 0;
+            gameRules.spectatorsGenerateChunks = false;
+            gameRules.doWeatherCycle = false;
+            gameRules.disableRaids = true;
+            gameRules.doInsomnia = false;
+            gameRules.drowningDamage = false;
+            gameRules.fallDamage = false;
+            gameRules.fireDamage = false;
+            gameRules.freezeDamage = false;
+            gameRules.doPatrolSpawning = false;
+            gameRules.doTraderSpawning = false;
+            gameRules.doWardenSpawning = false;
+            gameRules.doVinesSpread = false;
+            return gameRules;
+        }
+
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
             compound.put("doFireTick", doFireTick);
             compound.put("mobGriefing", mobGriefing);
