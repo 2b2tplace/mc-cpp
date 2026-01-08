@@ -84,6 +84,10 @@ namespace mc {
             logInline<L>(true, fmt, std::forward<T>(args)...);
         }
 
+        auto stream() const -> std::ostream& {
+            return out;
+        }
+
     private:
         std::mutex mtx;
         std::ostream &out;
