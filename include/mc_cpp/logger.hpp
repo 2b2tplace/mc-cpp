@@ -84,6 +84,7 @@ namespace mc {
             logInline<L>(true, fmt, std::forward<T>(args)...);
         }
 
+        [[nodiscard]]
         auto stream() const -> std::ostream& {
             return out;
         }
