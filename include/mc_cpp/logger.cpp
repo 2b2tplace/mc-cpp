@@ -11,8 +11,9 @@ namespace mc {
         return oss.str();
     }
 
-    auto Logger::println(const std::string &logMessage, const int color) -> void {
+    auto Logger::print(const std::string &logMessage, const int color, const bool newline) -> void {
         std::lock_guard lock(mtx);
-        out << "\x1B[" << color << 'm' << logMessage << "\x1B[0m" << '\n';
+        out << "\x1B[" << color << 'm' << logMessage << "\x1B[0m";
+        if (newline) out << '\n';
     }
 }

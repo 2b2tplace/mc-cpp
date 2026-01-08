@@ -60,10 +60,14 @@ namespace mc {
         explicit Logger(std::ostream &out): out(out) {
         }
 
-        auto println(const std::string &logMessage, int color) -> void;
+        auto print(const std::string &logMessage, int color, bool newline = false) -> void;
+
+        auto println(const std::string &logMessage, const int color) -> void {
+            print(logMessage, color, true);
+        }
 
         template<LogLevel L, typename... T>
-        auto log(fmt::format_string<T...> fmt, T &&... args) -> void {
+        auto logInline(const bool newline, fmt::format_string<T...> fmt, T &&... args) -> void {
 #ifndef DEBUG_MODE
             if constexpr (L == DEBUG) return;
 #endif
@@ -72,7 +76,12 @@ namespace mc {
             std::ostringstream msg;
             msg << "[" << currentTimeFormatted() << "] [" << logLevelToString(L) << "] " << logMessage;
 
-            println(msg.str(), logLevelToColor(L));
+            print(msg.str(), logLevelToColor(L), newline);
+        }
+
+        template<LogLevel L, typename... T>
+        auto log(fmt::format_string<T...> fmt, T &&... args) -> void {
+            logInline<L>(true, fmt, std::forward<T>(args)...);
         }
 
     private:
