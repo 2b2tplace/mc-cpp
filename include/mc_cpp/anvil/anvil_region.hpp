@@ -17,6 +17,7 @@ namespace mc::anvil {
     enum class RegionReadResult {
         OK,
         FILE_HANDLE_CLOSED,
+        EMPTY_REGION_FILE,
         CORRUPTED_HEADER,
         INVALID_CHUNK_OFFSET,
         CORRUPTED_CHUNK_EMPTY,
@@ -155,7 +156,7 @@ namespace mc::anvil {
 
                 const auto path = externalChunkPath(chunkPos);
                 std::ofstream out(path, std::ios_base::binary);
-                out.write(str.data(), str.size());
+                out.write(str.data(), static_cast<std::streamsize>(str.size()));
                 out.close();
                 flags |= 0x80;
             }
@@ -240,11 +241,13 @@ namespace mc::anvil {
             if (!in)
                 return RegionReadResult::FILE_HANDLE_CLOSED;
 
-            chunkViews.reserve(REGION_SIZE_CHUNKS);
             in.seekg(0, std::ios::end);
             const auto filesize = in.tellg();
             in.seekg(0, std::ios::beg);
+            if (filesize == 0)
+                return RegionReadResult::EMPTY_REGION_FILE;
 
+            chunkViews.reserve(REGION_SIZE_CHUNKS);
             std::vector<uint8_t> bytes(filesize);
             in.read(reinterpret_cast<char*>(bytes.data()), filesize);
 
