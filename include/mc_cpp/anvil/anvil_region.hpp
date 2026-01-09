@@ -8,6 +8,7 @@
 #include <mc_cpp/nbt/nbt.hpp>
 #include <mc_cpp/anvil/anvil_chunk.hpp>
 #include <mc_cpp/registry/registries/dimensions.hpp>
+#include <utility>
 
 namespace mc::anvil {
 
@@ -36,9 +37,9 @@ namespace mc::anvil {
         fs::path parentDirectory;
         DimensionType dimension;
 
-        explicit Region(const fs::path &parentDirectory, const DimensionType dimension, const Pos &pos):
+        explicit Region(fs::path parentDirectory, const DimensionType dimension, const Pos &pos):
             pos(pos),
-            parentDirectory(parentDirectory),
+            parentDirectory(std::move(parentDirectory)),
             dimension(dimension) {
             chunkViews.reserve(REGION_SIZE_CHUNKS);
         }
