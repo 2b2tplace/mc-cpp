@@ -15,6 +15,8 @@ namespace mc::anvil {
     static constexpr auto REGION_SIDELENGTH_CHUNKS = 32;
     static constexpr auto REGION_SIZE_CHUNKS = REGION_SIDELENGTH_CHUNKS * REGION_SIDELENGTH_CHUNKS;
 
+    static constexpr auto SECTOR_SIZE = 4096;
+
     enum class RegionReadResult {
         OK,
         FILE_HANDLE_CLOSED,
@@ -150,7 +152,7 @@ namespace mc::anvil {
 
             auto flags = static_cast<uint8_t>(compression);
 
-            auto sectorCount = (length + 5 + SECTION_SIZE_BLOCKS - 1) / SECTION_SIZE_BLOCKS;
+            auto sectorCount = (length + 5 + SECTOR_SIZE - 1) / SECTOR_SIZE;
             if (allowOversizedChunk && sectorCount >= 256) {
                 length = 1;
                 sectorCount = 1;
@@ -252,19 +254,19 @@ namespace mc::anvil {
             std::vector<uint8_t> bytes(filesize);
             in.read(reinterpret_cast<char*>(bytes.data()), filesize);
 
-            const std::span offsets(bytes.data(), SECTION_SIZE_BLOCKS);
-            const std::span timestamps(bytes.data() + SECTION_SIZE_BLOCKS, SECTION_SIZE_BLOCKS);
-            const std::span chunkDataArray(bytes.data() + SECTION_SIZE_BLOCKS * 2, bytes.size() - SECTION_SIZE_BLOCKS * 2);
+            const std::span offsets(bytes.data(), SECTOR_SIZE);
+            const std::span timestamps(bytes.data() + SECTOR_SIZE, SECTOR_SIZE);
+            const std::span chunkDataArray(bytes.data() + SECTOR_SIZE * 2, bytes.size() - SECTOR_SIZE * 2);
 
-            for (size_t i = 0; i < SECTION_SIZE_BLOCKS; i += 4) {
+            for (size_t i = 0; i < SECTOR_SIZE; i += 4) {
                 const uint32_t timestamp = bytesToInt(timestamps, i, i + 3);
                 const uint32_t offset = bytesToInt(offsets, i, i + 2);
 
                 const auto size = offsets[i + 3];
                 if (size == 0) continue;
 
-                const size_t chunkDataStart = (offset - 2) * SECTION_SIZE_BLOCKS;
-                const size_t chunkDataEnd   = (offset + size - 2) * SECTION_SIZE_BLOCKS;
+                const size_t chunkDataStart = (offset - 2) * SECTOR_SIZE;
+                const size_t chunkDataEnd   = (offset + size - 2) * SECTOR_SIZE;
 
                 if (chunkDataStart < 0 || static_cast<size_t>(chunkDataStart) >= chunkDataArray.size()) continue;
                 if (chunkDataEnd < 0 || static_cast<size_t>(chunkDataEnd) > chunkDataArray.size() || chunkDataEnd < chunkDataStart) continue;
@@ -278,8 +280,8 @@ namespace mc::anvil {
         }
 
         auto write(std::ostream &out) const -> void {
-            std::vector<uint8_t> offsets(SECTION_SIZE_BLOCKS);
-            std::vector<uint8_t> timestamps(SECTION_SIZE_BLOCKS);
+            std::vector<uint8_t> offsets(SECTOR_SIZE);
+            std::vector<uint8_t> timestamps(SECTOR_SIZE);
             absl::flat_hash_map<size_t, const std::vector<uint8_t>*> chunkDataList;
             size_t maxPos{};
 
@@ -297,7 +299,7 @@ namespace mc::anvil {
 
                 chunkDataList[offset] = &view.data;
 
-                if (const auto bytePos = (view.size + offset - 2) * SECTION_SIZE_BLOCKS;
+                if (const auto bytePos = (view.size + offset - 2) * SECTOR_SIZE;
                     bytePos > maxPos) maxPos = bytePos;
 
                 offset += view.size;
@@ -306,10 +308,10 @@ namespace mc::anvil {
             std::vector<uint8_t> res(totalBytes);
 
             std::memcpy(res.data(), offsets.data(), offsets.size());
-            std::memcpy(res.data() + SECTION_SIZE_BLOCKS, timestamps.data(), timestamps.size());
+            std::memcpy(res.data() + SECTOR_SIZE, timestamps.data(), timestamps.size());
 
             for (const auto& [i, data] : chunkDataList) {
-                const auto j = static_cast<size_t>(i) * SECTION_SIZE_BLOCKS;
+                const auto j = static_cast<size_t>(i) * SECTOR_SIZE;
                 if (j + data->size() > res.size()) continue;
 
                 std::memcpy(res.data() + j, data->data(), data->size());
