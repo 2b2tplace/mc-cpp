@@ -98,7 +98,7 @@ namespace mc {
 
         PlayerData() = default;
 
-        explicit PlayerData(const MinecraftRegistry &registry, const GameType gameType);
+        explicit PlayerData(const MinecraftRegistry &registry, GameType gameType);
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 

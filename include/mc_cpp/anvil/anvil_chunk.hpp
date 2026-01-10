@@ -14,10 +14,10 @@ namespace mc::anvil {
         int32_t z{};
 
         [[nodiscard]]
-        auto localX(const int32_t parentSidelength) const -> int32_t ;
+        auto localX(int32_t parentSidelength) const -> int32_t;
 
         [[nodiscard]]
-        auto localZ(const int32_t parentSidelength) const -> int32_t ;
+        auto localZ(int32_t parentSidelength) const -> int32_t;
     };
 
     static constexpr auto SECTION_SIDELENGTH_BLOCKS = 16;
@@ -67,20 +67,20 @@ namespace mc::anvil {
         PackedLightData packedSkyLightData{};
         int8_t yLevel;
 
-        explicit ChunkSection(const MinecraftRegistry &registry, const int8_t yLevel);
+        explicit ChunkSection(const MinecraftRegistry &registry, int8_t yLevel);
     };
 
-    static void prepareTileEntity(NbtCompound &tileEntityNBT, const std::string_view tileEntityName,
-                                  const Pos &localizeBlockPos, const int32_t yLevel);
+    static void prepareTileEntity(NbtCompound &tileEntityNBT, std::string_view tileEntityName,
+                                  const Pos &localizeBlockPos, int32_t yLevel);
 
     struct Chunk {
         std::vector<ChunkSection> sections;
         NbtList tileEntities;
 
-        auto writeSections(NbtCompound &chunkNBT, const MinecraftRegistry &registry) const -> void ;
+        auto writeSections(NbtCompound &chunkNBT, const MinecraftRegistry &registry) const -> void;
 
         [[nodiscard]]
-        static auto readSections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk> ;
+        static auto readSections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk>;
     };
 
     template<typename SectionDataType>

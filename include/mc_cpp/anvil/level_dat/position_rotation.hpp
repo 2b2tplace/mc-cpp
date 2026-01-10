@@ -33,9 +33,9 @@ namespace mc {
         double z{};
 
         [[nodiscard]]
-        auto createNbtList() const -> NbtList ;
+        auto createNbtList() const -> NbtList;
 
-        auto readNbtList(const NbtList &list) -> void ;
+        auto readNbtList(const NbtList &list) -> void;
     };
 
     struct Vec2d {
@@ -43,9 +43,9 @@ namespace mc {
         float pitch{};
 
         [[nodiscard]]
-        auto createNbtList() const -> NbtList ;
+        auto createNbtList() const -> NbtList;
 
-        auto readNbtList(const NbtList &list) -> void ;
+        auto readNbtList(const NbtList &list) -> void;
     };
 
 }

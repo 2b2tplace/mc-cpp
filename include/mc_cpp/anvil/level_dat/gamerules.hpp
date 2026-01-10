@@ -59,7 +59,7 @@ namespace mc {
         int32_t minecartMaxSpeed{8};
         int32_t spawnChunkRadius{2};
 
-        static auto staticGameRules() -> GameRules ;
+        static auto staticGameRules() -> GameRules;
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 

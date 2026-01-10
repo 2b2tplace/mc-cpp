@@ -14,10 +14,10 @@ namespace mc {
         bool previouslyKilled{};
 
         [[nodiscard]]
-        static auto defaultFight() -> DragonFight ;
+        static auto defaultFight() -> DragonFight;
 
         [[nodiscard]]
-        static auto finishedFight() -> DragonFight ;
+        static auto finishedFight() -> DragonFight;
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 

@@ -55,25 +55,25 @@ namespace mc {
         int64_t time{};
         bool wasModded{};
 
-        explicit Level(std::string levelName, const GameType gameType, const MinecraftRegistry &registry,
+        explicit Level(std::string levelName, GameType gameType, const MinecraftRegistry &registry,
                        const std::function<auto(const MinecraftRegistry&) -> WorldGeneratorSettings> &generator = WorldGeneratorSettings::defaultWorld);
 
-        static auto createStaticEmptyLevel(const std::string &levelName, const MinecraftRegistry &registry) -> Level ;
+        static auto createStaticEmptyLevel(const std::string &levelName, const MinecraftRegistry &registry) -> Level;
 
         Level() = default;
 
-        auto readCompound(const NbtCompound &compound) -> void ;
+        auto readCompound(const NbtCompound &compound) -> void;
 
-        auto writeCompound(NbtCompound &compound) const -> void ;
+        auto writeCompound(NbtCompound &compound) const -> void;
 
         auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
         [[nodiscard]]
-        static auto read(const fs::path &path) -> Level ;
+        static auto read(const fs::path &path) -> Level;
 
-        auto write(const fs::path &path) const -> void ;
+        auto write(const fs::path &path) const -> void;
     };
 
 }

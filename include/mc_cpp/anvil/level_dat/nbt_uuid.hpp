@@ -9,7 +9,7 @@ namespace mc {
 
         explicit NbtUUID(NbtIntArray array);
 
-        explicit NbtUUID(const int32_t u0, const int32_t u1, const int32_t u2, const int32_t u3);
+        explicit NbtUUID(int32_t u0, int32_t u1, int32_t u2, int32_t u3);
     };
 
 }

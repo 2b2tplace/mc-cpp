@@ -33,9 +33,9 @@ namespace mc {
 
             Event() = default;
 
-            explicit Event(std::string name, const int32_t currentHealth, const int32_t maxHealth);
+            explicit Event(std::string name, int32_t currentHealth, int32_t maxHealth);
 
-            explicit Event(std::string name, const int32_t maxHealth);
+            explicit Event(std::string name, int32_t maxHealth);
 
             auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 

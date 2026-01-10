@@ -38,75 +38,75 @@ namespace mc::anvil {
         fs::path parentDirectory;
         DimensionType dimension;
 
-        explicit Region(fs::path parentDirectory, const DimensionType dimension, const Pos &pos);
+        explicit Region(fs::path parentDirectory, DimensionType dimension, const Pos &pos);
 
         [[nodiscard]]
-        static auto chunkIndex(const Pos &chunkPos) -> size_t ;
+        static auto chunkIndex(const Pos &chunkPos) -> size_t;
 
         [[nodiscard]]
-        static auto bytesToInt(const std::span<uint8_t> &arr, size_t start, const size_t end) -> uint32_t ;
+        static auto bytesToInt(const std::span<uint8_t> &arr, size_t start, size_t end) -> uint32_t;
 
         [[nodiscard]]
         auto absoluteChunkPos(const Pos &chunkPos) const -> Pos;
 
         [[nodiscard]]
-        auto createChunk(const int32_t chunkX, const int32_t chunkZ, const int32_t minY, const MinecraftRegistry &registry) const -> NbtFile ;
+        auto createChunk(int32_t chunkX, int32_t chunkZ, int32_t minY, const MinecraftRegistry &registry) const -> NbtFile;
 
         [[nodiscard]]
-        auto createChunk(const Pos chunkPos, const int32_t minY, const MinecraftRegistry &registry) const -> NbtFile ;
+        auto createChunk(Pos chunkPos, int32_t minY, const MinecraftRegistry &registry) const -> NbtFile;
 
         [[nodiscard]]
-        auto readChunkNbtAt(const int32_t chunkX, const int32_t chunkZ, const bool allowOversizedChunk = true) const -> NbtFile ;
+        auto readChunkNbtAt(int32_t chunkX, int32_t chunkZ, bool allowOversizedChunk = true) const -> NbtFile;
 
         [[nodiscard]]
-        auto readChunkNbtAt(const Pos &chunkPos, const bool allowOversizedChunk = true) const -> NbtFile ;
+        auto readChunkNbtAt(const Pos &chunkPos, bool allowOversizedChunk = true) const -> NbtFile;
 
-        auto writeChunkNbtAt(const int32_t chunkX, const int32_t chunkZ, const NbtFile &chunkNBT,
-                             const bool allowOversizedChunk = true,
-                             const Compression compression = Compression::ZLIB) -> void ;
+        auto writeChunkNbtAt(int32_t chunkX, int32_t chunkZ, const NbtFile &chunkNBT,
+                             bool allowOversizedChunk = true,
+                             Compression compression = Compression::ZLIB) -> void;
 
         auto writeChunkNbtAt(const Pos &chunkPos, const NbtFile &chunkNBT,
-                             const bool allowOversizedChunk = true,
-                             const Compression compression = Compression::ZLIB) -> void ;
+                             bool allowOversizedChunk = true,
+                             Compression compression = Compression::ZLIB) -> void;
 
         [[nodiscard]]
-        auto chunkViewAt(const int32_t chunkX, const int32_t chunkZ) const -> const ChunkView& ;
+        auto chunkViewAt(int32_t chunkX, int32_t chunkZ) const -> const ChunkView&;
 
         [[nodiscard]]
-        auto chunkViewAt(const Pos &chunkPos) const -> const ChunkView& ;
+        auto chunkViewAt(const Pos &chunkPos) const -> const ChunkView&;
 
         [[nodiscard]]
-        auto chunkViewAt(const int32_t chunkX, const int32_t chunkZ) -> ChunkView& ;
+        auto chunkViewAt(int32_t chunkX, int32_t chunkZ) -> ChunkView&;
 
         [[nodiscard]]
-        auto chunkViewAt(const Pos &chunkPos) -> ChunkView& ;
+        auto chunkViewAt(const Pos &chunkPos) -> ChunkView&;
 
         [[nodiscard]]
-        auto hasChunkViewAt(const int32_t chunkX, const int32_t chunkZ) const -> bool ;
+        auto hasChunkViewAt(int32_t chunkX, int32_t chunkZ) const -> bool;
 
         [[nodiscard]]
-        auto hasChunkViewAt(const Pos &chunkPos) const -> bool ;
+        auto hasChunkViewAt(const Pos &chunkPos) const -> bool;
 
         [[nodiscard]]
-        auto externalChunkPath(const Pos &chunkPos) const -> fs::path ;
+        auto externalChunkPath(const Pos &chunkPos) const -> fs::path;
 
         [[nodiscard]]
-        auto filePath() const -> fs::path ;
+        auto filePath() const -> fs::path;
 
         [[nodiscard]]
-        auto read() -> RegionReadResult ;
+        auto read() -> RegionReadResult;
 
         [[nodiscard]]
-        auto read(const fs::path &path) -> RegionReadResult ;
+        auto read(const fs::path &path) -> RegionReadResult;
 
-        auto write() const -> void ;
+        auto write() const -> void;
 
-        auto write(const fs::path &path) const -> void ;
+        auto write(const fs::path &path) const -> void;
 
         [[nodiscard]]
-        auto read(std::istream &in) -> RegionReadResult ;
+        auto read(std::istream &in) -> RegionReadResult;
 
-        auto write(std::ostream &out) const -> void ;
+        auto write(std::ostream &out) const -> void;
     };
 
 }

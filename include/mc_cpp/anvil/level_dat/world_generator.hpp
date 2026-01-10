@@ -26,9 +26,9 @@ namespace mc {
 
             Layer() = default;
 
-            explicit Layer(const MinecraftRegistry &registry, const int32_t height, const std::string_view block);
+            explicit Layer(const MinecraftRegistry &registry, int32_t height, std::string_view block);
 
-            explicit Layer(const MinecraftRegistry &registry, const int32_t height);
+            explicit Layer(const MinecraftRegistry &registry, int32_t height);
 
             auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
@@ -61,11 +61,11 @@ namespace mc {
 
             explicit BiomeSource(std::string type);
 
-            static auto overworld() -> BiomeSource ;
+            static auto overworld() -> BiomeSource;
 
-            static auto nether() -> BiomeSource ;
+            static auto nether() -> BiomeSource;
 
-            static auto end() -> BiomeSource ;
+            static auto end() -> BiomeSource;
 
             auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
@@ -75,7 +75,7 @@ namespace mc {
         BiomeSource biomeSource{};
         std::string settings;
 
-        explicit NoiseWorldGenerator(const DimensionType dimension);
+        explicit NoiseWorldGenerator(DimensionType dimension);
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
@@ -89,28 +89,28 @@ namespace mc {
         WorldGenerator() = default;
 
         explicit WorldGenerator(const MinecraftRegistry &registry,
-                                const WorldGeneratorType type, const DimensionType dimension);
+                                WorldGeneratorType type, DimensionType dimension);
 
         [[nodiscard]]
-        auto type() const -> WorldGeneratorType ;
+        auto type() const -> WorldGeneratorType;
 
         [[nodiscard]]
-        auto asDebug() const -> const DebugWorldGenerator* ;
+        auto asDebug() const -> const DebugWorldGenerator*;
 
         [[nodiscard]]
-        auto asDebug() -> DebugWorldGenerator* ;
+        auto asDebug() -> DebugWorldGenerator*;
 
         [[nodiscard]]
-        auto asFlat() const -> const FlatWorldGenerator* ;
+        auto asFlat() const -> const FlatWorldGenerator*;
 
         [[nodiscard]]
-        auto asFlat() -> FlatWorldGenerator* ;
+        auto asFlat() -> FlatWorldGenerator*;
 
         [[nodiscard]]
-        auto asNoise() const -> const NoiseWorldGenerator* ;
+        auto asNoise() const -> const NoiseWorldGenerator*;
 
         [[nodiscard]]
-        auto asNoise() -> NoiseWorldGenerator* ;
+        auto asNoise() -> NoiseWorldGenerator*;
 
         auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
@@ -129,7 +129,7 @@ namespace mc {
 
         WorldGeneratorSettings() = default;
 
-        explicit WorldGeneratorSettings(const MinecraftRegistry &registry, const WorldGeneratorType type);
+        explicit WorldGeneratorSettings(const MinecraftRegistry &registry, WorldGeneratorType type);
 
         static WorldGeneratorSettings defaultWorld(const MinecraftRegistry &registry);
 
