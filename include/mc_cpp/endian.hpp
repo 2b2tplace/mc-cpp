@@ -12,7 +12,7 @@ namespace mc {
     }
 
     template <typename T>
-    constexpr T bigEndian(T x) {
+    constexpr auto bigEndian(T x) -> T {
         if constexpr (isBigEndian()) return x;
 
         return std::byteswap(x);
@@ -38,7 +38,7 @@ namespace mc {
     }
 
     template <typename T>
-    void writeBE(std::ostream& stream, T value) requires std::is_trivially_copyable_v<T> {
+    auto writeBE(std::ostream& stream, T value) -> void requires std::is_trivially_copyable_v<T> {
         if constexpr (std::is_integral_v<T>) {
             value = bigEndian(value);
             stream.write(reinterpret_cast<const char*>(&value), sizeof(value));
@@ -53,23 +53,8 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline std::string readBEString(std::istream& stream) {
-        const auto length = readBE<int16_t>(stream);
-        if (length < 0)
-            throw std::runtime_error("readBE<string>: negative length");
+    auto readBEString(std::istream& stream) -> std::string;
 
-        std::string value(static_cast<size_t>(length), '\0');
-        stream.read(value.data(), length);
-
-        return value;
-    }
-
-    inline void writeBEString(std::ostream& stream, const std::string& value) {
-        if (value.size() > static_cast<size_t>(INT16_MAX))
-            throw std::runtime_error("writeBE<string>: string too long");
-
-        writeBE<int16_t>(stream, static_cast<int16_t>(value.size()));
-        stream.write(value.data(), static_cast<std::streamsize>(value.size()));
-    }
+    auto writeBEString(std::ostream& stream, const std::string& value) -> void;
 
 }

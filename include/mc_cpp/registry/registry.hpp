@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <variant>
 #include <mc_cpp/common/json.hpp>
 #include <result.hpp>
 

@@ -5,9 +5,9 @@
 #include <mc_cpp/common/macro_magic.hpp>
 #include <mc_cpp/common/json.hpp>
 #include <mc_cpp/game/biome.hpp>
+#include <mc_cpp/registry/registry.hpp>
 
 namespace mc {
-
     struct BiomePropertyEntry {
         NAMED_FIELD(uint8_t, id);
         NAMED_FIELD(std::string, name);
@@ -18,46 +18,27 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
-    inline DEFINE_ENTRY_FROM_JSON(BiomePropertyEntry);
-    inline DEFINE_ENTRY_TO_JSON(BiomePropertyEntry);
+    DECLARE_ENTRY_FROM_JSON(BiomePropertyEntry);
+    DECLARE_ENTRY_TO_JSON(BiomePropertyEntry);
 
     struct BiomePropertyRegistry {
         absl::flat_hash_map<BiomeType, BiomeProperties> properties;
         absl::flat_hash_map<std::string, BiomeType> biomeIdByName;
         absl::flat_hash_map<BiomeType, std::string> biomeNameById;
 
-        explicit BiomePropertyRegistry(const Registry<BiomePropertyEntry> &registry) {
-            properties.reserve(registry.entries.size());
-            biomeIdByName.reserve(registry.entries.size());
-            biomeNameById.reserve(registry.entries.size());
-
-            for (const auto&[id, name, downfall, temperature, biomeType] : registry.entries) {
-                properties[id] = BiomeProperties{ getBiomeType(biomeType), temperature, downfall };
-                biomeIdByName[name] = id;
-                biomeNameById[id] = name;
-            }
-        }
+        explicit BiomePropertyRegistry(const Registry<BiomePropertyEntry> &registry);
 
         [[nodiscard]]
-        auto biomeProperties(const uint8_t id) const -> const BiomeProperties& {
-            return properties.at(id);
-        }
+        auto biomeProperties(uint8_t id) const -> const BiomeProperties&;
 
         [[nodiscard]]
-        auto biomeProperties(const std::string_view biomeName) const -> const BiomeProperties& {
-            return biomeProperties(biomeType(biomeName));
-        }
+        auto biomeProperties(std::string_view biomeName) const -> const BiomeProperties&;
 
         [[nodiscard]]
-        auto biomeType(const std::string_view biomeName) const -> BiomeType {
-            return biomeIdByName.at(biomeName);
-        }
+        auto biomeType(std::string_view biomeName) const -> BiomeType;
 
         [[nodiscard]]
-        auto biomeName(const BiomeType biomeType) const -> const std::string& {
-            return biomeNameById.at(biomeType);
-        }
+        auto biomeName(BiomeType biomeType) const -> const std::string&;
 
     };
-    
 }

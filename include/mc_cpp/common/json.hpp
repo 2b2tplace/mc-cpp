@@ -2968,7 +2968,7 @@ enforced with an assertion.**
 @since version 2.0.0
 */
 template<typename StringType>
-inline void replace_substring(StringType& s, const StringType& f,
+ void replace_substring(StringType& s, const StringType& f,
                               const StringType& t)
 {
     JSON_ASSERT(!f.empty());
@@ -2987,7 +2987,7 @@ inline void replace_substring(StringType& s, const StringType& f,
  * Note the order of escaping "~" to "~0" and "/" to "~1" is important.
  */
 template<typename StringType>
-inline StringType escape(StringType s)
+ StringType escape(StringType s)
 {
     replace_substring(s, StringType{"~"}, StringType{"~0"});
     replace_substring(s, StringType{"/"}, StringType{"~1"});
@@ -3210,7 +3210,7 @@ template<> struct priority_tag<0> {};
 template<typename T>
 struct static_const
 {
-    static JSON_INLINE_VARIABLE constexpr T value{};
+    static constexpr T value{};
 };
 
 #ifndef JSON_HAS_CPP_17
@@ -3219,7 +3219,7 @@ struct static_const
 #endif
 
 template<typename T, typename... Args>
-inline constexpr std::array<T, sizeof...(Args)> make_array(Args&& ... args)
+ constexpr std::array<T, sizeof...(Args)> make_array(Args&& ... args)
 {
     return std::array<T, sizeof...(Args)> {{static_cast<T>(std::forward<Args>(args))...}};
 }
@@ -4039,7 +4039,7 @@ struct is_ordered_map
         char x[2]; // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
     };
 
-    template <typename C> static one test( decltype(&C::capacity) ) ;
+    template <typename C> static one test( decltype(&C::capacity) );
     template <typename C> static two test(...);
 
     enum { value = sizeof(test<T>(nullptr)) == sizeof(char) }; // NOLINT(cppcoreguidelines-pro-type-vararg,hicpp-vararg)
@@ -4147,7 +4147,7 @@ struct value_in_range_of_impl1<OfType, T, true>
 };
 
 template<typename OfType, typename T>
-inline constexpr bool value_in_range_of(T val)
+ constexpr bool value_in_range_of(T val)
 {
     return value_in_range_of_impl1<OfType, T>::test(val);
 }
@@ -4163,7 +4163,7 @@ namespace impl
 {
 
 template<typename T>
-inline constexpr bool is_c_string()
+ constexpr bool is_c_string()
 {
     using TUnExt = typename std::remove_extent<T>::type;
     using TUnCVExt = typename std::remove_cv<TUnExt>::type;
@@ -4191,7 +4191,7 @@ namespace impl
 {
 
 template<typename T>
-inline constexpr bool is_transparent()
+ constexpr bool is_transparent()
 {
     return is_detected<detect_is_transparent, T>::value;
 }
@@ -4237,32 +4237,32 @@ inline std::size_t concat_length()
 }
 
 template<typename... Args>
-inline std::size_t concat_length(const char* cstr, const Args& ... rest);
+ std::size_t concat_length(const char* cstr, const Args& ... rest);
 
 template<typename StringType, typename... Args>
-inline std::size_t concat_length(const StringType& str, const Args& ... rest);
+ std::size_t concat_length(const StringType& str, const Args& ... rest);
 
 template<typename... Args>
-inline std::size_t concat_length(const char /*c*/, const Args& ... rest)
+ std::size_t concat_length(const char /*c*/, const Args& ... rest)
 {
     return 1 + concat_length(rest...);
 }
 
 template<typename... Args>
-inline std::size_t concat_length(const char* cstr, const Args& ... rest)
+ std::size_t concat_length(const char* cstr, const Args& ... rest)
 {
     // cppcheck-suppress ignoredReturnValue
     return ::strlen(cstr) + concat_length(rest...);
 }
 
 template<typename StringType, typename... Args>
-inline std::size_t concat_length(const StringType& str, const Args& ... rest)
+ std::size_t concat_length(const StringType& str, const Args& ... rest)
 {
     return str.size() + concat_length(rest...);
 }
 
 template<typename OutStringType>
-inline void concat_into(OutStringType& /*out*/)
+ void concat_into(OutStringType& /*out*/)
 {}
 
 template<typename StringType, typename Arg>
@@ -4292,24 +4292,24 @@ using detect_string_can_append_data = is_detected<string_can_append_data, String
 template < typename OutStringType, typename Arg, typename... Args,
            enable_if_t < !detect_string_can_append<OutStringType, Arg>::value
                          && detect_string_can_append_op<OutStringType, Arg>::value, int > = 0 >
-inline void concat_into(OutStringType& out, Arg && arg, Args && ... rest);
+ void concat_into(OutStringType& out, Arg && arg, Args && ... rest);
 
 template < typename OutStringType, typename Arg, typename... Args,
            enable_if_t < !detect_string_can_append<OutStringType, Arg>::value
                          && !detect_string_can_append_op<OutStringType, Arg>::value
                          && detect_string_can_append_iter<OutStringType, Arg>::value, int > = 0 >
-inline void concat_into(OutStringType& out, const Arg& arg, Args && ... rest);
+ void concat_into(OutStringType& out, const Arg& arg, Args && ... rest);
 
 template < typename OutStringType, typename Arg, typename... Args,
            enable_if_t < !detect_string_can_append<OutStringType, Arg>::value
                          && !detect_string_can_append_op<OutStringType, Arg>::value
                          && !detect_string_can_append_iter<OutStringType, Arg>::value
                          && detect_string_can_append_data<OutStringType, Arg>::value, int > = 0 >
-inline void concat_into(OutStringType& out, const Arg& arg, Args && ... rest);
+ void concat_into(OutStringType& out, const Arg& arg, Args && ... rest);
 
 template<typename OutStringType, typename Arg, typename... Args,
          enable_if_t<detect_string_can_append<OutStringType, Arg>::value, int> = 0>
-inline void concat_into(OutStringType& out, Arg && arg, Args && ... rest)
+ void concat_into(OutStringType& out, Arg && arg, Args && ... rest)
 {
     out.append(std::forward<Arg>(arg));
     concat_into(out, std::forward<Args>(rest)...);
@@ -4318,7 +4318,7 @@ inline void concat_into(OutStringType& out, Arg && arg, Args && ... rest)
 template < typename OutStringType, typename Arg, typename... Args,
            enable_if_t < !detect_string_can_append<OutStringType, Arg>::value
                          && detect_string_can_append_op<OutStringType, Arg>::value, int > >
-inline void concat_into(OutStringType& out, Arg&& arg, Args&& ... rest)
+ void concat_into(OutStringType& out, Arg&& arg, Args&& ... rest)
 {
     out += std::forward<Arg>(arg);
     concat_into(out, std::forward<Args>(rest)...);
@@ -4328,7 +4328,7 @@ template < typename OutStringType, typename Arg, typename... Args,
            enable_if_t < !detect_string_can_append<OutStringType, Arg>::value
                          && !detect_string_can_append_op<OutStringType, Arg>::value
                          && detect_string_can_append_iter<OutStringType, Arg>::value, int > >
-inline void concat_into(OutStringType& out, const Arg& arg, Args&& ... rest)
+ void concat_into(OutStringType& out, const Arg& arg, Args&& ... rest)
 {
     out.append(arg.begin(), arg.end());
     concat_into(out, std::forward<Args>(rest)...);
@@ -4339,14 +4339,14 @@ template < typename OutStringType, typename Arg, typename... Args,
                          && !detect_string_can_append_op<OutStringType, Arg>::value
                          && !detect_string_can_append_iter<OutStringType, Arg>::value
                          && detect_string_can_append_data<OutStringType, Arg>::value, int > >
-inline void concat_into(OutStringType& out, const Arg& arg, Args&& ... rest)
+ void concat_into(OutStringType& out, const Arg& arg, Args&& ... rest)
 {
     out.append(arg.data(), arg.size());
     concat_into(out, std::forward<Args>(rest)...);
 }
 
 template<typename OutStringType = std::string, typename... Args>
-inline OutStringType concat(Args && ... args)
+ OutStringType concat(Args && ... args)
 {
     OutStringType str;
     str.reserve(concat_length(args...));
@@ -4661,7 +4661,7 @@ namespace detail
 {
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename std::nullptr_t& n)
+ void from_json(const BasicJsonType& j, typename std::nullptr_t& n)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_null()))
     {
@@ -4708,7 +4708,7 @@ void get_arithmetic_value(const BasicJsonType& j, ArithmeticType& val)
 }
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename BasicJsonType::boolean_t& b)
+ void from_json(const BasicJsonType& j, typename BasicJsonType::boolean_t& b)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_boolean()))
     {
@@ -4718,7 +4718,7 @@ inline void from_json(const BasicJsonType& j, typename BasicJsonType::boolean_t&
 }
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename BasicJsonType::string_t& s)
+ void from_json(const BasicJsonType& j, typename BasicJsonType::string_t& s)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_string()))
     {
@@ -4734,7 +4734,7 @@ template <
         && is_detected_exact<typename BasicJsonType::string_t::value_type, value_type_t, StringType>::value
         && !std::is_same<typename BasicJsonType::string_t, StringType>::value
         && !is_json_ref<StringType>::value, int > = 0 >
-inline void from_json(const BasicJsonType& j, StringType& s)
+ void from_json(const BasicJsonType& j, StringType& s)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_string()))
     {
@@ -4745,19 +4745,19 @@ inline void from_json(const BasicJsonType& j, StringType& s)
 }
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename BasicJsonType::number_float_t& val)
+ void from_json(const BasicJsonType& j, typename BasicJsonType::number_float_t& val)
 {
     get_arithmetic_value(j, val);
 }
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename BasicJsonType::number_unsigned_t& val)
+ void from_json(const BasicJsonType& j, typename BasicJsonType::number_unsigned_t& val)
 {
     get_arithmetic_value(j, val);
 }
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename BasicJsonType::number_integer_t& val)
+ void from_json(const BasicJsonType& j, typename BasicJsonType::number_integer_t& val)
 {
     get_arithmetic_value(j, val);
 }
@@ -4765,7 +4765,7 @@ inline void from_json(const BasicJsonType& j, typename BasicJsonType::number_int
 #if !JSON_DISABLE_ENUM_SERIALIZATION
 template<typename BasicJsonType, typename EnumType,
          enable_if_t<std::is_enum<EnumType>::value, int> = 0>
-inline void from_json(const BasicJsonType& j, EnumType& e)
+ void from_json(const BasicJsonType& j, EnumType& e)
 {
     typename std::underlying_type<EnumType>::type val;
     get_arithmetic_value(j, val);
@@ -4776,7 +4776,7 @@ inline void from_json(const BasicJsonType& j, EnumType& e)
 // forward_list doesn't have an insert method
 template<typename BasicJsonType, typename T, typename Allocator,
          enable_if_t<is_getable<BasicJsonType, T>::value, int> = 0>
-inline void from_json(const BasicJsonType& j, std::forward_list<T, Allocator>& l)
+ void from_json(const BasicJsonType& j, std::forward_list<T, Allocator>& l)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
     {
@@ -4793,7 +4793,7 @@ inline void from_json(const BasicJsonType& j, std::forward_list<T, Allocator>& l
 // valarray doesn't have an insert method
 template<typename BasicJsonType, typename T,
          enable_if_t<is_getable<BasicJsonType, T>::value, int> = 0>
-inline void from_json(const BasicJsonType& j, std::valarray<T>& l)
+ void from_json(const BasicJsonType& j, std::valarray<T>& l)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
     {
@@ -4818,7 +4818,7 @@ auto from_json(const BasicJsonType& j, T (&arr)[N])  // NOLINT(cppcoreguidelines
 }
 
 template<typename BasicJsonType>
-inline void from_json_array_impl(const BasicJsonType& j, typename BasicJsonType::array_t& arr, priority_tag<3> /*unused*/)
+ void from_json_array_impl(const BasicJsonType& j, typename BasicJsonType::array_t& arr, priority_tag<3> /*unused*/)
 {
     arr = *j.template get_ptr<const typename BasicJsonType::array_t*>();
 }
@@ -4862,7 +4862,7 @@ template<typename BasicJsonType, typename ConstructibleArrayType,
          enable_if_t<
              std::is_assignable<ConstructibleArrayType&, ConstructibleArrayType>::value,
              int> = 0>
-inline void from_json_array_impl(const BasicJsonType& j, ConstructibleArrayType& arr,
+ void from_json_array_impl(const BasicJsonType& j, ConstructibleArrayType& arr,
                                  priority_tag<0> /*unused*/)
 {
     using std::end;
@@ -4920,7 +4920,7 @@ auto from_json(BasicJsonType&& j, identity_tag<std::array<T, N>> tag)
 }
 
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, typename BasicJsonType::binary_t& bin)
+ void from_json(const BasicJsonType& j, typename BasicJsonType::binary_t& bin)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_binary()))
     {
@@ -4932,7 +4932,7 @@ inline void from_json(const BasicJsonType& j, typename BasicJsonType::binary_t& 
 
 template<typename BasicJsonType, typename ConstructibleObjectType,
          enable_if_t<is_constructible_object_type<BasicJsonType, ConstructibleObjectType>::value, int> = 0>
-inline void from_json(const BasicJsonType& j, ConstructibleObjectType& obj)
+ void from_json(const BasicJsonType& j, ConstructibleObjectType& obj)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_object()))
     {
@@ -4964,7 +4964,7 @@ template < typename BasicJsonType, typename ArithmeticType,
                !std::is_same<ArithmeticType, typename BasicJsonType::number_float_t>::value&&
                !std::is_same<ArithmeticType, typename BasicJsonType::boolean_t>::value,
                int > = 0 >
-inline void from_json(const BasicJsonType& j, ArithmeticType& val)
+ void from_json(const BasicJsonType& j, ArithmeticType& val)
 {
     switch (static_cast<value_t>(j))
     {
@@ -5014,7 +5014,7 @@ std::pair<A1, A2> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::pair
 }
 
 template<typename BasicJsonType, typename A1, typename A2>
-inline void from_json_tuple_impl(BasicJsonType&& j, std::pair<A1, A2>& p, priority_tag<1> /*unused*/)
+ void from_json_tuple_impl(BasicJsonType&& j, std::pair<A1, A2>& p, priority_tag<1> /*unused*/)
 {
     p = from_json_tuple_impl(std::forward<BasicJsonType>(j), identity_tag<std::pair<A1, A2>> {}, priority_tag<0> {});
 }
@@ -5026,7 +5026,7 @@ std::tuple<Args...> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::tu
 }
 
 template<typename BasicJsonType, typename... Args>
-inline void from_json_tuple_impl(BasicJsonType&& j, std::tuple<Args...>& t, priority_tag<3> /*unused*/)
+ void from_json_tuple_impl(BasicJsonType&& j, std::tuple<Args...>& t, priority_tag<3> /*unused*/)
 {
     t = from_json_tuple_impl_base<BasicJsonType, Args...>(std::forward<BasicJsonType>(j), index_sequence_for<Args...> {});
 }
@@ -5046,7 +5046,7 @@ auto from_json(BasicJsonType&& j, TupleRelated&& t)
 template < typename BasicJsonType, typename Key, typename Value, typename Compare, typename Allocator,
            typename = enable_if_t < !std::is_constructible <
                                         typename BasicJsonType::string_t, Key >::value >>
-inline void from_json(const BasicJsonType& j, std::map<Key, Value, Compare, Allocator>& m)
+ void from_json(const BasicJsonType& j, std::map<Key, Value, Compare, Allocator>& m)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
     {
@@ -5066,7 +5066,7 @@ inline void from_json(const BasicJsonType& j, std::map<Key, Value, Compare, Allo
 template < typename BasicJsonType, typename Key, typename Value, typename Hash, typename KeyEqual, typename Allocator,
            typename = enable_if_t < !std::is_constructible <
                                         typename BasicJsonType::string_t, Key >::value >>
-inline void from_json(const BasicJsonType& j, std::unordered_map<Key, Value, Hash, KeyEqual, Allocator>& m)
+ void from_json(const BasicJsonType& j, std::unordered_map<Key, Value, Hash, KeyEqual, Allocator>& m)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
     {
@@ -5085,7 +5085,7 @@ inline void from_json(const BasicJsonType& j, std::unordered_map<Key, Value, Has
 
 #if JSON_HAS_FILESYSTEM || JSON_HAS_EXPERIMENTAL_FILESYSTEM
 template<typename BasicJsonType>
-inline void from_json(const BasicJsonType& j, std_fs::path& p)
+ void from_json(const BasicJsonType& j, std_fs::path& p)
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_string()))
     {
@@ -5639,7 +5639,7 @@ struct external_constructor<value_t::object>
 
 template<typename BasicJsonType, typename T,
          enable_if_t<std::is_same<T, typename BasicJsonType::boolean_t>::value, int> = 0>
-inline void to_json(BasicJsonType& j, T b) noexcept
+ void to_json(BasicJsonType& j, T b) noexcept
 {
     external_constructor<value_t::boolean>::construct(j, b);
 }
@@ -5652,41 +5652,41 @@ template < typename BasicJsonType, typename BoolRef,
                     && !std::is_same <detail::uncvref_t<std::vector<bool>::const_reference>,
                                       typename BasicJsonType::boolean_t >::value))
                && std::is_convertible<const BoolRef&, typename BasicJsonType::boolean_t>::value, int > = 0 >
-inline void to_json(BasicJsonType& j, const BoolRef& b) noexcept
+ void to_json(BasicJsonType& j, const BoolRef& b) noexcept
 {
     external_constructor<value_t::boolean>::construct(j, static_cast<typename BasicJsonType::boolean_t>(b));
 }
 
 template<typename BasicJsonType, typename CompatibleString,
          enable_if_t<std::is_constructible<typename BasicJsonType::string_t, CompatibleString>::value, int> = 0>
-inline void to_json(BasicJsonType& j, const CompatibleString& s)
+ void to_json(BasicJsonType& j, const CompatibleString& s)
 {
     external_constructor<value_t::string>::construct(j, s);
 }
 
 template<typename BasicJsonType>
-inline void to_json(BasicJsonType& j, typename BasicJsonType::string_t&& s)
+ void to_json(BasicJsonType& j, typename BasicJsonType::string_t&& s)
 {
     external_constructor<value_t::string>::construct(j, std::move(s));
 }
 
 template<typename BasicJsonType, typename FloatType,
          enable_if_t<std::is_floating_point<FloatType>::value, int> = 0>
-inline void to_json(BasicJsonType& j, FloatType val) noexcept
+ void to_json(BasicJsonType& j, FloatType val) noexcept
 {
     external_constructor<value_t::number_float>::construct(j, static_cast<typename BasicJsonType::number_float_t>(val));
 }
 
 template<typename BasicJsonType, typename CompatibleNumberUnsignedType,
          enable_if_t<is_compatible_integer_type<typename BasicJsonType::number_unsigned_t, CompatibleNumberUnsignedType>::value, int> = 0>
-inline void to_json(BasicJsonType& j, CompatibleNumberUnsignedType val) noexcept
+ void to_json(BasicJsonType& j, CompatibleNumberUnsignedType val) noexcept
 {
     external_constructor<value_t::number_unsigned>::construct(j, static_cast<typename BasicJsonType::number_unsigned_t>(val));
 }
 
 template<typename BasicJsonType, typename CompatibleNumberIntegerType,
          enable_if_t<is_compatible_integer_type<typename BasicJsonType::number_integer_t, CompatibleNumberIntegerType>::value, int> = 0>
-inline void to_json(BasicJsonType& j, CompatibleNumberIntegerType val) noexcept
+ void to_json(BasicJsonType& j, CompatibleNumberIntegerType val) noexcept
 {
     external_constructor<value_t::number_integer>::construct(j, static_cast<typename BasicJsonType::number_integer_t>(val));
 }
@@ -5694,7 +5694,7 @@ inline void to_json(BasicJsonType& j, CompatibleNumberIntegerType val) noexcept
 #if !JSON_DISABLE_ENUM_SERIALIZATION
 template<typename BasicJsonType, typename EnumType,
          enable_if_t<std::is_enum<EnumType>::value, int> = 0>
-inline void to_json(BasicJsonType& j, EnumType e) noexcept
+ void to_json(BasicJsonType& j, EnumType e) noexcept
 {
     using underlying_type = typename std::underlying_type<EnumType>::type;
     static constexpr value_t integral_value_t = std::is_unsigned<underlying_type>::value ? value_t::number_unsigned : value_t::number_integer;
@@ -5703,7 +5703,7 @@ inline void to_json(BasicJsonType& j, EnumType e) noexcept
 #endif  // JSON_DISABLE_ENUM_SERIALIZATION
 
 template<typename BasicJsonType>
-inline void to_json(BasicJsonType& j, const std::vector<bool>& e)
+ void to_json(BasicJsonType& j, const std::vector<bool>& e)
 {
     external_constructor<value_t::array>::construct(j, e);
 }
@@ -5716,39 +5716,39 @@ template < typename BasicJsonType, typename CompatibleArrayType,
                          !std::is_same<typename BasicJsonType::binary_t, CompatibleArrayType>::value&&
                          !is_basic_json<CompatibleArrayType>::value,
                          int > = 0 >
-inline void to_json(BasicJsonType& j, const CompatibleArrayType& arr)
+ void to_json(BasicJsonType& j, const CompatibleArrayType& arr)
 {
     external_constructor<value_t::array>::construct(j, arr);
 }
 
 template<typename BasicJsonType>
-inline void to_json(BasicJsonType& j, const typename BasicJsonType::binary_t& bin)
+ void to_json(BasicJsonType& j, const typename BasicJsonType::binary_t& bin)
 {
     external_constructor<value_t::binary>::construct(j, bin);
 }
 
 template<typename BasicJsonType, typename T,
          enable_if_t<std::is_convertible<T, BasicJsonType>::value, int> = 0>
-inline void to_json(BasicJsonType& j, const std::valarray<T>& arr)
+ void to_json(BasicJsonType& j, const std::valarray<T>& arr)
 {
     external_constructor<value_t::array>::construct(j, std::move(arr));
 }
 
 template<typename BasicJsonType>
-inline void to_json(BasicJsonType& j, typename BasicJsonType::array_t&& arr)
+ void to_json(BasicJsonType& j, typename BasicJsonType::array_t&& arr)
 {
     external_constructor<value_t::array>::construct(j, std::move(arr));
 }
 
 template < typename BasicJsonType, typename CompatibleObjectType,
            enable_if_t < is_compatible_object_type<BasicJsonType, CompatibleObjectType>::value&& !is_basic_json<CompatibleObjectType>::value, int > = 0 >
-inline void to_json(BasicJsonType& j, const CompatibleObjectType& obj)
+ void to_json(BasicJsonType& j, const CompatibleObjectType& obj)
 {
     external_constructor<value_t::object>::construct(j, obj);
 }
 
 template<typename BasicJsonType>
-inline void to_json(BasicJsonType& j, typename BasicJsonType::object_t&& obj)
+ void to_json(BasicJsonType& j, typename BasicJsonType::object_t&& obj)
 {
     external_constructor<value_t::object>::construct(j, std::move(obj));
 }
@@ -5758,13 +5758,13 @@ template <
     enable_if_t < !std::is_constructible<typename BasicJsonType::string_t,
                   const T(&)[N]>::value, // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
                   int > = 0 >
-inline void to_json(BasicJsonType& j, const T(&arr)[N]) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+ void to_json(BasicJsonType& j, const T(&arr)[N]) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 {
     external_constructor<value_t::array>::construct(j, arr);
 }
 
 template < typename BasicJsonType, typename T1, typename T2, enable_if_t < std::is_constructible<BasicJsonType, T1>::value&& std::is_constructible<BasicJsonType, T2>::value, int > = 0 >
-inline void to_json(BasicJsonType& j, const std::pair<T1, T2>& p)
+ void to_json(BasicJsonType& j, const std::pair<T1, T2>& p)
 {
     j = { p.first, p.second };
 }
@@ -5772,26 +5772,26 @@ inline void to_json(BasicJsonType& j, const std::pair<T1, T2>& p)
 // for https://github.com/nlohmann/json/pull/1134
 template<typename BasicJsonType, typename T,
          enable_if_t<std::is_same<T, iteration_proxy_value<typename BasicJsonType::iterator>>::value, int> = 0>
-inline void to_json(BasicJsonType& j, const T& b)
+ void to_json(BasicJsonType& j, const T& b)
 {
     j = { {b.key(), b.value()} };
 }
 
 template<typename BasicJsonType, typename Tuple, std::size_t... Idx>
-inline void to_json_tuple_impl(BasicJsonType& j, const Tuple& t, index_sequence<Idx...> /*unused*/)
+ void to_json_tuple_impl(BasicJsonType& j, const Tuple& t, index_sequence<Idx...> /*unused*/)
 {
     j = { std::get<Idx>(t)... };
 }
 
 template<typename BasicJsonType, typename T, enable_if_t<is_constructible_tuple<BasicJsonType, T>::value, int > = 0>
-inline void to_json(BasicJsonType& j, const T& t)
+ void to_json(BasicJsonType& j, const T& t)
 {
     to_json_tuple_impl(j, t, make_index_sequence<std::tuple_size<T>::value> {});
 }
 
 #if JSON_HAS_FILESYSTEM || JSON_HAS_EXPERIMENTAL_FILESYSTEM
 template<typename BasicJsonType>
-inline void to_json(BasicJsonType& j, const std_fs::path& p)
+ void to_json(BasicJsonType& j, const std_fs::path& p)
 {
     j = p.string();
 }
@@ -12093,7 +12093,7 @@ class binary_reader
     }
 
   private:
-    static JSON_INLINE_VARIABLE constexpr std::size_t npos = static_cast<std::size_t>(-1);
+    static constexpr std::size_t npos = static_cast<std::size_t>(-1);
 
     /// input adapter
     InputAdapterType ia;
@@ -18652,7 +18652,7 @@ class serializer
     @param[in] x  unsigned integer number to count its digits
     @return    number of decimal digits
     */
-    inline unsigned int count_digits(number_unsigned_t x) noexcept
+    unsigned int count_digits(number_unsigned_t x) noexcept
     {
         unsigned int n_digits = 1;
         for (;;)
@@ -18961,7 +18961,7 @@ class serializer
      * absolute values of INT_MIN and INT_MAX are usually not the same. See
      * #1708 for details.
      */
-    inline number_unsigned_t remove_sign(number_integer_t x) noexcept
+    number_unsigned_t remove_sign(number_integer_t x) noexcept
     {
         JSON_ASSERT(x < 0 && x < (std::numeric_limits<number_integer_t>::max)()); // NOLINT(misc-redundant-expression)
         return static_cast<number_unsigned_t>(-(x + 1)) + 1;

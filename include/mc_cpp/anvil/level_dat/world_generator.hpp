@@ -12,13 +12,9 @@ namespace mc {
     struct DebugWorldGenerator final : ToCompound {
         static constexpr std::string_view identifier = "minecraft:debug";
 
-        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-            compound.put<std::string>("type", identifier.data());
-        }
+        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-
-        }
+        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {}
     };
 
     struct FlatWorldGenerator final : ToCompound {
@@ -30,27 +26,13 @@ namespace mc {
 
             Layer() = default;
 
-            explicit Layer(const MinecraftRegistry &registry, const int32_t height, const std::string_view block):
-                height(height), block(registry.blockType(block)) {}
+            explicit Layer(const MinecraftRegistry &registry, const int32_t height, const std::string_view block);
 
-            explicit Layer(const MinecraftRegistry &registry, const int32_t height):
-                Layer(registry, height, "air") {}
+            explicit Layer(const MinecraftRegistry &registry, const int32_t height);
 
-            auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-                auto blockName = registry.blockName(block);
-                prependMinecraftNamespace(&blockName);
-                compound.put("block", blockName);
-                compound.put("height", height);
-            }
+            auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-            auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-                std::string blockName;
-                compound.read("block", blockName);
-                compound.read("height", height);
-
-                stripMinecraftNamespace(&blockName);
-                block = registry.blockType(blockName);
-            }
+            auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
         };
 
         std::vector<Layer> layers;
@@ -59,44 +41,11 @@ namespace mc {
         bool features{};
         std::vector<std::string> structureOverrides;
 
-        explicit FlatWorldGenerator(const MinecraftRegistry &registry): biome(registry.biomeType("plains")) {}
+        explicit FlatWorldGenerator(const MinecraftRegistry &registry);
 
-        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-            NbtCompound settings;
+        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-            auto biomeName = registry.biomeName(biome);
-            prependMinecraftNamespace(&biomeName);
-            settings.put("biome", biomeName);
-            settings.put("features", features);
-            settings.put("lakes", lakes);
-
-            NbtList layersNBT{NbtType::COMPOUND};
-            for (const auto &layer : layers)
-                layersNBT.add(layer.createCompound(registry));
-
-            settings.putNbt("layers", layersNBT);
-            compound.putNbt("settings", settings);
-            compound.put<std::string>("type", identifier.data());
-        }
-
-        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-            const auto &settings = compound.readNbt<NbtCompound>("settings");
-
-            std::string biomeName;
-            settings.read("biome", biomeName);
-            settings.read("features", features);
-            settings.read("lakes", lakes);
-
-            prependMinecraftNamespace(&biomeName);
-            biome = registry.biomeType(biomeName);
-
-            const auto &layersNBT = settings.readNbt<NbtList>("layers");
-            for (const auto &layerNBTPtr : layersNBT.values) {
-                Layer layer;
-                layer.readCompound(registry, getAsTag<const NbtCompound&>(*layerNBTPtr));
-                layers.push_back(layer);
-            }
-        }
+        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
     };
 
     struct NoiseWorldGenerator final : ToCompound {
@@ -108,71 +57,29 @@ namespace mc {
 
             BiomeSource() = default;
 
-            explicit BiomeSource(std::string preset, std::string type):
-                preset(std::move(preset)), type(std::move(type)) {}
+            explicit BiomeSource(std::string preset, std::string type);
 
-            explicit BiomeSource(std::string type):
-                type(std::move(type)) {}
+            explicit BiomeSource(std::string type);
 
-            static auto overworld() -> BiomeSource {
-                return BiomeSource{"minecraft:overworld", "minecraft:multi_noise"};
-            }
+            static auto overworld() -> BiomeSource ;
 
-            static auto nether() -> BiomeSource {
-                return BiomeSource{"minecraft:nether", "minecraft:multi_noise"};
-            }
+            static auto nether() -> BiomeSource ;
 
-            static auto end() -> BiomeSource {
-                return BiomeSource{"minecraft:the_end"};
-            }
+            static auto end() -> BiomeSource ;
 
-            auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-                if (preset) compound.put("preset", *preset);
-                compound.put("type", type);
-            }
+            auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-            auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-                if (compound.contains<std::string>("preset"))
-                    compound.read("preset", *preset);
-
-                compound.read("type", type);
-            }
+            auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
         };
 
         BiomeSource biomeSource{};
         std::string settings;
 
-        explicit NoiseWorldGenerator(const DimensionType dimension) {
-            switch (dimension) {
-                case OVERWORLD:
-                    biomeSource = BiomeSource::overworld();
-                    settings = "minecraft:overworld";
-                    break;
-                case NETHER:
-                    biomeSource = BiomeSource::nether();
-                    settings = "minecraft:nether";
-                    break;
-                case THE_END:
-                    biomeSource = BiomeSource::end();
-                    settings = "minecraft:end";
-                    break;
-                default:
-                    std::unreachable();
-            }
-        }
+        explicit NoiseWorldGenerator(const DimensionType dimension);
 
-        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-            compound.putNbt("biome_source", biomeSource.createCompound(registry));
-            compound.put("settings", settings);
-            compound.put("type", std::string{identifier});
-        }
+        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-            const auto &biomeSourceNBT = compound.readNbt<NbtCompound>("biome_source");
-            biomeSource.readCompound(registry, biomeSourceNBT);
-
-            compound.read("settings", settings);
-        }
+        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
     };
 
     struct WorldGenerator final : ToCompound {
@@ -182,76 +89,32 @@ namespace mc {
         WorldGenerator() = default;
 
         explicit WorldGenerator(const MinecraftRegistry &registry,
-                                const WorldGeneratorType type, const DimensionType dimension):
-            dimension(dimension), _type(type) {
-            switch (type) {
-                case WorldGeneratorType::DEBUG:
-                    worldGeneratorPtr = std::make_shared<DebugWorldGenerator>();
-                    break;
-                case WorldGeneratorType::FLAT:
-                    worldGeneratorPtr = std::make_shared<FlatWorldGenerator>(registry);
-                    break;
-                case WorldGeneratorType::NOISE:
-                    worldGeneratorPtr = std::make_shared<NoiseWorldGenerator>(dimension);
-                    break;
-            }
-        }
+                                const WorldGeneratorType type, const DimensionType dimension);
 
         [[nodiscard]]
-        auto type() const -> WorldGeneratorType {
-            return _type;
-        }
+        auto type() const -> WorldGeneratorType ;
 
         [[nodiscard]]
-        auto asDebug() const -> const DebugWorldGenerator* {
-            return dynamic_cast<const DebugWorldGenerator*>(worldGeneratorPtr.get());
-        }
+        auto asDebug() const -> const DebugWorldGenerator* ;
 
         [[nodiscard]]
-        auto asDebug() -> DebugWorldGenerator* {
-            return dynamic_cast<DebugWorldGenerator*>(worldGeneratorPtr.get());
-        }
+        auto asDebug() -> DebugWorldGenerator* ;
 
         [[nodiscard]]
-        auto asFlat() const -> const FlatWorldGenerator* {
-            return dynamic_cast<const FlatWorldGenerator*>(worldGeneratorPtr.get());
-        }
+        auto asFlat() const -> const FlatWorldGenerator* ;
 
         [[nodiscard]]
-        auto asFlat() -> FlatWorldGenerator* {
-            return dynamic_cast<FlatWorldGenerator*>(worldGeneratorPtr.get());
-        }
+        auto asFlat() -> FlatWorldGenerator* ;
 
         [[nodiscard]]
-        auto asNoise() const -> const NoiseWorldGenerator* {
-            return dynamic_cast<const NoiseWorldGenerator*>(worldGeneratorPtr.get());
-        }
+        auto asNoise() const -> const NoiseWorldGenerator* ;
 
         [[nodiscard]]
-        auto asNoise() -> NoiseWorldGenerator* {
-            return dynamic_cast<NoiseWorldGenerator*>(worldGeneratorPtr.get());
-        }
+        auto asNoise() -> NoiseWorldGenerator* ;
 
-        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-            compound.putNbt("generator", worldGeneratorPtr->createCompound(registry));
-            compound.put<std::string>("type", getNamespacedDimension(dimension));
-        }
+        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-            std::string dimensionName;
-            compound.read<std::string>("type", dimensionName);
-            dimension = getDimensionType(dimensionName);
-
-            const auto &generator = compound.readNbt<NbtCompound>("generator");
-            const auto &generatorTypeStr = generator.read<std::string>("type");
-
-            if (generatorTypeStr == DebugWorldGenerator::identifier)
-                worldGeneratorPtr = std::make_shared<DebugWorldGenerator>();
-            else if (generatorTypeStr == FlatWorldGenerator::identifier)
-                worldGeneratorPtr = std::make_shared<FlatWorldGenerator>(registry);
-            else if (generatorTypeStr == NoiseWorldGenerator::identifier)
-                worldGeneratorPtr = std::make_shared<NoiseWorldGenerator>(dimension);
-        }
+        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
 
     private:
         WorldGeneratorType _type;
@@ -266,47 +129,15 @@ namespace mc {
 
         WorldGeneratorSettings() = default;
 
-        explicit WorldGeneratorSettings(const MinecraftRegistry &registry, const WorldGeneratorType type) {
-            for (size_t i = 0; i < DIMENSION_NAMES.size(); i++) {
-                const auto dimension = static_cast<DimensionType>(i);
-                dimensions.emplace(getNamespacedDimension(dimension), WorldGenerator{registry, type, dimension});
-            }
-        }
+        explicit WorldGeneratorSettings(const MinecraftRegistry &registry, const WorldGeneratorType type);
 
-        static WorldGeneratorSettings defaultWorld(const MinecraftRegistry &registry) {
-            return WorldGeneratorSettings{registry, WorldGeneratorType::NOISE};
-        }
+        static WorldGeneratorSettings defaultWorld(const MinecraftRegistry &registry);
 
-        static WorldGeneratorSettings emptyWorld(const MinecraftRegistry &registry) {
-            return WorldGeneratorSettings{registry, WorldGeneratorType::FLAT};
-        }
+        static WorldGeneratorSettings emptyWorld(const MinecraftRegistry &registry);
 
-        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override {
-            compound.put("bonus_chest", bonusChest);
-            compound.put("seed", seed);
-            compound.put("generate_features", generateFeatures);
+        auto writeCompound(const MinecraftRegistry &registry, NbtCompound &compound) const -> void override;
 
-            NbtCompound dimensionsNBT;
-            for (const auto &[dimension, generator] : dimensions)
-                dimensionsNBT.putNbt(dimension, generator.createCompound(registry));
-
-            compound.putNbt("dimensions", dimensionsNBT);
-        }
-
-        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override {
-            compound.read("bonus_chest", bonusChest);
-            compound.read("seed", seed);
-            compound.read("generate_features", generateFeatures);
-
-            const auto &dimensionsNBT = compound.readNbt<NbtCompound>("dimensions");
-            for (const auto &dimensionName : dimensionsNBT.getKeys()) {
-                const auto &generatorNBT = dimensionsNBT.readNbt<NbtCompound>(dimensionName);
-
-                WorldGenerator generator;
-                generator.readCompound(registry, generatorNBT);
-                dimensions.insert({dimensionName, generator});
-            }
-        }
+        auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
     };
 
 }

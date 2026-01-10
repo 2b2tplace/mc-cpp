@@ -39,9 +39,7 @@ namespace mc {
     };
 
     [[nodiscard]]
-    inline auto getDimensionRegionDirectory(const DimensionType type) -> const fs::path& {
-        return DIMENSION_REGION_DIRECTORIES[type];
-    }
+    auto getDimensionRegionDirectory(DimensionType type) -> const fs::path&;
 
     [[nodiscard]]
     constexpr auto getDimensionProperties(const DimensionType type) -> const DimensionProperties& {
@@ -54,21 +52,9 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline auto getDimensionType(const std::string_view name) -> DimensionType {
-        auto nameStripped = name;
-        stripMinecraftNamespace(&nameStripped);
-        for (size_t i = 0; i < DIMENSION_NAMES.size(); i++) {
-            if (DIMENSION_NAMES[i] == nameStripped)
-                return static_cast<DimensionType>(i);
-        }
-        throw std::runtime_error("Unknown dimension '" + std::string{name} + "'");
-    }
+    auto getDimensionType(std::string_view name) -> DimensionType;
 
     [[nodiscard]]
-    inline auto getNamespacedDimension(const DimensionType type) -> std::string {
-        auto dimensionName = std::string{getDimensionName(type)};
-        prependMinecraftNamespace(&dimensionName);
-        return dimensionName;
-    }
+    auto getNamespacedDimension(DimensionType type) -> std::string;
 
 }

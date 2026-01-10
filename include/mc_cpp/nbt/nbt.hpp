@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <ranges>
 #include <result.hpp>
 #include <string>
 #include <utility>
@@ -52,19 +51,11 @@ namespace mc {
         [[nodiscard]]
         virtual auto byteSize() const -> size_t = 0;
 
-        virtual auto read(std::istream& stream) -> NbtElement& {
-            return *this;
-        }
+        virtual auto read(std::istream& stream) -> NbtElement&;
 
-        virtual auto write(std::ostream& stream, const bool writeType, const bool writeName, const std::string &name) const -> void {
-            if (writeType) writeBE(stream, static_cast<int8_t>(getType()));
-            if (writeName) writeBEString(stream, name);
-        }
+        virtual auto write(std::ostream& stream, bool writeType, bool writeName, const std::string &name) const -> void;
 
-        virtual auto writeWithType(std::ostream& stream) const -> void {
-            write(stream, true, false, DEFAULT_NBT_ELEMENT_NAME);
-        }
-
+        virtual auto writeWithType(std::ostream& stream) const -> void;
     };
 
     using NbtElementPtr = std::shared_ptr<NbtElement>;
@@ -118,28 +109,17 @@ namespace mc {
         std::string value;
 
         NbtString() = default;
-        explicit NbtString(std::string value): value(std::move(value)) {}
+        explicit NbtString(std::string value);
 
         [[nodiscard]]
-        auto getType() const -> NbtType override {
-            return TypeEnum;
-        }
+        auto getType() const -> NbtType override;
 
         [[nodiscard]]
-        auto byteSize() const -> size_t override {
-            return SIZE + 2 * value.length();
-        }
+        auto byteSize() const -> size_t override;
 
-        auto read(std::istream& stream) -> NbtString& override {
-            value = readBEString(stream);
-            return *this;
-        }
+        auto read(std::istream& stream) -> NbtString& override;
 
-        auto write(std::ostream& stream, const bool writeType, const bool writeName, const std::string &name) const -> void override {
-            NbtElement::write(stream, writeType, writeName, name);
-            writeBEString(stream, value);
-        }
-
+        auto write(std::ostream& stream, bool writeType, bool writeName, const std::string &name) const -> void override;
     };
 
     class NbtEnd final : public NbtElement {
@@ -150,15 +130,10 @@ namespace mc {
         NbtEnd() = default;
 
         [[nodiscard]]
-        auto getType() const -> NbtType override {
-            return TypeEnum;
-        }
+        auto getType() const -> NbtType override;
 
         [[nodiscard]]
-        auto byteSize() const -> size_t override {
-            return SIZE;
-        }
-
+        auto byteSize() const -> size_t override;
     };
 
     template<typename T, NbtType TYPE, NbtType HELD_TYPE, size_t HELD_SIZE>
@@ -364,20 +339,13 @@ namespace mc {
         NbtType type{NbtType::END};
 
         NbtList() = default;
-        explicit NbtList(const NbtType type): type(type) {}
+        explicit NbtList(const NbtType type);
 
         [[nodiscard]]
-        auto getType() const -> NbtType override {
-            return TypeEnum;
-        }
+        auto getType() const -> NbtType override;
 
         [[nodiscard]]
-        auto byteSize() const -> size_t override {
-            auto size = SIZE + 4 * values.size();
-            for (const auto &element : values)
-                size += element->byteSize();
-            return size;
-        }
+        auto byteSize() const -> size_t override;
 
         template<typename NbtTag>
         auto add(const NbtTag &tag) -> bool {
@@ -424,14 +392,10 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto length() const -> size_t {
-            return values.size();
-        }
+        auto length() const -> size_t;
 
         [[nodiscard]]
-        auto getHeldType() const -> NbtType override {
-            return type;
-        }
+        auto getHeldType() const -> NbtType override;
 
         auto read(std::istream &stream) -> NbtList& override;
 
@@ -449,26 +413,13 @@ namespace mc {
         NbtCompound() = default;
 
         [[nodiscard]]
-        auto getType() const -> NbtType override {
-            return TypeEnum;
-        }
+        auto getType() const -> NbtType override;
 
         [[nodiscard]]
-        auto byteSize() const -> size_t override {
-            auto size = SIZE + 36 * entries.size();
-            for (const auto &[key, value] : entries)
-                size += 28 + 2 * key.length() + value->byteSize();
-            return size;
-        }
+        auto byteSize() const -> size_t override;
 
         [[nodiscard]]
-        auto getKeys() const -> std::vector<std::string> {
-            std::vector<std::string> keys;
-            keys.reserve(entries.size());
-            for (const auto &key : entries | std::views::keys)
-                keys.push_back(key);
-            return keys;
-        }
+        auto getKeys() const -> std::vector<std::string>;
 
         template<typename NbtTag>
         auto putNbt(const std::string_view key, const NbtTag &tag) -> void {
@@ -481,33 +432,19 @@ namespace mc {
         }
 
         [[nodiscard]]
-        auto at(const std::string_view key) const -> result::OptionCRef<NbtElement> {
-            if (!contains(key)) return result::None;
-            return *entries.at(key);
-        }
+        auto at(std::string_view key) const -> result::OptionCRef<NbtElement>;
 
         [[nodiscard]]
-        auto get(const std::string_view key) -> result::OptionRef<NbtElement> {
-            if (!contains(key)) return result::None;
-            return *entries[key];
-        }
+        auto get(std::string_view key) -> result::OptionRef<NbtElement>;
 
         [[nodiscard]]
-        auto getType(const std::string_view key) const -> result::Option<NbtType> {
-            return at(key).transform([](const NbtElement &element) { return element.getType(); });
-        }
+        auto getType(std::string_view key) const -> result::Option<NbtType>;
 
         [[nodiscard]]
-        auto contains(const std::string_view key) const -> bool {
-            return entries.contains(key);
-        }
+        auto contains(std::string_view key) const -> bool;
 
         [[nodiscard]]
-        auto contains(const std::string_view key, const NbtType type) const -> bool {
-            return getType(key)
-                .transform([type](const NbtType elemType) { return type == elemType; })
-                .value_or(false);
-        }
+        auto contains(std::string_view key, NbtType type) const -> bool;
 
         template<typename T>
         [[nodiscard]]
@@ -586,120 +523,12 @@ namespace mc {
     }
 
     [[nodiscard]]
-    inline auto escapeNbtString(const std::string &str, const bool alwaysEscape = true) -> std::string {
-        std::string result = " ";
-        char quoteChar{};
-
-        for (size_t i = 0; i < str.length(); i++) {
-            const auto ch = str[i];
-            if (ch == '\\') {
-                result += "\\\\";
-                continue;
-            }
-            if (ch == '"' || ch == '\'') {
-                if (!quoteChar)
-                    quoteChar = ch == '"' ? '\'' : '"';
-
-                if (ch == quoteChar)
-                    result += '\\';
-            }
-            result += ch;
-        }
-        if (!quoteChar) {
-            if (!alwaysEscape) return result.substr(1);
-            quoteChar = '"';
-        }
-
-        result[0] = quoteChar;
-        result += quoteChar;
-        return result;
-    }
+    auto escapeNbtString(const std::string &str, bool alwaysEscape = true) -> std::string;
 
     [[nodiscard]]
-    inline auto stringifyNbt(const NbtElement &element, const bool alwaysEscapeCompoundKeys = true) -> std::string {
-        switch (element.getType()) {
-            case NbtType::END:
-                return "END";
-            case NbtType::BYTE:
-                return std::to_string(get<int8_t>(element)) + "b";
-            case NbtType::SHORT:
-                return std::to_string(get<int16_t>(element)) + "s";
-            case NbtType::INT:
-                return std::to_string(get<int32_t>(element));
-            case NbtType::LONG:
-                return std::to_string(get<int64_t>(element)) + "L";
-            case NbtType::FLOAT:
-                return std::to_string(get<float>(element)) + "f";
-            case NbtType::DOUBLE:
-                return std::to_string(get<double>(element)) + "d";
-            case NbtType::BYTE_ARRAY:
-                return stringifyNbtArray<int8_t>(element, 'B', "B");
-            case NbtType::INT_ARRAY:
-                return stringifyNbtArray<int32_t>(element, 'I', "");
-            case NbtType::LONG_ARRAY:
-                return stringifyNbtArray<int64_t>(element, 'L', "L");
-            case NbtType::STRING:
-                return escapeNbtString(get<std::string>(element));
-            case NbtType::LIST: {
-                const auto &list = getAsTag<NbtList>(element);
-                std::string result = "[";
-                for (size_t i = 0; i < list.length(); i++) {
-                    if (i != 0) result += ',';
-                    result += stringifyNbt(*list.values[i], alwaysEscapeCompoundKeys);
-                }
-                result += ']';
-                return result;
-            }
-            case NbtType::COMPOUND: {
-                const auto &compound = getAsTag<NbtCompound>(element);
-                auto keys = compound.getKeys();
-                std::ranges::sort(keys);
+    auto stringifyNbt(const NbtElement &element, bool alwaysEscapeCompoundKeys = true) -> std::string;
 
-                std::string result = "{";
-                for (size_t i = 0; i < keys.size(); i++) {
-                    const auto &key = keys[i];
-                    if (i != 0) result += ',';
-                    result += escapeNbtString(key, alwaysEscapeCompoundKeys) + ':' + stringifyNbt(compound.at(key).value(), alwaysEscapeCompoundKeys);
-                }
-                result += '}';
-                return result;
-            }
-        }
-        return "";
-    }
-
-    inline auto createTag(const NbtType type) -> NbtElementPtr {
-        switch (type) {
-            case NbtType::BYTE:
-                return std::make_shared<NbtByte>();
-            case NbtType::SHORT:
-                return std::make_shared<NbtShort>();
-            case NbtType::INT:
-                return std::make_shared<NbtInt>();
-            case NbtType::LONG:
-                return std::make_shared<NbtLong>();
-            case NbtType::FLOAT:
-                return std::make_shared<NbtFloat>();
-            case NbtType::DOUBLE:
-                return std::make_shared<NbtDouble>();
-            case NbtType::BYTE_ARRAY:
-                return std::make_shared<NbtByteArray>();
-            case NbtType::STRING:
-                return std::make_shared<NbtString>();
-            case NbtType::LIST:
-                return std::make_shared<NbtList>();
-            case NbtType::COMPOUND:
-                return std::make_shared<NbtCompound>();
-            case NbtType::INT_ARRAY:
-                return std::make_shared<NbtIntArray>();
-            case NbtType::LONG_ARRAY:
-                return std::make_shared<NbtLongArray>();
-            case NbtType::END:
-                return std::make_shared<NbtEnd>();
-            default:
-                std::unreachable();
-        }
-    }
+    auto createTag(NbtType type) -> NbtElementPtr;
 
     class NbtFile final : public NbtCompound {
         static void decompressStream(std::istream& stream, std::stringstream& decompressed,

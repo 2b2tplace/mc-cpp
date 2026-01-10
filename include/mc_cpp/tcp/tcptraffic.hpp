@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <memory>
 
 namespace mc {
 
@@ -12,33 +13,19 @@ namespace mc {
     public:
         TCPTraffic() = default;
 
-        TCPTraffic(const TCPTraffic &other) {
-            parent = other.parent;
-            totalBytesSend = other.totalBytesSend.load();
-            totalBytesRecv = other.totalBytesRecv.load();
-        }
+        TCPTraffic(const TCPTraffic &other);
 
-        auto setParent(const std::shared_ptr<TCPTraffic> &parentNew) -> void {
-            parent = parentNew;
-        }
+        auto setParent(const std::shared_ptr<TCPTraffic> &parentNew) -> void;
 
-        auto incrementRecv(const size_t amount) -> void {
-            if (parent) parent->incrementRecv(amount);
-            totalBytesRecv += amount;
-        }
+        auto incrementRecv(size_t amount) -> void;
 
-        auto recv() -> size_t {
-            return totalBytesRecv;
-        }
+        [[nodiscard]]
+        auto recv() -> size_t;
 
-        auto incrementSend(const size_t amount) -> void {
-            if (parent) parent->incrementSend(amount);
-            totalBytesSend += amount;
-        }
+        auto incrementSend(size_t amount) -> void;
 
-        auto send() -> size_t {
-            return totalBytesSend;
-        }
+        [[nodiscard]]
+        auto send() -> size_t;
     };
 
 }

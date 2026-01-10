@@ -41,16 +41,7 @@ namespace mc {
     };
 
     [[nodiscard]]
-    inline auto getBiomeType(const std::string &biomeTypeName) -> BiomeEnvironment {
-        auto biomeType = BiomeEnvironment::DEFAULT;
-        for (size_t i = 0; i < BIOME_ENVIRONMENT_COUNT; i++) {
-            if (BiomeTypeNames.at(i) == biomeTypeName) {
-                biomeType = static_cast<BiomeEnvironment>(i);
-                break;
-            }
-        }
-        return biomeType;
-    }
+    auto getBiomeType(const std::string &biomeTypeName) -> BiomeEnvironment;
 
     struct BiomeProperties {
         BiomeEnvironment environment{};

@@ -492,7 +492,7 @@ std::array<char, 256> constexpr encode_table_1 = {
 }  // namespace detail
 
 template <class OutputBuffer, class InputIterator>
-inline OutputBuffer encode_into(InputIterator begin, InputIterator end) {
+ OutputBuffer encode_into(InputIterator begin, InputIterator end) {
   typedef std::decay_t<decltype(*begin)> input_value_type;
   static_assert(std::is_same_v<input_value_type, char> ||
                 std::is_same_v<input_value_type, signed char> ||
@@ -554,7 +554,7 @@ inline OutputBuffer encode_into(InputIterator begin, InputIterator end) {
 }
 
 template <class OutputBuffer>
-inline OutputBuffer encode_into(std::string_view data) {
+ OutputBuffer encode_into(std::string_view data) {
   return encode_into<OutputBuffer>(std::begin(data), std::end(data));
 }
 
@@ -563,7 +563,7 @@ inline std::string to_base64(std::string_view data) {
 }
 
 template <class OutputBuffer>
-inline OutputBuffer decode_into(std::string_view base64Text) {
+ OutputBuffer decode_into(std::string_view base64Text) {
   typedef typename OutputBuffer::value_type output_value_type;
   static_assert(std::is_same_v<output_value_type, char> ||
                 std::is_same_v<output_value_type, signed char> ||
@@ -678,7 +678,7 @@ inline OutputBuffer decode_into(std::string_view base64Text) {
 }
 
 template <class OutputBuffer, class InputIterator>
-inline OutputBuffer decode_into(InputIterator begin, InputIterator end) {
+ OutputBuffer decode_into(InputIterator begin, InputIterator end) {
   typedef std::decay_t<decltype(*begin)> input_value_type;
   static_assert(std::is_same_v<input_value_type, char> ||
                 std::is_same_v<input_value_type, signed char> ||
