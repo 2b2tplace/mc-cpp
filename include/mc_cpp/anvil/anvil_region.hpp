@@ -47,7 +47,7 @@ namespace mc::anvil {
         static auto bytesToInt(const std::span<uint8_t> &arr, size_t start, const size_t end) -> uint32_t ;
 
         [[nodiscard]]
-        auto absoluteChunkPos(const Pos &chunkPos) const;
+        auto absoluteChunkPos(const Pos &chunkPos) const -> Pos;
 
         [[nodiscard]]
         auto createChunk(const int32_t chunkX, const int32_t chunkZ, const int32_t minY, const MinecraftRegistry &registry) const -> NbtFile ;

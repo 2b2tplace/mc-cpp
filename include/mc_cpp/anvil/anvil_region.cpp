@@ -21,7 +21,7 @@ namespace mc {
         return res;
     }
 
-    auto anvil::Region::absoluteChunkPos(const Pos &chunkPos) const {
+    auto anvil::Region::absoluteChunkPos(const Pos &chunkPos) const -> Pos {
         return Pos {
             pos.x * REGION_SIDELENGTH_CHUNKS + chunkPos.localX(REGION_SIDELENGTH_CHUNKS),
             pos.z * REGION_SIDELENGTH_CHUNKS + chunkPos.localZ(REGION_SIDELENGTH_CHUNKS)
