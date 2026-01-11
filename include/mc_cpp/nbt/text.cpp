@@ -106,8 +106,8 @@ namespace mc {
             case TextClickAction::SUGGEST_COMMAND: return "suggest_command";
             case TextClickAction::CHANGE_PAGE: return "change_page";
             case TextClickAction::COPY_TO_CLIPBOARD: return "copy_to_clipboard";
+            default: std::unreachable();
         }
-        assert(false && "unreachable");
     }
 
     void TextClickEvent::writeToNbt(NbtCompound &compound) const {
