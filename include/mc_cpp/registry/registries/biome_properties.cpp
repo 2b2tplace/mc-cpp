@@ -17,6 +17,9 @@ namespace mc {
     }
 
     auto BiomePropertyRegistry::biomeProperties(const uint8_t id) const -> const BiomeProperties& {
+        if (!properties.contains(id))
+            return MISSING_BIOME;
+
         return properties.at(id);
     }
 
@@ -25,10 +28,16 @@ namespace mc {
     }
 
     auto BiomePropertyRegistry::biomeType(const std::string_view biomeName) const -> BiomeType {
+        if (!biomeIdByName.contains(biomeName))
+            return MISSING_BIOME_TYPE;
+
         return biomeIdByName.at(biomeName);
     }
 
     auto BiomePropertyRegistry::biomeName(const BiomeType biomeType) const -> const std::string& {
+        if (!biomeNameById.contains(biomeType))
+            return MISSING_BIOME_NAME;
+
         return biomeNameById.at(biomeType);
     }
 }

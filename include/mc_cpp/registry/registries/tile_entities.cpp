@@ -15,6 +15,9 @@ namespace mc {
     }
 
     auto TileEntityRegistry::tileEntity(const uint16_t tileEntityId) const -> const TileEntityEntry& {
+        if (!tileEntitiesById.contains(tileEntityId))
+            return MISSING_TILE_ENTITY;
+
         return tileEntitiesById.at(tileEntityId);
     }
 
@@ -23,6 +26,9 @@ namespace mc {
     }
 
     auto TileEntityRegistry::tileEntityId(const std::string_view tileEntityName) const -> uint16_t {
+        if (!tileEntityIdsByName.contains(tileEntityName))
+            return MISSING_TILE_ENTITY_TYPE;
+
         return tileEntityIdsByName.at(tileEntityName);
     }
 

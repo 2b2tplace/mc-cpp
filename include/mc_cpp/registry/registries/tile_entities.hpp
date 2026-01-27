@@ -14,6 +14,10 @@ namespace mc {
         DECLARE_ENTRY_BACKEND;
     };
 
+    static constexpr uint16_t MISSING_TILE_ENTITY_TYPE = UINT16_MAX;
+    static const std::string MISSING_TILE_ENTITY_NAME = ":unknown";
+    static const auto MISSING_TILE_ENTITY = TileEntityEntry {.id = MISSING_TILE_ENTITY_TYPE, .name = MISSING_TILE_ENTITY_NAME};
+
     DECLARE_ENTRY_FROM_JSON(TileEntityEntry);
     DECLARE_ENTRY_TO_JSON(TileEntityEntry);
 

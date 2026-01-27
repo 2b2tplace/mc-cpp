@@ -43,7 +43,11 @@ namespace mc {
     }
 
     auto BiomeRegistry::biomeWaterColor(const BiomeEnvironment biomeEnv) const -> const RGBA& {
-        return biomeColors.water[static_cast<size_t>(biomeEnv)];
+        const auto biomeIndex = static_cast<size_t>(biomeEnv);
+        if (biomeIndex < 0 || biomeIndex >= biomeColors.water.size())
+            return WHITE;
+
+        return biomeColors.water[biomeIndex];
     }
 
     auto BiomeRegistry::biomeWaterColor(const BiomeProperties &properties) const -> const RGBA& {

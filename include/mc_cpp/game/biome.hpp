@@ -8,6 +8,9 @@ namespace mc {
 
     using BiomeType = uint8_t;
 
+    static constexpr BiomeType MISSING_BIOME_TYPE = UINT8_MAX;
+    static const std::string MISSING_BIOME_NAME = ":unknown";
+
     enum class BiomeEnvironment {
         DEFAULT = 0,
         SWAMP,
@@ -49,5 +52,7 @@ namespace mc {
         float temperature{};
         float downfall{};
     };
+
+    static constexpr auto MISSING_BIOME = BiomeProperties{.environment = BiomeEnvironment::COUNT_};
 
 }
