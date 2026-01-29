@@ -20,17 +20,17 @@ namespace mc {
     }
 
     MinecraftRegistry::MinecraftRegistry(const SupportedMinecraftVersion version,
-                              const Registry<BiomeColorEntry> &foliageColors,
-                              const Registry<BiomeColorEntry> &grassColors,
-                              const Registry<BiomeColorEntry> &waterColors,
-                              const Registry<ColorTriangleEntry> &colorTriangles,
-                              const Registry<BiomePropertyEntry> &biomePropertyRegistry,
-                              const Registry<BlockStateEntry> &blockStateRegistry,
-                              const Registry<TileEntityEntry> &tileEntityRegistry):
-       version(version),
-       biomes(BiomeRegistry { foliageColors, grassColors, waterColors, colorTriangles, biomePropertyRegistry }),
-       blocks(BlockRegistry { blockStateRegistry }),
-       tileEntities(TileEntityRegistry { tileEntityRegistry }) {
+                                         const Registry<BiomeColorEntry> &foliageColors,
+                                         const Registry<BiomeColorEntry> &grassColors,
+                                         const Registry<BiomeColorEntry> &waterColors,
+                                         const Registry<ColorTriangleEntry> &colorTriangles,
+                                         const Registry<BiomePropertyEntry> &biomePropertyRegistry,
+                                         const Registry<BlockStateEntry> &blockStateRegistry,
+                                         const Registry<TileEntityEntry> &tileEntityRegistry):
+        version(version),
+        biomes(BiomeRegistry { foliageColors, grassColors, waterColors, colorTriangles, biomePropertyRegistry }),
+        blocks(BlockRegistry { blockStateRegistry }),
+        tileEntities(TileEntityRegistry { tileEntityRegistry }) {
 
         waterBlock = blocks.blockType("water");
         grassBlock = blocks.blockType("grass_block");
@@ -40,6 +40,17 @@ namespace mc {
 
             for (BlockState b = min; b <= max; b++)
                 foliage.emplace(b);
+        }
+        for (auto &tileEntity : tileEntities.tileEntitiesById | std::views::values) {
+            tileEntity.blockStates.reserve(tileEntity.blockTypes.size());
+            for (const auto &block : tileEntity.blockTypes) {
+                const auto [min, max] = blockType(block);
+                if (min == MISSING_BLOCK_STATE) continue;
+
+                for (BlockState state = min; state <= max; state++) {
+                    tileEntity.blockStates.emplace(state);
+                }
+            }
         }
     }
 

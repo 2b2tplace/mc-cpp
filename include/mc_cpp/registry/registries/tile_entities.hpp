@@ -3,15 +3,20 @@
 #include <string>
 #include <mc_cpp/common/macro_magic.hpp>
 #include <mc_cpp/common/json.hpp>
+#include <mc_cpp/game/block.hpp>
 #include <mc_cpp/registry/registry.hpp>
+#include <absl/container/flat_hash_set.h>
 #include <absl/container/flat_hash_map.h>
 
 namespace mc {
     struct TileEntityEntry {
         NAMED_FIELD(uint16_t, id);
         NAMED_FIELD(std::string, name);
+        NAMED_FIELD(std::vector<std::string>, blockTypes);
 
         DECLARE_ENTRY_BACKEND;
+
+        absl::flat_hash_set<BlockState> blockStates;
     };
 
     static constexpr uint16_t MISSING_TILE_ENTITY_TYPE = UINT16_MAX;

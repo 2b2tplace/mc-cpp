@@ -1,170 +1,419 @@
 {
-	"type": "tile_entities",
-	"protocolVersion": 765,
-	"entries": [
-		{
-			"id": 0,
-			"name": "furnace"
-		},
-		{
-			"id": 1,
-			"name": "chest"
-		},
-		{
-			"id": 2,
-			"name": "trapped_chest"
-		},
-		{
-			"id": 3,
-			"name": "ender_chest"
-		},
-		{
-			"id": 4,
-			"name": "jukebox"
-		},
-		{
-			"id": 5,
-			"name": "dispenser"
-		},
-		{
-			"id": 6,
-			"name": "dropper"
-		},
-		{
-			"id": 7,
-			"name": "sign"
-		},
-		{
-			"id": 8,
-			"name": "hanging_sign"
-		},
-		{
-			"id": 9,
-			"name": "mob_spawner"
-		},
-		{
-			"id": 10,
-			"name": "piston"
-		},
-		{
-			"id": 11,
-			"name": "brewing_stand"
-		},
-		{
-			"id": 12,
-			"name": "enchanting_table"
-		},
-		{
-			"id": 13,
-			"name": "end_portal"
-		},
-		{
-			"id": 14,
-			"name": "beacon"
-		},
-		{
-			"id": 15,
-			"name": "skull"
-		},
-		{
-			"id": 16,
-			"name": "daylight_detector"
-		},
-		{
-			"id": 17,
-			"name": "hopper"
-		},
-		{
-			"id": 18,
-			"name": "comparator"
-		},
-		{
-			"id": 19,
-			"name": "banner"
-		},
-		{
-			"id": 20,
-			"name": "structure_block"
-		},
-		{
-			"id": 21,
-			"name": "end_gateway"
-		},
-		{
-			"id": 22,
-			"name": "command_block"
-		},
-		{
-			"id": 23,
-			"name": "shulker_box"
-		},
-		{
-			"id": 24,
-			"name": "bed"
-		},
-		{
-			"id": 25,
-			"name": "conduit"
-		},
-		{
-			"id": 26,
-			"name": "barrel"
-		},
-		{
-			"id": 27,
-			"name": "smoker"
-		},
-		{
-			"id": 28,
-			"name": "blast_furnace"
-		},
-		{
-			"id": 29,
-			"name": "lectern"
-		},
-		{
-			"id": 30,
-			"name": "bell"
-		},
-		{
-			"id": 31,
-			"name": "jigsaw"
-		},
-		{
-			"id": 32,
-			"name": "campfire"
-		},
-		{
-			"id": 33,
-			"name": "beehive"
-		},
-		{
-			"id": 34,
-			"name": "sculk_sensor"
-		},
-		{
-			"id": 35,
-			"name": "calibrated_sculk_sensor"
-		},
-		{
-			"id": 36,
-			"name": "sculk_catalyst"
-		},
-		{
-			"id": 37,
-			"name": "sculk_shrieker"
-		},
-		{
-			"id": 38,
-			"name": "chiseled_bookshelf"
-		},
-		{
-			"id": 39,
-			"name": "brushable_block"
-		},
-		{
-			"id": 40,
-			"name": "decorated_pot"
-		}
-	]
+    "type": "tile_entities",
+    "protocolVersion": 765,
+    "entries": [
+        {
+            "id": 0,
+            "name": "furnace",
+            "blockTypes": [
+                "furnace"
+            ]
+        },
+        {
+            "id": 1,
+            "name": "chest",
+            "blockTypes": [
+                "chest"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "trapped_chest",
+            "blockTypes": [
+                "trapped_chest"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "ender_chest",
+            "blockTypes": [
+                "ender_chest"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "jukebox",
+            "blockTypes": [
+                "jukebox"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "dispenser",
+            "blockTypes": [
+                "dispenser"
+            ]
+        },
+        {
+            "id": 6,
+            "name": "dropper",
+            "blockTypes": [
+                "dropper"
+            ]
+        },
+        {
+            "id": 7,
+            "name": "sign",
+            "blockTypes": [
+                "oak_sign",
+                "spruce_sign",
+                "birch_sign",
+                "acacia_sign",
+                "cherry_sign",
+                "jungle_sign",
+                "dark_oak_sign",
+                "pale_oak_sign",
+                "oak_wall_sign",
+                "spruce_wall_sign",
+                "birch_wall_sign",
+                "acacia_wall_sign",
+                "cherry_wall_sign",
+                "jungle_wall_sign",
+                "dark_oak_wall_sign",
+                "pale_oak_wall_sign",
+                "crimson_sign",
+                "crimson_wall_sign",
+                "warped_sign",
+                "warped_wall_sign",
+                "mangrove_sign",
+                "mangrove_wall_sign",
+                "bamboo_sign",
+                "bamboo_wall_sign"
+            ]
+        },
+        {
+            "id": 8,
+            "name": "hanging_sign",
+            "blockTypes": [
+                "oak_hanging_sign",
+                "spruce_hanging_sign",
+                "birch_hanging_sign",
+                "acacia_hanging_sign",
+                "cherry_hanging_sign",
+                "jungle_hanging_sign",
+                "dark_oak_hanging_sign",
+                "pale_oak_hanging_sign",
+                "crimson_hanging_sign",
+                "warped_hanging_sign",
+                "mangrove_hanging_sign",
+                "bamboo_hanging_sign",
+                "oak_wall_hanging_sign",
+                "spruce_wall_hanging_sign",
+                "birch_wall_hanging_sign",
+                "acacia_wall_hanging_sign",
+                "cherry_wall_hanging_sign",
+                "jungle_wall_hanging_sign",
+                "dark_oak_wall_hanging_sign",
+                "pale_oak_wall_hanging_sign",
+                "crimson_wall_hanging_sign",
+                "warped_wall_hanging_sign",
+                "mangrove_wall_hanging_sign",
+                "bamboo_wall_hanging_sign"
+            ]
+        },
+        {
+            "id": 9,
+            "name": "mob_spawner",
+            "blockTypes": [
+                "spawner"
+            ]
+        },
+        {
+            "id": 10,
+            "name": "piston",
+            "blockTypes": [
+                "moving_piston"
+            ]
+        },
+        {
+            "id": 11,
+            "name": "brewing_stand",
+            "blockTypes": [
+                "brewing_stand"
+            ]
+        },
+        {
+            "id": 12,
+            "name": "enchanting_table",
+            "blockTypes": [
+                "enchanting_table"
+            ]
+        },
+        {
+            "id": 13,
+            "name": "end_portal",
+            "blockTypes": [
+                "end_portal"
+            ]
+        },
+        {
+            "id": 14,
+            "name": "beacon",
+            "blockTypes": [
+                "beacon"
+            ]
+        },
+        {
+            "id": 15,
+            "name": "skull",
+            "blockTypes": [
+                "skeleton_skull",
+                "skeleton_wall_skull",
+                "creeper_head",
+                "creeper_wall_head",
+                "dragon_head",
+                "dragon_wall_head",
+                "zombie_head",
+                "zombie_wall_head",
+                "wither_skeleton_skull",
+                "wither_skeleton_wall_skull",
+                "player_head",
+                "player_wall_head",
+                "piglin_head",
+                "piglin_wall_head"
+            ]
+        },
+        {
+            "id": 16,
+            "name": "daylight_detector",
+            "blockTypes": [
+                "daylight_detector"
+            ]
+        },
+        {
+            "id": 17,
+            "name": "hopper",
+            "blockTypes": [
+                "hopper"
+            ]
+        },
+        {
+            "id": 18,
+            "name": "comparator",
+            "blockTypes": [
+                "comparator"
+            ]
+        },
+        {
+            "id": 19,
+            "name": "banner",
+            "blockTypes": [
+                "white_banner",
+                "orange_banner",
+                "magenta_banner",
+                "light_blue_banner",
+                "yellow_banner",
+                "lime_banner",
+                "pink_banner",
+                "gray_banner",
+                "light_gray_banner",
+                "cyan_banner",
+                "purple_banner",
+                "blue_banner",
+                "brown_banner",
+                "green_banner",
+                "red_banner",
+                "black_banner",
+                "white_wall_banner",
+                "orange_wall_banner",
+                "magenta_wall_banner",
+                "light_blue_wall_banner",
+                "yellow_wall_banner",
+                "lime_wall_banner",
+                "pink_wall_banner",
+                "gray_wall_banner",
+                "light_gray_wall_banner",
+                "cyan_wall_banner",
+                "purple_wall_banner",
+                "blue_wall_banner",
+                "brown_wall_banner",
+                "green_wall_banner",
+                "red_wall_banner",
+                "black_wall_banner"
+            ]
+        },
+        {
+            "id": 20,
+            "name": "structure_block",
+            "blockTypes": [
+                "structure_block"
+            ]
+        },
+        {
+            "id": 21,
+            "name": "end_gateway",
+            "blockTypes": [
+                "end_gateway"
+            ]
+        },
+        {
+            "id": 22,
+            "name": "command_block",
+            "blockTypes": [
+                "command_block",
+                "chain_command_block",
+                "repeating_command_block"
+            ]
+        },
+        {
+            "id": 23,
+            "name": "shulker_box",
+            "blockTypes": [
+                "shulker_box",
+                "black_shulker_box",
+                "blue_shulker_box",
+                "brown_shulker_box",
+                "cyan_shulker_box",
+                "gray_shulker_box",
+                "green_shulker_box",
+                "light_blue_shulker_box",
+                "light_gray_shulker_box",
+                "lime_shulker_box",
+                "magenta_shulker_box",
+                "orange_shulker_box",
+                "pink_shulker_box",
+                "purple_shulker_box",
+                "red_shulker_box",
+                "white_shulker_box",
+                "yellow_shulker_box"
+            ]
+        },
+        {
+            "id": 24,
+            "name": "bed",
+            "blockTypes": [
+                "red_bed",
+                "black_bed",
+                "blue_bed",
+                "brown_bed",
+                "cyan_bed",
+                "gray_bed",
+                "green_bed",
+                "light_blue_bed",
+                "light_gray_bed",
+                "lime_bed",
+                "magenta_bed",
+                "orange_bed",
+                "pink_bed",
+                "purple_bed",
+                "white_bed",
+                "yellow_bed"
+            ]
+        },
+        {
+            "id": 25,
+            "name": "conduit",
+            "blockTypes": [
+                "conduit"
+            ]
+        },
+        {
+            "id": 26,
+            "name": "barrel",
+            "blockTypes": [
+                "barrel"
+            ]
+        },
+        {
+            "id": 27,
+            "name": "smoker",
+            "blockTypes": [
+                "smoker"
+            ]
+        },
+        {
+            "id": 28,
+            "name": "blast_furnace",
+            "blockTypes": [
+                "blast_furnace"
+            ]
+        },
+        {
+            "id": 29,
+            "name": "lectern",
+            "blockTypes": [
+                "lectern"
+            ]
+        },
+        {
+            "id": 30,
+            "name": "bell",
+            "blockTypes": [
+                "bell"
+            ]
+        },
+        {
+            "id": 31,
+            "name": "jigsaw",
+            "blockTypes": [
+                "jigsaw"
+            ]
+        },
+        {
+            "id": 32,
+            "name": "campfire",
+            "blockTypes": [
+                "campfire",
+                "soul_campfire"
+            ]
+        },
+        {
+            "id": 33,
+            "name": "beehive",
+            "blockTypes": [
+                "bee_nest",
+                "beehive"
+            ]
+        },
+        {
+            "id": 34,
+            "name": "sculk_sensor",
+            "blockTypes": [
+                "sculk_sensor"
+            ]
+        },
+        {
+            "id": 35,
+            "name": "calibrated_sculk_sensor",
+            "blockTypes": [
+                "calibrated_sculk_sensor"
+            ]
+        },
+        {
+            "id": 36,
+            "name": "sculk_catalyst",
+            "blockTypes": [
+                "sculk_catalyst"
+            ]
+        },
+        {
+            "id": 37,
+            "name": "sculk_shrieker",
+            "blockTypes": [
+                "sculk_shrieker"
+            ]
+        },
+        {
+            "id": 38,
+            "name": "chiseled_bookshelf",
+            "blockTypes": [
+                "chiseled_bookshelf"
+            ]
+        },
+        {
+            "id": 39,
+            "name": "brushable_block",
+            "blockTypes": [
+                "suspicious_sand",
+                "suspicious_gravel"
+            ]
+        },
+        {
+            "id": 40,
+            "name": "decorated_pot",
+            "blockTypes": [
+                "decorated_pot"
+            ]
+        }
+    ]
 }

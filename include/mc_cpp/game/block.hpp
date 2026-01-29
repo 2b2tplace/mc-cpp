@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <ostream>
 #include <mc_cpp/common/color.hpp>
+#include <absl/container/flat_hash_map.h>
 
 namespace mc {
 

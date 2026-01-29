@@ -4,183 +4,444 @@
 	"entries": [
 		{
 			"id": 0,
-			"name": "furnace"
+			"name": "furnace",
+            "blockTypes": [
+                "furnace"
+            ]
 		},
 		{
 			"id": 1,
-			"name": "chest"
+			"name": "chest",
+            "blockTypes": [
+                "chest"
+            ]
 		},
 		{
 			"id": 2,
-			"name": "trapped_chest"
+			"name": "trapped_chest",
+            "blockTypes": [
+                "trapped_chest"
+            ]
 		},
 		{
 			"id": 3,
-			"name": "ender_chest"
+			"name": "ender_chest",
+            "blockTypes": [
+                "ender_chest"
+            ]
 		},
 		{
 			"id": 4,
-			"name": "jukebox"
+			"name": "jukebox",
+            "blockTypes": [
+                "jukebox"
+            ]
 		},
 		{
 			"id": 5,
-			"name": "dispenser"
+			"name": "dispenser",
+            "blockTypes": [
+                "dispenser"
+            ]
 		},
 		{
 			"id": 6,
-			"name": "dropper"
+			"name": "dropper",
+            "blockTypes": [
+                "dropper"
+            ]
 		},
 		{
 			"id": 7,
-			"name": "sign"
+			"name": "sign",
+            "blockTypes": [
+                "oak_sign",
+                "spruce_sign",
+                "birch_sign",
+                "acacia_sign",
+                "cherry_sign",
+                "jungle_sign",
+                "dark_oak_sign",
+                "pale_oak_sign",
+                "oak_wall_sign",
+                "spruce_wall_sign",
+                "birch_wall_sign",
+                "acacia_wall_sign",
+                "cherry_wall_sign",
+                "jungle_wall_sign",
+                "dark_oak_wall_sign",
+                "pale_oak_wall_sign",
+                "crimson_sign",
+                "crimson_wall_sign",
+                "warped_sign",
+                "warped_wall_sign",
+                "mangrove_sign",
+                "mangrove_wall_sign",
+                "bamboo_sign",
+                "bamboo_wall_sign"
+            ]
 		},
 		{
 			"id": 8,
-			"name": "hanging_sign"
+			"name": "hanging_sign",
+            "blockTypes": [
+                "oak_hanging_sign",
+                "spruce_hanging_sign",
+                "birch_hanging_sign",
+                "acacia_hanging_sign",
+                "cherry_hanging_sign",
+                "jungle_hanging_sign",
+                "dark_oak_hanging_sign",
+                "pale_oak_hanging_sign",
+                "crimson_hanging_sign",
+                "warped_hanging_sign",
+                "mangrove_hanging_sign",
+                "bamboo_hanging_sign",
+                "oak_wall_hanging_sign",
+                "spruce_wall_hanging_sign",
+                "birch_wall_hanging_sign",
+                "acacia_wall_hanging_sign",
+                "cherry_wall_hanging_sign",
+                "jungle_wall_hanging_sign",
+                "dark_oak_wall_hanging_sign",
+                "pale_oak_wall_hanging_sign",
+                "crimson_wall_hanging_sign",
+                "warped_wall_hanging_sign",
+                "mangrove_wall_hanging_sign",
+                "bamboo_wall_hanging_sign"
+            ]
 		},
 		{
 			"id": 9,
-			"name": "mob_spawner"
+			"name": "mob_spawner",
+            "blockTypes": [
+                "spawner"
+            ]
 		},
 		{
 			"id": 10,
-			"name": "creaking_heart"
+			"name": "creaking_heart",
+            "blockTypes": [
+                "creaking_heart"
+            ]
 		},
 		{
 			"id": 11,
-			"name": "piston"
+			"name": "piston",
+            "blockTypes": [
+                "moving_piston"
+            ]
 		},
 		{
 			"id": 12,
-			"name": "brewing_stand"
+			"name": "brewing_stand",
+            "blockTypes": [
+                "brewing_stand"
+            ]
 		},
 		{
 			"id": 13,
-			"name": "enchanting_table"
+			"name": "enchanting_table",
+            "blockTypes": [
+                "enchanting_table"
+            ]
 		},
 		{
 			"id": 14,
-			"name": "end_portal"
+			"name": "end_portal",
+            "blockTypes": [
+                "end_portal"
+            ]
 		},
 		{
 			"id": 15,
-			"name": "beacon"
+			"name": "beacon",
+            "blockTypes": [
+                "beacon"
+            ]
 		},
 		{
 			"id": 16,
-			"name": "skull"
+			"name": "skull",
+            "blockTypes": [
+                "skeleton_skull",
+                "skeleton_wall_skull",
+                "creeper_head",
+                "creeper_wall_head",
+                "dragon_head",
+                "dragon_wall_head",
+                "zombie_head",
+                "zombie_wall_head",
+                "wither_skeleton_skull",
+                "wither_skeleton_wall_skull",
+                "player_head",
+                "player_wall_head",
+                "piglin_head",
+                "piglin_wall_head"
+            ]
 		},
 		{
 			"id": 17,
-			"name": "daylight_detector"
+			"name": "daylight_detector",
+            "blockTypes": [
+                "daylight_detector"
+            ]
 		},
 		{
 			"id": 18,
-			"name": "hopper"
+			"name": "hopper",
+            "blockTypes": [
+                "hopper"
+            ]
 		},
 		{
 			"id": 19,
-			"name": "comparator"
+			"name": "comparator",
+            "blockTypes": [
+                "comparator"
+            ]
 		},
 		{
 			"id": 20,
-			"name": "banner"
+			"name": "banner",
+            "blockTypes": [
+                "white_banner",
+                "orange_banner",
+                "magenta_banner",
+                "light_blue_banner",
+                "yellow_banner",
+                "lime_banner",
+                "pink_banner",
+                "gray_banner",
+                "light_gray_banner",
+                "cyan_banner",
+                "purple_banner",
+                "blue_banner",
+                "brown_banner",
+                "green_banner",
+                "red_banner",
+                "black_banner",
+                "white_wall_banner",
+                "orange_wall_banner",
+                "magenta_wall_banner",
+                "light_blue_wall_banner",
+                "yellow_wall_banner",
+                "lime_wall_banner",
+                "pink_wall_banner",
+                "gray_wall_banner",
+                "light_gray_wall_banner",
+                "cyan_wall_banner",
+                "purple_wall_banner",
+                "blue_wall_banner",
+                "brown_wall_banner",
+                "green_wall_banner",
+                "red_wall_banner",
+                "black_wall_banner"
+            ]
 		},
 		{
 			"id": 21,
-			"name": "structure_block"
+			"name": "structure_block",
+            "blockTypes": [
+                "structure_block"
+            ]
 		},
 		{
 			"id": 22,
-			"name": "end_gateway"
+			"name": "end_gateway",
+            "blockTypes": [
+                "end_gateway"
+            ]
 		},
 		{
 			"id": 23,
-			"name": "command_block"
+			"name": "command_block",
+            "blockTypes": [
+                "command_block",
+                "chain_command_block",
+                "repeating_command_block"
+            ]
 		},
 		{
 			"id": 24,
-			"name": "shulker_box"
+			"name": "shulker_box",
+            "blockTypes": [
+                "shulker_box",
+                "black_shulker_box",
+                "blue_shulker_box",
+                "brown_shulker_box",
+                "cyan_shulker_box",
+                "gray_shulker_box",
+                "green_shulker_box",
+                "light_blue_shulker_box",
+                "light_gray_shulker_box",
+                "lime_shulker_box",
+                "magenta_shulker_box",
+                "orange_shulker_box",
+                "pink_shulker_box",
+                "purple_shulker_box",
+                "red_shulker_box",
+                "white_shulker_box",
+                "yellow_shulker_box"
+            ]
 		},
 		{
 			"id": 25,
-			"name": "bed"
+			"name": "bed",
+            "blockTypes": [
+                "red_bed",
+                "black_bed",
+                "blue_bed",
+                "brown_bed",
+                "cyan_bed",
+                "gray_bed",
+                "green_bed",
+                "light_blue_bed",
+                "light_gray_bed",
+                "lime_bed",
+                "magenta_bed",
+                "orange_bed",
+                "pink_bed",
+                "purple_bed",
+                "white_bed",
+                "yellow_bed"
+            ]
 		},
 		{
 			"id": 26,
-			"name": "conduit"
+			"name": "conduit",
+            "blockTypes": [
+                "conduit"
+            ]
 		},
 		{
 			"id": 27,
-			"name": "barrel"
+			"name": "barrel",
+            "blockTypes": [
+                "barrel"
+            ]
 		},
 		{
 			"id": 28,
-			"name": "smoker"
+			"name": "smoker",
+            "blockTypes": [
+                "smoker"
+            ]
 		},
 		{
 			"id": 29,
-			"name": "blast_furnace"
+			"name": "blast_furnace",
+            "blockTypes": [
+                "blast_furnace"
+            ]
 		},
 		{
 			"id": 30,
-			"name": "lectern"
+			"name": "lectern",
+            "blockTypes": [
+                "lectern"
+            ]
 		},
 		{
 			"id": 31,
-			"name": "bell"
+			"name": "bell",
+            "blockTypes": [
+                "bell"
+            ]
 		},
 		{
 			"id": 32,
-			"name": "jigsaw"
+			"name": "jigsaw",
+            "blockTypes": [
+                "jigsaw"
+            ]
 		},
 		{
 			"id": 33,
-			"name": "campfire"
+			"name": "campfire",
+            "blockTypes": [
+                "campfire",
+                "soul_campfire"
+            ]
 		},
 		{
 			"id": 34,
-			"name": "beehive"
+			"name": "beehive",
+            "blockTypes": [
+                "bee_nest",
+                "beehive"
+            ]
 		},
 		{
 			"id": 35,
-			"name": "sculk_sensor"
+			"name": "sculk_sensor",
+            "blockTypes": [
+                "sculk_sensor"
+            ]
 		},
 		{
 			"id": 36,
-			"name": "calibrated_sculk_sensor"
+			"name": "calibrated_sculk_sensor",
+            "blockTypes": [
+                "calibrated_sculk_sensor"
+            ]
 		},
 		{
 			"id": 37,
-			"name": "sculk_catalyst"
+			"name": "sculk_catalyst",
+            "blockTypes": [
+                "sculk_catalyst"
+            ]
 		},
 		{
 			"id": 38,
-			"name": "sculk_shrieker"
+			"name": "sculk_shrieker",
+            "blockTypes": [
+                "sculk_shrieker"
+            ]
 		},
 		{
 			"id": 39,
-			"name": "chiseled_bookshelf"
+			"name": "chiseled_bookshelf",
+            "blockTypes": [
+                "chiseled_bookshelf"
+            ]
 		},
 		{
 			"id": 40,
-			"name": "brushable_block"
+			"name": "brushable_block",
+            "blockTypes": [
+                "suspicious_sand",
+                "suspicious_gravel"
+            ]
 		},
 		{
 			"id": 41,
-			"name": "decorated_pot"
+			"name": "decorated_pot",
+            "blockTypes": [
+                "decorated_pot"
+            ]
 		},
 		{
 			"id": 42,
-			"name": "crafter"
+			"name": "crafter",
+            "blockTypes": [
+                "crafter"
+            ]
 		},
 		{
 			"id": 43,
-			"name": "trial_spawner"
+			"name": "trial_spawner",
+            "blockTypes": [
+                "trial_spawner"
+            ]
 		},
 		{
 			"id": 44,
-			"name": "vault"
+			"name": "vault",
+            "blockTypes": [
+                "vault"
+            ]
 		}
 	]
 }
