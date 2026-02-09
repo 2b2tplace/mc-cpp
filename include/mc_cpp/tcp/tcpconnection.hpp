@@ -119,9 +119,12 @@ namespace mc {
         int32_t compressionThreshold{-1};
         std::shared_ptr<AESContext> aesContext;
         std::shared_ptr<TCPTraffic> measureTraffic;
+        std::function<auto (int, const std::string&) -> void> onSendError;
 
         explicit TCPConnection(Logger &logger, const std::shared_ptr<TCPSocket<>> &socket):
-            logger(logger), socket(socket) {}
+        logger(logger), socket(socket), onSendError([this](const auto errorCode, const auto&) {
+            this->logger.template log<ERROR>("Failed to send packet: errno = {}", errorCode);
+        }) {}
 
         auto sendPacket(const pc::Packet &packet) const -> void {
             ByteBuf packetBuffer;
@@ -131,6 +134,29 @@ namespace mc {
 
         auto sendPacketWithCompression(const ByteBuf &packetBuffer) const -> void {
             sendRawPacket(compressPacketIfNeeded(packetBuffer));
+        }
+
+        auto sendRawPacket(const ByteBuf &packetWithID) const -> void {
+            const auto packetLength = static_cast<int>(packetWithID.size());
+
+            ByteBuf packetBuffer;
+            pc::WriteData<pc::VarInt>(packetLength, packetBuffer);
+            pc::WriteByteArray(packetWithID, packetBuffer);
+
+            logger.log<DEBUG>("Sending packet to {}bound with encryption enabled = {}", Side::source,
+                              aesContext != nullptr);
+
+            // AES encryption does not change the packet size, just calculate here
+            if (measureTraffic)
+                measureTraffic->incrementSend(packetBuffer.size());
+
+            if (!aesContext) {
+                socket->sockSend(packetBuffer, onSendError);
+                return;
+            }
+            const auto encrypted = aesContext->encrypt(packetBuffer);
+            logger.log<DEBUG>("Sending encrypted packet with length {}", encrypted.size());
+            socket->sockSend(encrypted, onSendError);
         }
 
         auto compressPacketIfNeeded(const ByteBuf &packetBuffer) const -> ByteBuf {
@@ -226,29 +252,6 @@ namespace mc {
                     buffer.erase(buffer.begin(), buffer.begin() + bytesRead + packetLength);
                 }
             });
-        }
-
-        auto sendRawPacket(const ByteBuf &packetWithID) const -> void {
-            const auto packetLength = static_cast<int>(packetWithID.size());
-
-            ByteBuf packetBuffer;
-            pc::WriteData<pc::VarInt>(packetLength, packetBuffer);
-            pc::WriteByteArray(packetWithID, packetBuffer);
-
-            logger.log<DEBUG>("Sending packet to {}bound with encryption enabled = {}", Side::source,
-                              aesContext != nullptr);
-
-            // AES encryption does not change the packet size, just calculate here
-            if (measureTraffic)
-                measureTraffic->incrementSend(packetBuffer.size());
-
-            if (!aesContext) {
-                socket->sockSend(packetBuffer);
-                return;
-            }
-            const auto encrypted = aesContext->encrypt(packetBuffer);
-            logger.log<DEBUG>("Sending encrypted packet with length {}", encrypted.size());
-            socket->sockSend(encrypted);
         }
     };
 }

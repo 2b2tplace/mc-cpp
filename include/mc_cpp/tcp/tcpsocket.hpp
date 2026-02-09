@@ -17,20 +17,34 @@ namespace mc {
 
         explicit TCPSocket(FDR_ON_ERROR, const int socketId = -1) : BaseSocket(onError, socketId) {}
 
-        auto sockSend(const char *bytes, const size_t length) const -> void {
-            send(this->sock, bytes, length, 0);
+        auto rawSend(const void *data, const size_t length, FDR_ON_ERROR) const -> void {
+            size_t totalSent = 0;
+            const auto ptr = static_cast<const char*>(data);
+
+            while (totalSent < length) {
+                const auto sent = send(this->sock, ptr + totalSent, length - totalSent, 0);
+
+                if (sent == -1) {
+                    onError(errno, "Failed to send packet to host.");
+                    return;
+                }
+                totalSent += static_cast<size_t>(sent);
+            }
         }
 
-        auto sockSend(const std::vector<uint8_t> &bytes) const -> void {
-            send(this->sock, bytes.data(), bytes.size(), 0);
+        auto sockSend(const char *bytes, const size_t length, FDR_ON_ERROR) const -> void {
+            rawSend(bytes, length, onError);
         }
 
-        auto sockSend(const std::string &message) const -> void {
-            sockSend(message.c_str(), message.length());
+        auto sockSend(const std::vector<uint8_t> &bytes, FDR_ON_ERROR) const -> void {
+            rawSend(bytes.data(), bytes.size(), onError);
         }
 
-        auto sockConnect(uint32_t ipv4, const uint16_t port, const std::function<void()> &onConnected = [] {
-                         }, FDR_ON_ERROR) -> void {
+        auto sockSend(const std::string &message, FDR_ON_ERROR) const -> void {
+            sockSend(message.c_str(), message.length(), onError);
+        }
+
+        auto sockConnect(uint32_t ipv4, const uint16_t port, const std::function<void()> &onConnected = [] {}, FDR_ON_ERROR) -> void {
             this->address.sin_family = AF_INET;
             this->address.sin_port = htons(port);
             this->address.sin_addr.s_addr = ipv4;
