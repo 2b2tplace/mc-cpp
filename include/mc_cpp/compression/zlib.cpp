@@ -28,7 +28,7 @@ namespace mc {
         strm.next_in = const_cast<uint8_t *>(compressed.data() + start);
         strm.avail_in = decompressedSize;
         strm.next_out = buffer.data();
-        strm.avail_out = static_cast<uint>(buffer.size());
+        strm.avail_out = static_cast<uInt>(buffer.size());
         auto res = inflateInit(&strm);
 
         if (res != Z_OK)
