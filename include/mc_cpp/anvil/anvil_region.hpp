@@ -1,13 +1,9 @@
 #pragma once
 
-#include <spanstream>
-#include <fmt/format.h>
-#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <mc_cpp/nbt/nbt.hpp>
 #include <mc_cpp/anvil/anvil_chunk.hpp>
 #include <mc_cpp/registry/registries/dimensions.hpp>
-#include <utility>
 
 namespace mc::anvil {
 
