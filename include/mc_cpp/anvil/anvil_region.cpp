@@ -1,4 +1,9 @@
 #include <mc_cpp/anvil/anvil_region.hpp>
+#ifdef __cpp_lib_spanstream
+#include <spanstream>
+#else
+#include <sstream>
+#endif
 
 namespace mc {
     anvil::Region::Region(fs::path parentDirectory, const DimensionType dimension, const Pos &pos):
@@ -40,8 +45,8 @@ namespace mc {
         NbtFile chunkNBT;
         chunkNBT.put("DataVersion", registry.dataVersion());
         chunkNBT.putNbt("Heightmaps", NbtCompound{});
-        chunkNBT.put("InhabitedTime", 0L);
-        chunkNBT.put("LastUpdate", 0L);
+        chunkNBT.put<int64_t>("InhabitedTime", 0L);
+        chunkNBT.put<int64_t>("LastUpdate", 0L);
         chunkNBT.put("xPos", absX);
         chunkNBT.put("zPos", absZ);
         chunkNBT.put("yPos", minY);
@@ -75,8 +80,13 @@ namespace mc {
             in.read(reinterpret_cast<char*>(bytes.data()), filesize);
             in.close();
 
+#ifdef __cpp_lib_spanstream
             std::span span(reinterpret_cast<const char*>(bytes.data()), filesize);
             std::ispanstream iss(span);
+#else
+            std::string str(reinterpret_cast<const char*>(bytes.data()), filesize);
+            std::istringstream iss(str);
+#endif
 
             chunk.readNBT(iss, compression);
             return chunk;
@@ -85,8 +95,13 @@ namespace mc {
         if (length > view.data.size())
             return chunk;
 
+#ifdef __cpp_lib_spanstream
         std::span span(reinterpret_cast<const char*>(view.data.data()) + 5, length);
         std::ispanstream iss(span);
+#else
+        std::string str(reinterpret_cast<const char*>(view.data.data()) + 5, length);
+        std::istringstream iss(str);
+#endif
 
         chunk.readNBT(iss, compression);
         return chunk;
