@@ -10,7 +10,7 @@ set(BOTCRAFT_GAME_VERSION "1.21.4" CACHE STRING "Minecraft game version")
 
 file(GLOB_RECURSE LIBS "include/*.hpp" "include/*.h" "include/*.cpp" "include/*.c")
 include_directories(mc_cpp ${CMAKE_CURRENT_SOURCE_DIR}/include)
-find_package(fmt REQUIRED)
+
 find_package(Boost REQUIRED COMPONENTS iostreams)
 link_libraries(z sqlite3 crypto)
 if(WIN32)
@@ -19,6 +19,14 @@ endif()
 
 include(FetchContent)
 set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
+
+FetchContent_Declare(fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt
+        GIT_TAG 12.1.0
+        GIT_PROGRESS TRUE
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(fmt)
 
 FetchContent_Declare(Botcraft
         GIT_REPOSITORY https://github.com/adepierre/Botcraft
@@ -52,7 +60,7 @@ target_link_libraries(mc_cpp
         PUBLIC protocolCraft
         PUBLIC fmt
         PUBLIC result_cpp
-        PUBLIC "${Boost_IOSTREAMS_LIBRARY}"
+        PUBLIC Boost::iostreams
 )
 
 add_executable(mc_cpp_run main.cpp)
