@@ -3,7 +3,8 @@
 #include <iomanip>
 #include <mutex>
 #include <string_view>
-#include <fmt/core.h>
+#include <fmt/format.h>
+#include <sstream>
 
 namespace mc {
     static constexpr auto LEVEL_INFO_STR = "INFO";
@@ -71,7 +72,7 @@ namespace mc {
 #ifndef DEBUG_MODE
             if constexpr (L == DEBUG) return;
 #endif
-            const auto logMessage = fmt::vformat(fmt, fmt::make_format_args(args...));
+            const auto logMessage = fmt::format(fmt, fmt::make_format_args(args...));
 
             std::ostringstream msg;
             msg << "[" << currentTimeFormatted() << "] [" << logLevelToString(L) << "] " << logMessage;
