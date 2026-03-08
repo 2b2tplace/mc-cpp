@@ -7,6 +7,7 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 set(BOTCRAFT_BUILD_DOC OFF)
 set(BOTCRAFT_GAME_VERSION "1.21.4" CACHE STRING "Minecraft game version")
+set(PROTOCOLCRAFT_STATIC ON)
 
 file(GLOB_RECURSE LIBS "include/*.hpp" "include/*.h" "include/*.cpp" "include/*.c")
 include_directories(mc_cpp ${CMAKE_CURRENT_SOURCE_DIR}/include)
