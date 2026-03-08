@@ -68,11 +68,11 @@ namespace mc {
         }
 
         template<LogLevel L, typename... T>
-        auto logInline(const bool newline, fmt::format_string<T...> fmt, T &&... args) -> void {
+        auto logInline(const bool newline, fmt::format_string<T...> fmt, T&&... args) -> void {
 #ifndef DEBUG_MODE
             if constexpr (L == DEBUG) return;
 #endif
-            const auto logMessage = fmt::format(fmt, fmt::make_format_args(args...));
+            const auto logMessage = fmt::format(fmt, std::forward<T>(args)...);
 
             std::ostringstream msg;
             msg << "[" << currentTimeFormatted() << "] [" << logLevelToString(L) << "] " << logMessage;
