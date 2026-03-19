@@ -13,7 +13,7 @@ file(GLOB_RECURSE LIBS "include/*.hpp" "include/*.h" "include/*.cpp" "include/*.
 include_directories(mc_cpp ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 find_package(Boost REQUIRED COMPONENTS iostreams)
-link_libraries(z sqlite3 crypto)
+link_libraries(z crypto)
 if(WIN32)
     link_libraries(ws2_32)
 endif()
