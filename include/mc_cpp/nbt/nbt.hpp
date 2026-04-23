@@ -60,6 +60,8 @@ namespace mc {
 
     using NbtElementPtr = std::shared_ptr<NbtElement>;
 
+    static auto read(std::istream &stream) -> NbtElementPtr;
+
     class AbstractNbtList : public NbtElement {
 
         [[nodiscard]]

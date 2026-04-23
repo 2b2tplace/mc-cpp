@@ -21,6 +21,28 @@ namespace mc {
 		write(stream, true, false, DEFAULT_NBT_ELEMENT_NAME);
 	}
 
+	auto read(std::istream &stream) -> NbtElementPtr {
+		const auto type = static_cast<NbtType>(readBE<int8_t>(stream));
+		NbtElementPtr result;
+		switch (type) {
+			case NbtType::BYTE:		  { result = std::make_shared<NbtByte>();      break; }
+			case NbtType::SHORT:	  { result = std::make_shared<NbtShort>();     break; }
+			case NbtType::INT:		  { result = std::make_shared<NbtInt>();       break; }
+			case NbtType::LONG:		  { result = std::make_shared<NbtLong>();      break; }
+			case NbtType::FLOAT:      { result = std::make_shared<NbtFloat>();	   break; }
+			case NbtType::DOUBLE:	  { result = std::make_shared<NbtDouble>();	   break; }
+			case NbtType::BYTE_ARRAY: { result = std::make_shared<NbtByteArray>(); break; }
+			case NbtType::STRING:	  { result = std::make_shared<NbtString>();    break; }
+			case NbtType::LIST:       { result = std::make_shared<NbtList>();      break; }
+			case NbtType::COMPOUND:   { result = std::make_shared<NbtCompound>();  break; }
+			case NbtType::INT_ARRAY:  { result = std::make_shared<NbtIntArray>();  break; }
+			case NbtType::LONG_ARRAY: { result = std::make_shared<NbtLongArray>(); break; }
+			default:				  { result = std::make_shared<NbtEnd>();       break; }
+		}
+		result->read(stream);
+		return result;
+	}
+
 	NbtString::NbtString(std::string value): value(std::move(value)) {}
 
 	auto NbtString::getType() const -> NbtType {
