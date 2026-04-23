@@ -108,6 +108,9 @@ namespace mc {
         auto blockName(BlockState state) const -> const std::string&;
 
         [[nodiscard]]
+        auto blockStateName(BlockState state) const -> const std::string&;
+
+        [[nodiscard]]
         auto blockType(std::string_view name) const -> const BlockType&;
 
         [[nodiscard]]
