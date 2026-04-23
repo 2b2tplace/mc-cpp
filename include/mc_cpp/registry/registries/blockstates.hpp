@@ -51,6 +51,7 @@ namespace mc {
     public:
         absl::flat_hash_map<BlockState, BlockStateRenderProperties> renderProperties;
         absl::flat_hash_map<std::string, BlockState> blockStateByName;
+        absl::flat_hash_map<BlockState, std::string> blockStateNameByState;
         absl::flat_hash_map<BlockState, std::string> blockNameByState;
         absl::flat_hash_map<BlockState, BlockStatePropertyMap> blockStatePropertyMaps;
 
@@ -79,6 +80,9 @@ namespace mc {
 
         [[nodiscard]]
         auto blockName(BlockState state) const -> const std::string&;
+
+        [[nodiscard]]
+        auto blockStateName(BlockState state) const -> const std::string&;
 
         [[nodiscard]]
         auto blockType(std::string_view name) const -> const BlockType&;

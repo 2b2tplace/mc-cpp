@@ -21,6 +21,7 @@ namespace mc {
             }
             renderProperties[id] = BlockStateRenderProperties { id, name, rgba, colorBrightness(rgba), lightLevel, illuminatedColor };
             blockStateByName[name] = id;
+            blockStateNameByState[id] = name;
             extendBlockType(id, name);
         }
     }
@@ -62,6 +63,13 @@ namespace mc {
             return MISSING_BLOCK_NAME;
 
         return blockNameByState.at(state);
+    }
+
+    auto BlockRegistry::blockStateName(const BlockState state) const -> const std::string& {
+        if (!blockStateNameByState.contains(state))
+            return MISSING_BLOCK_NAME;
+
+        return blockStateNameByState.at(state);
     }
 
     auto BlockRegistry::blockType(const std::string_view name) const -> const BlockType& {

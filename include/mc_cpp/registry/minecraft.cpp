@@ -147,6 +147,10 @@ namespace mc {
         return blocks.blockName(state);
     }
 
+    auto MinecraftRegistry::blockStateName(const BlockState state) const -> const std::string& {
+        return blocks.blockStateName(state);
+    }
+
     auto MinecraftRegistry::blockType(const std::string_view name) const -> const BlockType& {
         return blocks.blockType(name);
     }
