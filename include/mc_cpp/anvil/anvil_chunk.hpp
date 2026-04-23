@@ -81,6 +81,9 @@ namespace mc::anvil {
 
         [[nodiscard]]
         static auto readSections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk>;
+
+        [[nodiscard]]
+        static auto readLegacySections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk>;
     };
 
     template<typename SectionDataType>

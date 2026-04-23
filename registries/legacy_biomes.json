@@ -1,0 +1,254 @@
+{
+    "type": "legacy_biomes",
+    "protocolVersion": 340,
+    "entries": [
+        {
+            "id": 0,
+            "name": "ocean"
+        },
+        {
+            "id": 1,
+            "name": "plains"
+        },
+        {
+            "id": 2,
+            "name": "desert"
+        },
+        {
+            "id": 3,
+            "name": "windswept_hills"
+        },
+        {
+            "id": 4,
+            "name": "forest"
+        },
+        {
+            "id": 5,
+            "name": "taiga"
+        },
+        {
+            "id": 6,
+            "name": "swamp"
+        },
+        {
+            "id": 7,
+            "name": "river"
+        },
+        {
+            "id": 8,
+            "name": "nether_wastes"
+        },
+        {
+            "id": 9,
+            "name": "the_end"
+        },
+        {
+            "id": 10,
+            "name": "frozen_ocean"
+        },
+        {
+            "id": 11,
+            "name": "frozen_river"
+        },
+        {
+            "id": 12,
+            "name": "snowy_plains"
+        },
+        {
+            "id": 13,
+            "name": "snowy_plains"
+        },
+        {
+            "id": 14,
+            "name": "mushroom_fields"
+        },
+        {
+            "id": 15,
+            "name": "mushroom_fields"
+        },
+        {
+            "id": 16,
+            "name": "beach"
+        },
+        {
+            "id": 17,
+            "name": "desert"
+        },
+        {
+            "id": 18,
+            "name": "forest"
+        },
+        {
+            "id": 19,
+            "name": "taiga"
+        },
+        {
+            "id": 20,
+            "name": "windswept_hills"
+        },
+        {
+            "id": 21,
+            "name": "jungle"
+        },
+        {
+            "id": 22,
+            "name": "jungle"
+        },
+        {
+            "id": 23,
+            "name": "jungle"
+        },
+        {
+            "id": 24,
+            "name": "deep_ocean"
+        },
+        {
+            "id": 25,
+            "name": "stony_shore"
+        },
+        {
+            "id": 26,
+            "name": "snowy_beach"
+        },
+        {
+            "id": 27,
+            "name": "birch_forest"
+        },
+        {
+            "id": 28,
+            "name": "birch_forest"
+        },
+        {
+            "id": 29,
+            "name": "dark_forest"
+        },
+        {
+            "id": 30,
+            "name": "snowy_taiga"
+        },
+        {
+            "id": 31,
+            "name": "snowy_taiga"
+        },
+        {
+            "id": 32,
+            "name": "old_growth_pine_taiga"
+        },
+        {
+            "id": 33,
+            "name": "old_growth_pine_taiga"
+        },
+        {
+            "id": 34,
+            "name": "windswept_forest"
+        },
+        {
+            "id": 35,
+            "name": "savanna"
+        },
+        {
+            "id": 36,
+            "name": "savanna_plateau"
+        },
+        {
+            "id": 37,
+            "name": "badlands"
+        },
+        {
+            "id": 38,
+            "name": "wooded_badlands"
+        },
+        {
+            "id": 39,
+            "name": "badlands"
+        },
+        {
+            "id": 127,
+            "name": "the_void"
+        },
+        {
+            "id": 129,
+            "name": "sunflower_plains"
+        },
+        {
+            "id": 130,
+            "name": "desert"
+        },
+        {
+            "id": 131,
+            "name": "windswept_gravelly_hills"
+        },
+        {
+            "id": 132,
+            "name": "flower_forest"
+        },
+        {
+            "id": 133,
+            "name": "taiga"
+        },
+        {
+            "id": 134,
+            "name": "swamp"
+        },
+        {
+            "id": 140,
+            "name": "ice_spikes"
+        },
+        {
+            "id": 149,
+            "name": "jungle"
+        },
+        {
+            "id": 151,
+            "name": "sparse_jungle"
+        },
+        {
+            "id": 155,
+            "name": "old_growth_birch_forest"
+        },
+        {
+            "id": 156,
+            "name": "old_growth_birch_forest"
+        },
+        {
+            "id": 157,
+            "name": "dark_forest"
+        },
+        {
+            "id": 158,
+            "name": "snowy_taiga"
+        },
+        {
+            "id": 160,
+            "name": "old_growth_pine_taiga"
+        },
+        {
+            "id": 161,
+            "name": "old_growth_spruce_taiga"
+        },
+        {
+            "id": 162,
+            "name": "windswept_forest"
+        },
+        {
+            "id": 163,
+            "name": "windswept_savanna"
+        },
+        {
+            "id": 164,
+            "name": "windswept_savanna"
+        },
+        {
+            "id": 165,
+            "name": "eroded_badlands"
+        },
+        {
+            "id": 166,
+            "name": "wooded_badlands"
+        },
+        {
+            "id": 167,
+            "name": "badlands"
+        }
+    ]
+}

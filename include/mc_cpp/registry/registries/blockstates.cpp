@@ -79,25 +79,7 @@ namespace mc {
     }
 
     auto BlockRegistry::extendBlockType(const BlockState additionalState, const std::string &stateName) -> void {
-        const auto open = stateName.find('[');
-        const auto close = stateName.find(']');
-        const auto blockName = open == std::string::npos ? stateName : stateName.substr(0, open);
-        const auto blockPropertiesStr = close == std::string_view::npos || close < open ? "" : stateName.substr(open + 1, close - open - 1);
-
-        absl::flat_hash_map<std::string, std::string> properties;
-        if (!blockPropertiesStr.empty() && blockPropertiesStr != "-") {
-            std::istringstream ss(blockPropertiesStr);
-            for (std::string token; std::getline(ss, token, ',');) {
-                if (token.empty()) continue;
-
-                const auto index = token.find('=');
-                if (index == std::string::npos) continue;
-
-                const auto key = token.substr(0, index);
-                const auto value = token.substr(index + 1);
-                properties[key] = value;
-            }
-        }
+        const auto [blockName, properties] = parseBlockStateProperties(stateName);
         blockStatePropertyMaps[additionalState] = properties;
         blockNameByState[additionalState] = blockName;
 

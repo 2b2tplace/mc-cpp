@@ -96,8 +96,79 @@ namespace mc {
         chunkNBT.putNbt<NbtList>("sections", sectionsNBT);
     }
 
-    auto anvil::Chunk::readSections(const NbtCompound &chunkNBT,
-        const MinecraftRegistry &registry) -> result::Option<Chunk> {
+    auto anvil::Chunk::readLegacySections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk> {
+        const auto &level = chunkNBT.readNbt<NbtCompound>("Level");
+        const auto &sections = level.readNbt<NbtList>("Sections");
+        Chunk chunk;
+        chunk.sections.reserve(sections.length());
+
+        for (int i = 0; i < sections.length(); i++) {
+            const auto &section = sections.readNbt<NbtCompound>(i);
+            if (!section.contains("Y")) return result::None;
+
+            chunk.sections.emplace_back(registry, section.read<int8_t>("Y"));
+            auto &chunkSection = chunk.sections[i];
+
+            const auto &blocks = section.readNbt<NbtByteArray>("Blocks");
+            const auto &blockData = section.readNbt<NbtByteArray>("Data");
+
+            for (size_t j = 0; j < blockData.value.size(); j++) {
+                const auto firstBlockIndex = 2 * j;
+                const auto firstBlock = blocks.value[firstBlockIndex];
+                const auto secondBlock = blocks.value[firstBlockIndex + 1];
+                const auto combinedDataValue = blockData.value[j];
+
+                const auto firstDataValue = combinedDataValue & 0xF;
+                const auto secondDataValue = combinedDataValue >> 4 & 0xF;
+
+                chunkSection.unpackedBlockData[firstBlockIndex] = registry.blockStateForLegacy(firstBlock, firstDataValue);
+                chunkSection.unpackedBlockData[firstBlockIndex + 1] = registry.blockStateForLegacy(secondBlock, secondDataValue);
+            }
+            if (section.containsNbt<NbtByteArray>("BlockLight")) {
+                const auto &blockLight = section.readNbt<NbtByteArray>("BlockLight");
+                std::ranges::copy_n(
+                    blockLight.value.begin(),
+                    static_cast<int64_t>(std::min(blockLight.value.size(), chunkSection.packedBlockLightData.size())),
+                    chunkSection.packedBlockLightData.begin()
+                );
+            }
+            if (section.containsNbt<NbtByteArray>("SkyLight")) {
+                const auto &skyLight = section.readNbt<NbtByteArray>("SkyLight");
+                std::ranges::copy_n(
+                    skyLight.value.begin(),
+                    static_cast<int64_t>(std::min(skyLight.value.size(), chunkSection.packedSkyLightData.size())),
+                    chunkSection.packedSkyLightData.begin()
+                );
+            }
+        }
+        UnpackedData<Biomes> unpackedBiomeData{};
+        const auto &biomes = level.readNbt<NbtByteArray>("Biomes");
+        for (uint8_t z = 0; z < SECTION_SIDELENGTH_BIOMES; z++) {
+            for (uint8_t x = 0; x < SECTION_SIDELENGTH_BIOMES; x++) {
+                const auto legacyBiomeIndex = z * 4 * SECTION_SIDELENGTH_BLOCKS + x * 4;
+                const auto legacyBiomeId = biomes.value[legacyBiomeIndex];
+                const auto biomeType = registry.biomeTypeForLegacy(legacyBiomeId);
+
+                for (uint8_t y = 0; y < SECTION_SIDELENGTH_BIOMES; y++) {
+                    const auto biomeIndex = static_cast<size_t>(y) * SECTION_SIDELENGTH_BIOMES * SECTION_SIDELENGTH_BIOMES
+                                          + static_cast<size_t>(z) * SECTION_SIDELENGTH_BIOMES
+                                          + static_cast<size_t>(x);
+                    unpackedBiomeData[biomeIndex] = biomeType;
+                }
+            }
+        }
+        for (auto &section : chunk.sections)
+            section.unpackedBiomeData = unpackedBiomeData;
+
+        // TODO tile entity conversions
+        return chunk;
+    }
+
+    auto anvil::Chunk::readSections(const NbtCompound &chunkNBT, const MinecraftRegistry &registry) -> result::Option<Chunk> {
+        if (chunkNBT.read<int32_t>("DataVersion") <= 1343) { // 1.12.2 or below
+            if (registry.legacyBlockUpgradeMap.empty()) return result::None;
+            return readLegacySections(chunkNBT, registry);
+        }
         const auto &sections = chunkNBT.readNbt<NbtList>("sections");
         Chunk chunk;
         chunk.tileEntities = chunkNBT.readNbt<NbtList>("block_entities");

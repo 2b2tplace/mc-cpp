@@ -121,6 +121,16 @@ namespace mc {
         return blocks.blockState(name);
     }
 
+    auto MinecraftRegistry::blockStateForLegacy(const uint8_t id, const uint8_t data) const -> BlockState {
+        if (const auto legacyBlock = toLegacy(id, data); legacyBlockUpgradeMap.contains(legacyBlock))
+            return legacyBlockUpgradeMap.at(legacyBlock);
+
+        if (const auto legacyBlockFallback = toLegacy(id, 0); legacyBlockUpgradeMap.contains(legacyBlockFallback))
+            return legacyBlockUpgradeMap.at(legacyBlockFallback);
+
+        return 0;
+    }
+
     auto MinecraftRegistry::blockStatePropertyMap(const BlockState state) const -> const BlockStatePropertyMap& {
         return blocks.blockStatePropertyMap(state);
     }
@@ -200,6 +210,13 @@ namespace mc {
         return biomes.biomeProperties.biomeType(biomeName);
     }
 
+    auto MinecraftRegistry::biomeTypeForLegacy(const LegacyBiomeType legacyBiomeType) const -> BiomeType {
+        if (legacyBiomeTypeUpgradeMap.contains(legacyBiomeType))
+            return legacyBiomeTypeUpgradeMap.at(legacyBiomeType);
+
+        return MISSING_BIOME_TYPE;
+    }
+
     auto MinecraftRegistry::biomeName(const BiomeType biomeType) const -> const std::string& {
         return biomes.biomeProperties.biomeName(biomeType);
     }
@@ -221,10 +238,27 @@ namespace mc {
     }
 
     auto loadRegistries(const std::filesystem::path &parentDirectory,
-                               const std::vector<SupportedMinecraftVersion> &mcVersions) -> result::Result<std::monostate, std::string> {
+                        const std::vector<SupportedMinecraftVersion> &mcVersions,
+                        const bool loadLegacyRegistries) -> result::Result<std::monostate, std::string> {
         for (const auto mcVersion : mcVersions)
             REGISTRIES.emplace(mcVersion, TRY(MinecraftRegistry::load(parentDirectory, mcVersion)));
 
+        if (!loadLegacyRegistries) return {};
+
+        Registry<LegacyBlockStateEntry> legacyBlockStateRegistry;
+        TRY(legacyBlockStateRegistry.tryLoad(parentDirectory / "legacy_blockstates.json"));
+
+        Registry<LegacyBiomeTypeEntry> legacyBiomeTypeRegistry;
+        TRY(legacyBiomeTypeRegistry.tryLoad(parentDirectory / "legacy_biomes.json"));
+
+        const LegacyBlockStateRegistry legacyBlockStates{legacyBlockStateRegistry};
+        const LegacyBiomeTypeRegistry legacyBiomeTypes{legacyBiomeTypeRegistry};
+
+        for (const auto mcVersion : mcVersions) {
+            const auto &registry = REGISTRIES.at(mcVersion);
+            TRY(legacyBlockStates.populateUpgradeMap(registry->blocks, registry->legacyBlockUpgradeMap));
+            TRY(legacyBiomeTypes.populateUpgradeMap(registry->biomes, registry->legacyBiomeTypeUpgradeMap));
+        }
         return {};
     }
 

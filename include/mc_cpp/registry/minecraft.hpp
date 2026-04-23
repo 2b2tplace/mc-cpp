@@ -4,6 +4,8 @@
 #include <mc_cpp/registry/registries/biomes.hpp>
 #include <mc_cpp/registry/registries/blockstates.hpp>
 #include <mc_cpp/registry/registries/tile_entities.hpp>
+#include <mc_cpp/registry/registries/legacy_biomes.hpp>
+#include <mc_cpp/registry/registries/legacy_blockstates.hpp>
 #include <result.hpp>
 
 namespace mc {
@@ -49,6 +51,8 @@ namespace mc {
         BiomeRegistry biomes;
         BlockRegistry blocks;
         TileEntityRegistry tileEntities;
+        LegacyBlockUpgradeMap legacyBlockUpgradeMap;
+        LegacyBiomeTypeUpgradeMap legacyBiomeTypeUpgradeMap;
 
         explicit MinecraftRegistry(SupportedMinecraftVersion version,
                                    const Registry<BiomeColorEntry> &foliageColors,
@@ -87,6 +91,9 @@ namespace mc {
 
         [[nodiscard]]
         auto blockState(std::string_view name) const -> BlockState;
+
+        [[nodiscard]]
+        auto blockStateForLegacy(uint8_t id, uint8_t data) const -> BlockState;
 
         [[nodiscard]]
         auto blockStatePropertyMap(BlockState state) const -> const BlockStatePropertyMap&;
@@ -143,6 +150,9 @@ namespace mc {
         auto biomeType(std::string_view biomeName) const -> BiomeType;
 
         [[nodiscard]]
+        auto biomeTypeForLegacy(LegacyBiomeType legacyBiomeType) const -> BiomeType;
+
+        [[nodiscard]]
         auto biomeName(BiomeType biomeType) const -> const std::string&;
 
         [[nodiscard]]
@@ -164,7 +174,8 @@ namespace mc {
 
     [[nodiscard]]
     auto loadRegistries(const std::filesystem::path &parentDirectory,
-                               const std::vector<SupportedMinecraftVersion> &mcVersions) -> result::Result<std::monostate, std::string>;
+                        const std::vector<SupportedMinecraftVersion> &mcVersions,
+                        bool loadLegacyRegistries = false) -> result::Result<std::monostate, std::string>;
 
     [[nodiscard]]
     auto getRegistry(SupportedMinecraftVersion version) -> const MinecraftRegistry&;

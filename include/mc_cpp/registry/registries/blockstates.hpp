@@ -24,6 +24,29 @@ namespace mc {
 
     using BlockStatePropertyMap = absl::flat_hash_map<std::string, std::string>;
 
+    inline auto parseBlockStateProperties(const std::string &blockstate) -> std::pair<std::string, absl::flat_hash_map<std::string, std::string>> {
+        const auto open = blockstate.find('[');
+        const auto close = blockstate.find(']');
+        const auto blockName = open == std::string::npos ? blockstate : blockstate.substr(0, open);
+        const auto blockPropertiesStr = close == std::string_view::npos || close < open ? "" : blockstate.substr(open + 1, close - open - 1);
+
+        absl::flat_hash_map<std::string, std::string> properties;
+        if (!blockPropertiesStr.empty() && blockPropertiesStr != "-") {
+            std::istringstream ss(blockPropertiesStr);
+            for (std::string token; std::getline(ss, token, ',');) {
+                if (token.empty()) continue;
+
+                const auto index = token.find('=');
+                if (index == std::string::npos) continue;
+
+                const auto key = token.substr(0, index);
+                const auto value = token.substr(index + 1);
+                properties[key] = value;
+            }
+        }
+        return {blockName, properties};
+    }
+
     class BlockRegistry {
     public:
         absl::flat_hash_map<BlockState, BlockStateRenderProperties> renderProperties;
