@@ -90,15 +90,17 @@ namespace mc {
         const auto [blockName, properties] = parseBlockStateProperties(stateName);
         blockStatePropertyMaps[additionalState] = properties;
         blockNameByState[additionalState] = blockName;
-        blockTypeByState[additionalState] = currentBlockTypeId;
 
         if (!blockTypeByName.contains(blockName)) {
             blockTypeByName[blockName] = currentBlockTypeId;
+            blockTypeByState[additionalState] = currentBlockTypeId;
             blockTypes.emplace_back(additionalState, additionalState);
             currentBlockTypeId++;
             return;
         }
-        auto&[min, max] = blockTypes[blockTypeByName.at(blockName)];
+        const auto typeIndex = blockTypeByName.at(blockName);
+        blockTypeByState[additionalState] = typeIndex;
+        auto&[min, max] = blockTypes[typeIndex];
 
         if (additionalState < min) min = additionalState;
         if (additionalState > max) max = additionalState;
