@@ -90,10 +90,10 @@ namespace mc {
         const auto [blockName, properties] = parseBlockStateProperties(stateName);
         blockStatePropertyMaps[additionalState] = properties;
         blockNameByState[additionalState] = blockName;
+        blockTypeByState[additionalState] = currentBlockTypeId;
 
         if (!blockTypeByName.contains(blockName)) {
             blockTypeByName[blockName] = currentBlockTypeId;
-            blockTypeByState[additionalState] = currentBlockTypeId;
             blockTypes.emplace_back(additionalState, additionalState);
             currentBlockTypeId++;
             return;
