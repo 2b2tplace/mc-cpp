@@ -20,6 +20,8 @@ namespace mc {
 
         [[nodiscard]]
         auto createJson() const -> nlohmann::json;
+
+        virtual auto clone() const -> std::unique_ptr<NbtSerializable> = 0;
     };
 
     struct TextColor {
@@ -75,6 +77,8 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override;
     };
 
     enum class TextClickAction {
@@ -98,6 +102,8 @@ namespace mc {
         void writeToNbt(NbtCompound &compound) const override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override;
     };
 
     struct TextHoverEvent : NbtSerializable {};
@@ -105,7 +111,23 @@ namespace mc {
     struct TextInteractivity final : NbtSerializable {
         result::Option<std::string> insertion;
         result::Option<TextClickEvent> clickEvent;
-        std::shared_ptr<TextHoverEvent> hoverEvent;
+        std::unique_ptr<NbtSerializable> hoverEvent;
+
+        TextInteractivity() = default;
+
+        TextInteractivity(const result::Option<std::string> &insertion, const result::Option<TextClickEvent> &clickEvent,
+                          std::unique_ptr<NbtSerializable> hoverEvent):
+            insertion(insertion), clickEvent(clickEvent), hoverEvent(std::move(hoverEvent)) {}
+
+        TextInteractivity(const TextInteractivity &other):
+            TextInteractivity(other.insertion, other.clickEvent, other.hoverEvent ? other.hoverEvent->clone() : nullptr) {}
+
+        auto operator=(const TextInteractivity &other) -> TextInteractivity& {
+            insertion = other.insertion;
+            clickEvent = other.clickEvent;
+            hoverEvent = other.hoverEvent ? other.hoverEvent->clone() : nullptr;
+            return *this;
+        }
 
         auto withInsertion(const std::string &insertionNew) -> TextInteractivity&;
 
@@ -118,15 +140,35 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<TextInteractivity>(*this);
+        }
     };
 
     struct Text final : NbtSerializable {
-        std::shared_ptr<NbtSerializable> content;
+        std::unique_ptr<NbtSerializable> content;
         std::vector<Text> siblings{};
         TextStyle style{};
         TextInteractivity interactivity{};
 
-        explicit Text(const std::shared_ptr<NbtSerializable> &content);
+        explicit Text(std::unique_ptr<NbtSerializable> content);
+
+        Text(const Text &other):
+            content(other.content ? other.content->clone() : nullptr), siblings(other.siblings),
+            style(other.style), interactivity(other.interactivity) {}
+
+        Text(Text &&other) noexcept:
+            content(std::move(other.content)), siblings(std::move(other.siblings)),
+            style(std::move(other.style)), interactivity(std::move(other.interactivity)) {}
+
+        auto operator=(const Text &other) -> Text& {
+            content = other.content ? other.content->clone() : nullptr;
+            siblings = other.siblings;
+            style = other.style;
+            interactivity = other.interactivity;
+            return *this;
+        }
 
         auto append(const Text &sibling) -> Text&;
 
@@ -161,6 +203,10 @@ namespace mc {
 
         [[nodiscard]]
         auto serialize() const -> std::string;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<Text>(*this);
+        }
     };
 
     struct TextHoverEventShowText final : TextHoverEvent {
@@ -172,6 +218,10 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<TextHoverEventShowText>(contents);
+        }
     };
 
     struct PlainTextContent final : NbtSerializable {
@@ -182,12 +232,19 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<PlainTextContent>(text);
+        }
     };
 
     struct TranslatableTextContent final : NbtSerializable {
         std::string translate;
         result::Option<std::string> fallback;
         result::Option<std::vector<Text>> with;
+
+        TranslatableTextContent(const TranslatableTextContent &other):
+            translate(other.translate), fallback(other.fallback), with(other.with) {}
 
         explicit TranslatableTextContent(std::string translate);
 
@@ -198,6 +255,10 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<TranslatableTextContent>(*this);
+        }
     };
 
     struct ScoreTextContent final : NbtSerializable {
@@ -209,11 +270,18 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<ScoreTextContent>(name, objective);
+        }
     };
 
     struct SelectorTextContent final : NbtSerializable {
         std::string selector;
         result::Option<Text> separator;
+
+        SelectorTextContent(const SelectorTextContent &other):
+            selector(other.selector), separator(other.separator) {}
 
         explicit SelectorTextContent(std::string selector);
 
@@ -222,6 +290,10 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<SelectorTextContent>(*this);
+        }
     };
 
     struct KeybindTextContent final : NbtSerializable {
@@ -232,6 +304,10 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<KeybindTextContent>(keybind);
+        }
     };
 
     enum class NbtSourceType {
@@ -247,6 +323,10 @@ namespace mc {
         result::Option<bool> interpret;
         result::Option<Text> separator;
 
+        NbtTextContent(const NbtTextContent &other):
+            sourceType(other.sourceType), nbt(other.nbt), source(other.source),
+            interpret(other.interpret), separator(other.separator) {}
+
         explicit NbtTextContent(NbtSourceType sourceType, std::string nbt, std::string source);
 
         auto withInterpret(bool interpretNew) -> NbtTextContent&;
@@ -256,6 +336,10 @@ namespace mc {
         auto writeToNbt(NbtCompound &compound) const -> void override;
 
         auto writeToJson(nlohmann::json &json) const -> void override;
+
+        auto clone() const -> std::unique_ptr<NbtSerializable> override {
+            return std::make_unique<NbtTextContent>(*this);
+        }
     };
 
     [[nodiscard]]

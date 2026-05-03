@@ -135,22 +135,22 @@ namespace mc {
 
     WorldGenerator::WorldGenerator(const MinecraftRegistry &registry, const WorldGeneratorType type,
         const DimensionType dimension):
-        dimension(dimension), _type(type) {
+        dimension(dimension), type_(type) {
         switch (type) {
             case WorldGeneratorType::DEBUG:
-                worldGeneratorPtr = std::make_shared<DebugWorldGenerator>();
+                worldGeneratorPtr = std::make_unique<DebugWorldGenerator>();
                 break;
             case WorldGeneratorType::FLAT:
-                worldGeneratorPtr = std::make_shared<FlatWorldGenerator>(registry);
+                worldGeneratorPtr = std::make_unique<FlatWorldGenerator>(registry);
                 break;
             case WorldGeneratorType::NOISE:
-                worldGeneratorPtr = std::make_shared<NoiseWorldGenerator>(dimension);
+                worldGeneratorPtr = std::make_unique<NoiseWorldGenerator>(dimension);
                 break;
         }
     }
 
     auto WorldGenerator::type() const -> WorldGeneratorType {
-        return _type;
+        return type_;
     }
 
     auto WorldGenerator::asDebug() const -> const DebugWorldGenerator * {
@@ -191,11 +191,11 @@ namespace mc {
         const auto &generatorTypeStr = generator.read<std::string>("type");
 
         if (generatorTypeStr == DebugWorldGenerator::identifier)
-            worldGeneratorPtr = std::make_shared<DebugWorldGenerator>();
+            worldGeneratorPtr = std::make_unique<DebugWorldGenerator>();
         else if (generatorTypeStr == FlatWorldGenerator::identifier)
-            worldGeneratorPtr = std::make_shared<FlatWorldGenerator>(registry);
+            worldGeneratorPtr = std::make_unique<FlatWorldGenerator>(registry);
         else if (generatorTypeStr == NoiseWorldGenerator::identifier)
-            worldGeneratorPtr = std::make_shared<NoiseWorldGenerator>(dimension);
+            worldGeneratorPtr = std::make_unique<NoiseWorldGenerator>(dimension);
     }
 
     WorldGeneratorSettings::WorldGeneratorSettings(const MinecraftRegistry &registry, const WorldGeneratorType type) {
@@ -236,7 +236,7 @@ namespace mc {
 
             WorldGenerator generator;
             generator.readCompound(registry, generatorNBT);
-            dimensions.insert({dimensionName, generator});
+            dimensions.emplace(dimensionName, std::move(generator));
         }
     }
 }

@@ -96,6 +96,10 @@ namespace mc {
             json["obfuscated"] = obfuscated.value();
     }
 
+    auto TextStyle::clone() const -> std::unique_ptr<NbtSerializable> {
+        return std::make_unique<TextStyle>(*this);
+    }
+
     TextClickEvent::TextClickEvent(const TextClickAction action, std::string value): action(action), value(std::move(value)) {}
 
     auto TextClickEvent::actionKey() const -> std::string {
@@ -124,6 +128,10 @@ namespace mc {
         json["clickEvent"] = clickEvent;
     }
 
+    auto TextClickEvent::clone() const -> std::unique_ptr<NbtSerializable> {
+        return std::make_unique<TextClickEvent>(*this);
+    }
+
     auto TextInteractivity::withInsertion(const std::string &insertionNew) -> TextInteractivity & {
         insertion = insertionNew;
         return *this;
@@ -140,7 +148,7 @@ namespace mc {
     }
 
     auto TextInteractivity::withHoverText(const Text &hoverEventNew) -> TextInteractivity& {
-        hoverEvent = std::make_shared<TextHoverEventShowText>(hoverEventNew);
+        hoverEvent = std::make_unique<TextHoverEventShowText>(hoverEventNew);
         return *this;
     }
 
@@ -162,7 +170,7 @@ namespace mc {
             hoverEvent->writeToJson(json);
     }
 
-    Text::Text(const std::shared_ptr<NbtSerializable> &content): content(content) {}
+    Text::Text(std::unique_ptr<NbtSerializable> content): content(std::move(content)) {}
 
     auto Text::append(const Text &sibling) -> Text & {
         siblings.push_back(sibling);
@@ -423,26 +431,26 @@ namespace mc {
     }
 
     auto text(const std::string &text) -> Text {
-        return Text{std::make_shared<PlainTextContent>(text)};
+        return Text{std::make_unique<PlainTextContent>(text)};
     }
 
     auto score(const std::string &name, const std::string &objective) -> Text {
-        return Text{std::make_shared<ScoreTextContent>(name, objective)};
+        return Text{std::make_unique<ScoreTextContent>(name, objective)};
     }
 
     auto selector(const std::string &selector) -> Text {
-        return Text{std::make_shared<SelectorTextContent>(selector)};
+        return Text{std::make_unique<SelectorTextContent>(selector)};
     }
 
     auto keybind(const std::string &keybind) -> Text {
-        return Text{std::make_shared<KeybindTextContent>(keybind)};
+        return Text{std::make_unique<KeybindTextContent>(keybind)};
     }
 
     auto translate(const std::string &translate) -> Text {
-        return Text{std::make_shared<TranslatableTextContent>(translate)};
+        return Text{std::make_unique<TranslatableTextContent>(translate)};
     }
 
     auto nbtText(const NbtSourceType sourceType, const std::string &nbt, const std::string &source) -> Text {
-        return Text{std::make_shared<NbtTextContent>(sourceType, nbt, source)};
+        return Text{std::make_unique<NbtTextContent>(sourceType, nbt, source)};
     }
 }

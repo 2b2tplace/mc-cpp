@@ -15,6 +15,11 @@ namespace mc {
         int protocolVersion{};
         std::vector<Entry> entries;
 
+        Registry() = default;
+
+        Registry(Registry &&other) noexcept:
+            type(std::move(other.type)), protocolVersion(other.protocolVersion), entries(std::move(other.entries)) {}
+
         auto save(const std::filesystem::path &filepath) const -> void;
 
         [[nodiscard]]

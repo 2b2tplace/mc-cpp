@@ -88,6 +88,10 @@ namespace mc {
 
         WorldGenerator() = default;
 
+        WorldGenerator(WorldGenerator &&other) noexcept:
+            dimension(other.dimension), type_(other.type_),
+            worldGeneratorPtr(std::move(other.worldGeneratorPtr)) {}
+
         explicit WorldGenerator(const MinecraftRegistry &registry,
                                 WorldGeneratorType type, DimensionType dimension);
 
@@ -117,8 +121,8 @@ namespace mc {
         auto readCompound(const MinecraftRegistry &registry, const NbtCompound &compound) -> void override;
 
     private:
-        WorldGeneratorType _type;
-        std::shared_ptr<ToCompound> worldGeneratorPtr;
+        WorldGeneratorType type_;
+        std::unique_ptr<ToCompound> worldGeneratorPtr;
     };
 
     struct WorldGeneratorSettings final : ToCompound {
