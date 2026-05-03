@@ -70,7 +70,7 @@ namespace mc {
         return PROTOCOL_VERSIONS[version];
     }
 
-    auto MinecraftRegistry::load(const std::filesystem::path &parentDirectory, const SupportedMinecraftVersion version) -> result::Result<std::shared_ptr<MinecraftRegistry>, std::string> {
+    auto MinecraftRegistry::load(const std::filesystem::path &parentDirectory, const SupportedMinecraftVersion version) -> result::Result<std::unique_ptr<MinecraftRegistry>, std::string> {
         Registry<BiomeColorEntry>    foliageColorRegistry;
         Registry<BiomeColorEntry>    grassColorRegistry;
         Registry<BiomeColorEntry>    waterColorRegistry;
@@ -89,7 +89,7 @@ namespace mc {
         TRY(blockStateRegistry   .tryLoad(directory / "blockstates.json"));
         TRY(tileEntityRegistry   .tryLoad(directory / "tile_entities.json"));
 
-        return std::make_shared<MinecraftRegistry>(
+        return std::make_unique<MinecraftRegistry>(
             version,
             foliageColorRegistry,
             grassColorRegistry,
@@ -244,8 +244,12 @@ namespace mc {
     auto loadRegistries(const std::filesystem::path &parentDirectory,
                         const std::vector<SupportedMinecraftVersion> &mcVersions,
                         const bool loadLegacyRegistries) -> result::Result<std::monostate, std::string> {
-        for (const auto mcVersion : mcVersions)
-            REGISTRIES.emplace(mcVersion, TRY(MinecraftRegistry::load(parentDirectory, mcVersion)));
+        for (const auto mcVersion : mcVersions) {
+            auto loadResult = MinecraftRegistry::load(parentDirectory, mcVersion);
+            if (!loadResult) return ERR(loadResult.error());
+
+            REGISTRIES.emplace(mcVersion, std::move(*loadResult));
+        }
 
         if (!loadLegacyRegistries) return {};
 
@@ -270,11 +274,11 @@ namespace mc {
         return *REGISTRIES.at(version);
     }
 
-    auto getRegistry(const int32_t dataVersion) -> std::shared_ptr<MinecraftRegistry> {
+    auto getRegistry(const int32_t dataVersion) -> const std::unique_ptr<MinecraftRegistry>& {
         for (size_t i = 0; i < DATA_VERSIONS.size(); i++) {
             const auto version = static_cast<SupportedMinecraftVersion>(i);
             if (DATA_VERSIONS[i] == dataVersion && REGISTRIES.contains(version)) {
-                const auto registry = REGISTRIES.at(version);
+                const auto &registry = REGISTRIES.at(version);
                 if (!registry) continue;
 
                 return registry;

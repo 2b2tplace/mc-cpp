@@ -75,7 +75,7 @@ namespace mc {
         [[nodiscard]]
         auto protocolVersion() const -> int32_t;
 
-        static auto load(const std::filesystem::path &parentDirectory, SupportedMinecraftVersion version) -> result::Result<std::shared_ptr<MinecraftRegistry>, std::string>;
+        static auto load(const std::filesystem::path &parentDirectory, SupportedMinecraftVersion version) -> result::Result<std::unique_ptr<MinecraftRegistry>, std::string>;
 
         [[nodiscard]]
         bool isWaterBlock(BlockState state) const;
@@ -171,7 +171,7 @@ namespace mc {
         auto tileEntityName(uint16_t tileEntityId) const -> const std::string&;
     };
 
-    using RegistryHolder = absl::flat_hash_map<SupportedMinecraftVersion, std::shared_ptr<MinecraftRegistry>>;
+    using RegistryHolder = absl::flat_hash_map<SupportedMinecraftVersion, std::unique_ptr<MinecraftRegistry>>;
 
     inline auto REGISTRIES = RegistryHolder{};
 
@@ -184,6 +184,6 @@ namespace mc {
     auto getRegistry(SupportedMinecraftVersion version) -> const MinecraftRegistry&;
 
     [[nodiscard]]
-    auto getRegistry(int32_t dataVersion) -> std::shared_ptr<MinecraftRegistry>;
+    auto getRegistry(int32_t dataVersion) -> const std::unique_ptr<MinecraftRegistry>&;
 
 }
