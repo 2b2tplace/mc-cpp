@@ -7,7 +7,7 @@
 #include <boost/iostreams/filter/zlib.hpp>
 
 namespace mc {
-	auto NbtElement::read(std::istream &stream) -> NbtElement & {
+	auto NbtElement::read(std::istream &stream) -> NbtElement& {
 		return *this;
 	}
 
@@ -23,29 +23,117 @@ namespace mc {
 
 	auto read(std::istream &stream) -> NbtElementPtr {
 		const auto type = static_cast<NbtType>(readBE<int8_t>(stream));
-		NbtElementPtr result;
-		switch (type) {
-			case NbtType::BYTE:		  { result = std::make_shared<NbtByte>();      break; }
-			case NbtType::SHORT:	  { result = std::make_shared<NbtShort>();     break; }
-			case NbtType::INT:		  { result = std::make_shared<NbtInt>();       break; }
-			case NbtType::LONG:		  { result = std::make_shared<NbtLong>();      break; }
-			case NbtType::FLOAT:      { result = std::make_shared<NbtFloat>();	   break; }
-			case NbtType::DOUBLE:	  { result = std::make_shared<NbtDouble>();	   break; }
-			case NbtType::BYTE_ARRAY: { result = std::make_shared<NbtByteArray>(); break; }
-			case NbtType::STRING:	  { result = std::make_shared<NbtString>();    break; }
-			case NbtType::LIST:       { result = std::make_shared<NbtList>();      break; }
-			case NbtType::COMPOUND:   { result = std::make_shared<NbtCompound>();  break; }
-			case NbtType::INT_ARRAY:  { result = std::make_shared<NbtIntArray>();  break; }
-			case NbtType::LONG_ARRAY: { result = std::make_shared<NbtLongArray>(); break; }
-			default:				  { result = std::make_shared<NbtEnd>();       break; }
-		}
+		auto result = createTag(type);
 		result->read(stream);
 		return result;
 	}
 
-	NbtString::NbtString(std::string value): value(std::move(value)) {}
+    auto encodeToModifiedUTF8(const std::string &input) -> std::string {
+        std::string output;
+        output.reserve(input.size() * 2);
 
-	auto NbtString::getType() const -> NbtType {
+        for (size_t i = 0; i < input.size();) {
+            const auto c = static_cast<uint8_t>(input[i]);
+            uint32_t codepoint = 0;
+
+            if (c <= 0x7F) {
+                codepoint = c;
+                i += 1;
+            } else if ((c & 0xE0) == 0xC0) {
+                codepoint = (c & 0x1F) << 6
+                            | static_cast<uint8_t>(input[i + 1]) & 0x3F;
+                i += 2;
+            } else if ((c & 0xF0) == 0xE0) {
+                codepoint = (c & 0x0F) << 12
+                            | (static_cast<uint8_t>(input[i + 1]) & 0x3F) << 6
+                            | static_cast<uint8_t>(input[i + 2]) & 0x3F;
+                i += 3;
+            } else {
+                codepoint = (c & 0x07) << 18
+                            | (static_cast<uint8_t>(input[i + 1]) & 0x3F) << 12
+                            | (static_cast<uint8_t>(input[i + 2]) & 0x3F) << 6
+                            | static_cast<uint8_t>(input[i + 3]) & 0x3F;
+                i += 4;
+            }
+            if (codepoint == 0) {
+                output.push_back(static_cast<char>(0xC0));
+                output.push_back(static_cast<char>(0x80));
+            } else if (codepoint <= 0x7F) {
+                output.push_back(static_cast<char>(codepoint));
+            } else if (codepoint <= 0x7FF) {
+                output.push_back(static_cast<char>(0xC0 | codepoint >> 6));
+                output.push_back(static_cast<char>(0x80 | codepoint & 0x3F));
+            } else if (codepoint <= 0xFFFF) {
+                output.push_back(static_cast<char>(0xE0 | codepoint >> 12));
+                output.push_back(static_cast<char>(0x80 | codepoint >> 6 & 0x3F));
+                output.push_back(static_cast<char>(0x80 | codepoint & 0x3F));
+            } else {
+                const auto cp = codepoint - 0x10000;
+                const auto high = static_cast<uint16_t>(0xD800 | cp >> 10);
+                const auto low  = static_cast<uint16_t>(0xDC00 | cp & 0x3FF);
+
+                const auto encode3 = [&](const uint16_t surrogate) {
+                    output.push_back(static_cast<char>(0xE0 | surrogate >> 12));
+                    output.push_back(static_cast<char>(0x80 | surrogate >> 6 & 0x3F));
+                    output.push_back(static_cast<char>(0x80 | surrogate & 0x3F));
+                };
+                encode3(high);
+                encode3(low);
+            }
+        }
+        return output;
+    }
+
+    auto decodeToRegularUTF8(const std::string &input) -> std::string {
+        std::string output;
+        output.reserve(input.size());
+
+        for (size_t i = 0; i < input.size();) {
+            if (i + 5 >= input.size()) {
+                output.push_back(input[i++]);
+                continue;
+            }
+            const auto b0 = static_cast<uint8_t>(input[i]);
+            const auto b1 = static_cast<uint8_t>(input[i + 1]);
+            const auto b2 = static_cast<uint8_t>(input[i + 2]);
+            const auto b3 = static_cast<uint8_t>(input[i + 3]);
+            const auto b4 = static_cast<uint8_t>(input[i + 4]);
+            const auto b5 = static_cast<uint8_t>(input[i + 5]);
+
+            const auto isHigh = b0 == 0xED && b1 >= 0xA0 && b1 <= 0xAF && (b2 & 0xC0) == 0x80;
+            const auto isLow  = b3 == 0xED && b4 >= 0xB0 && b4 <= 0xBF && (b5 & 0xC0) == 0x80;
+
+            if (!isHigh || !isLow) {
+                output.push_back(input[i++]);
+                continue;
+            }
+            const auto high = static_cast<uint16_t>((b0 & 0x0F) << 12 | (b1 & 0x3F) << 6 | b2 & 0x3F);
+            const auto low = static_cast<uint16_t>((b3 & 0x0F) << 12 | (b4 & 0x3F) << 6 | b5 & 0x3F);
+
+            if (high < 0xD800 || high > 0xDBFF || low < 0xDC00 || low > 0xDFFF) {
+                output.push_back(input[i++]);
+                continue;
+            }
+            const auto codepoint = static_cast<uint32_t>(0x10000 + ((high - 0xD800) << 10) + (low - 0xDC00));
+
+            output.push_back(static_cast<char>(0xF0 | codepoint >> 18));
+            output.push_back(static_cast<char>(0x80 | codepoint >> 12 & 0x3F));
+            output.push_back(static_cast<char>(0x80 | codepoint >> 6 & 0x3F));
+            output.push_back(static_cast<char>(0x80 | codepoint & 0x3F));
+
+            i += 6;
+        }
+        return output;
+    }
+
+    NbtString::NbtString(std::string value): value(std::move(value)) {}
+
+    auto NbtString::operator=(const NbtString &other) -> NbtString& {
+        value = other.value;
+        return *this;
+    }
+
+    auto NbtString::getType() const -> NbtType {
 		return TypeEnum;
 	}
 
@@ -53,18 +141,26 @@ namespace mc {
 		return SIZE + 2 * value.length();
 	}
 
-	NbtString & NbtString::read(std::istream &stream) {
-		value = readBEString(stream);
+	auto NbtString::read(std::istream &stream) -> NbtString& {
+		value = decodeToRegularUTF8(readBEString(stream));
 		return *this;
 	}
 
 	void NbtString::write(std::ostream &stream, const bool writeType, const bool writeName,
 		const std::string &name) const {
 		NbtElement::write(stream, writeType, writeName, name);
-		writeBEString(stream, value);
+		writeBEString(stream, encodeToModifiedUTF8(value));
 	}
 
-	auto NbtEnd::getType() const -> NbtType {
+    auto NbtString::clone() const -> NbtElementPtr {
+        return std::make_unique<NbtString>(value);
+    }
+
+    auto NbtEnd::operator=(const NbtEnd&) -> NbtEnd& {
+        return *this;
+    }
+
+    auto NbtEnd::getType() const -> NbtType {
 		return TypeEnum;
 	}
 
@@ -72,9 +168,30 @@ namespace mc {
 		return SIZE;
 	}
 
-	NbtList::NbtList(const NbtType type): type(type) {}
+    auto NbtEnd::clone() const -> NbtElementPtr {
+        return std::make_unique<NbtEnd>();
+    }
 
-	auto NbtList::getType() const -> NbtType {
+    NbtList::NbtList(const NbtList &other): type(other.type) {
+        *this = other;
+    }
+
+    NbtList::NbtList(const NbtType type): type(type) {}
+
+    auto NbtList::operator=(const NbtList &other) -> NbtList& {
+        values.clear();
+        values.reserve(other.values.size());
+        for (const auto &value : other.values) {
+            if (value) {
+                values.push_back(value->clone());
+            } else {
+                values.push_back(nullptr);
+            }
+        }
+        return *this;
+    }
+
+    auto NbtList::getType() const -> NbtType {
 		return TypeEnum;
 	}
 
@@ -98,12 +215,12 @@ namespace mc {
 		const auto length = readBE<int32_t>(stream);
 
 		for (int32_t i = 0; i < length; i++) {
-			const auto tag = createTag(type);
+			auto tag = createTag(type);
 			if (tag == nullptr)
 				throw std::runtime_error(std::string("unknown tag type with id ") + std::to_string(static_cast<int>(type)));
 
 			tag->read(stream);
-			values.push_back(tag);
+			values.push_back(std::move(tag));
 		}
 		return *this;
 	}
@@ -118,7 +235,28 @@ namespace mc {
 		}
 	}
 
-	auto NbtCompound::getType() const -> NbtType {
+    auto NbtList::clone() const -> NbtElementPtr {
+        return std::make_unique<NbtList>(*this);
+    }
+
+    NbtCompound::NbtCompound(const NbtCompound &other) {
+        *this = other;
+    }
+
+    auto NbtCompound::operator=(const NbtCompound &other) -> NbtCompound& {
+        entries.clear();
+        entries.reserve(other.entries.size());
+        for (const auto &[key, value] : other.entries) {
+            if (value) {
+                entries.emplace(key, value->clone());
+            } else {
+                entries.emplace(key, nullptr);
+            }
+        }
+        return *this;
+    }
+
+    auto NbtCompound::getType() const -> NbtType {
 		return TypeEnum;
 	}
 
@@ -167,12 +305,12 @@ namespace mc {
 			if (type == NbtType::END) break;
 
 			auto name = readBEString(stream);
-			const auto tag = createTag(type);
+		    auto tag = createTag(type);
 			if (tag == nullptr)
 				throw std::runtime_error(std::string("Unknown tag type with id ") + std::to_string(static_cast<int>(type)));
 
 			tag->read(stream);
-			entries[name] = tag;
+			entries[name] = std::move(tag);
 		}
 		return *this;
 	}
@@ -186,7 +324,11 @@ namespace mc {
 		writeBE<int8_t>(stream, static_cast<int8_t>(NbtType::END));
 	}
 
-	auto escapeNbtString(const std::string &str, const bool alwaysEscape) -> std::string {
+    auto NbtCompound::clone() const -> NbtElementPtr {
+        return std::make_unique<NbtCompound>(*this);
+    }
+
+    auto escapeNbtString(const std::string &str, const bool alwaysEscape) -> std::string {
 		std::string result = " ";
 		char quoteChar{};
 
@@ -270,31 +412,31 @@ namespace mc {
 	auto createTag(const NbtType type) -> NbtElementPtr {
 		switch (type) {
 			case NbtType::BYTE:
-				return std::make_shared<NbtByte>();
+				return std::make_unique<NbtByte>();
 			case NbtType::SHORT:
-				return std::make_shared<NbtShort>();
+				return std::make_unique<NbtShort>();
 			case NbtType::INT:
-				return std::make_shared<NbtInt>();
+				return std::make_unique<NbtInt>();
 			case NbtType::LONG:
-				return std::make_shared<NbtLong>();
+				return std::make_unique<NbtLong>();
 			case NbtType::FLOAT:
-				return std::make_shared<NbtFloat>();
+				return std::make_unique<NbtFloat>();
 			case NbtType::DOUBLE:
-				return std::make_shared<NbtDouble>();
+				return std::make_unique<NbtDouble>();
 			case NbtType::BYTE_ARRAY:
-				return std::make_shared<NbtByteArray>();
+				return std::make_unique<NbtByteArray>();
 			case NbtType::STRING:
-				return std::make_shared<NbtString>();
+				return std::make_unique<NbtString>();
 			case NbtType::LIST:
-				return std::make_shared<NbtList>();
+				return std::make_unique<NbtList>();
 			case NbtType::COMPOUND:
-				return std::make_shared<NbtCompound>();
+				return std::make_unique<NbtCompound>();
 			case NbtType::INT_ARRAY:
-				return std::make_shared<NbtIntArray>();
+				return std::make_unique<NbtIntArray>();
 			case NbtType::LONG_ARRAY:
-				return std::make_shared<NbtLongArray>();
+				return std::make_unique<NbtLongArray>();
 			case NbtType::END:
-				return std::make_shared<NbtEnd>();
+				return std::make_unique<NbtEnd>();
 			default:
 				std::unreachable();
 		}

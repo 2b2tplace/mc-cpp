@@ -3,7 +3,6 @@
 #include <memory>
 #include <result.hpp>
 #include <string>
-#include <utility>
 #include <vector>
 #include <mc_cpp/endian.hpp>
 #include <absl/container/flat_hash_map.h>
@@ -56,9 +55,11 @@ namespace mc {
         virtual auto write(std::ostream& stream, bool writeType, bool writeName, const std::string &name) const -> void;
 
         virtual auto writeWithType(std::ostream& stream) const -> void;
+
+        virtual auto clone() const -> std::unique_ptr<NbtElement> = 0;
     };
 
-    using NbtElementPtr = std::shared_ptr<NbtElement>;
+    using NbtElementPtr = std::unique_ptr<NbtElement>;
 
     auto read(std::istream &stream) -> NbtElementPtr;
 
@@ -78,7 +79,13 @@ namespace mc {
         T value{};
 
         NbtPrimitive() = default;
+        NbtPrimitive(const NbtPrimitive &other): value(other.value) {}
         explicit NbtPrimitive(const T value): value(value) {}
+
+        auto operator=(const NbtPrimitive &other) -> NbtPrimitive& {
+            value = other.value;
+            return *this;
+        }
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
@@ -100,7 +107,15 @@ namespace mc {
             writeBE<T>(stream, value);
         }
 
+        auto clone() const -> NbtElementPtr override {
+            return std::make_unique<NbtPrimitive>(value);
+        }
+
     };
+
+    auto encodeToModifiedUTF8(const std::string &input) -> std::string;
+
+    auto decodeToRegularUTF8(const std::string &input) -> std::string;
 
     class NbtString final : public NbtElement {
         static constexpr size_t SIZE = 36;
@@ -111,7 +126,10 @@ namespace mc {
         std::string value;
 
         NbtString() = default;
+        NbtString(const NbtString &other): value(other.value) {}
         explicit NbtString(std::string value);
+
+        auto operator=(const NbtString &other) -> NbtString&;
 
         [[nodiscard]]
         auto getType() const -> NbtType override;
@@ -122,6 +140,8 @@ namespace mc {
         auto read(std::istream& stream) -> NbtString& override;
 
         auto write(std::ostream& stream, bool writeType, bool writeName, const std::string &name) const -> void override;
+
+        auto clone() const -> NbtElementPtr override;
     };
 
     class NbtEnd final : public NbtElement {
@@ -130,12 +150,17 @@ namespace mc {
     public:
         static constexpr auto TypeEnum = NbtType::END;
         NbtEnd() = default;
+        NbtEnd(const NbtEnd&) {}
+
+        auto operator=(const NbtEnd&) -> NbtEnd&;
 
         [[nodiscard]]
         auto getType() const -> NbtType override;
 
         [[nodiscard]]
         auto byteSize() const -> size_t override;
+
+        auto clone() const -> NbtElementPtr override;
     };
 
     template<typename T, NbtType TYPE, NbtType HELD_TYPE, size_t HELD_SIZE>
@@ -147,7 +172,13 @@ namespace mc {
         std::vector<T> value;
 
         NbtPrimitiveArray() = default;
+        NbtPrimitiveArray(const NbtPrimitiveArray &other): value(other.value) {}
         explicit NbtPrimitiveArray(const std::vector<T> &value): value(value) {}
+
+        auto operator=(const NbtPrimitiveArray &other) -> NbtPrimitiveArray& {
+            value = other.value;
+            return *this;
+        }
 
         [[nodiscard]]
         auto getType() const -> NbtType override {
@@ -185,6 +216,10 @@ namespace mc {
                 for (size_t i = 0; i < value.size(); i++)
                     writeBE<T>(stream, value[i]);
             }
+        }
+
+        auto clone() const -> NbtElementPtr override {
+            return std::make_unique<NbtPrimitiveArray>(value);
         }
 
     };
@@ -341,7 +376,12 @@ namespace mc {
         NbtType type{NbtType::END};
 
         NbtList() = default;
-        explicit NbtList(const NbtType type);
+
+        NbtList(const NbtList &other);
+
+        explicit NbtList(NbtType type);
+
+        auto operator=(const NbtList &other) -> NbtList&;
 
         [[nodiscard]]
         auto getType() const -> NbtType override;
@@ -355,7 +395,7 @@ namespace mc {
             if (heldType == NbtType::END || (type != NbtType::END && type != heldType)) return false;
 
             type = heldType;
-            values.push_back(std::make_shared<NbtTag>(tag));
+            values.push_back(std::make_unique<NbtTag>(tag));
             return true;
         }
 
@@ -403,6 +443,7 @@ namespace mc {
 
         auto write(std::ostream &stream, bool writeType, bool writeName, const std::string &name) const -> void override;
 
+        auto clone() const -> NbtElementPtr override;
     };
 
     class NbtCompound : public NbtElement {
@@ -413,6 +454,10 @@ namespace mc {
         absl::flat_hash_map<std::string, NbtElementPtr> entries;
 
         NbtCompound() = default;
+
+        NbtCompound(const NbtCompound &other);
+
+        auto operator=(const NbtCompound &other) -> NbtCompound&;
 
         [[nodiscard]]
         auto getType() const -> NbtType override;
@@ -425,7 +470,7 @@ namespace mc {
 
         template<typename NbtTag>
         auto putNbt(const std::string_view key, const NbtTag &tag) -> void {
-            entries[key] = std::make_shared<NbtTag>(tag);
+            entries[key] = std::make_unique<NbtTag>(tag);
         }
 
         template<typename T>
@@ -508,6 +553,7 @@ namespace mc {
 
         auto write(std::ostream &stream, bool writeType, bool writeName, const std::string &name) const -> void override;
 
+        auto clone() const -> NbtElementPtr override;
     };
 
     template<typename T>
