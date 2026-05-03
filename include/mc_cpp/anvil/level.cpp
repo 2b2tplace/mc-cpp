@@ -23,7 +23,7 @@ namespace mc {
     auto Level::readCompound(const NbtCompound &compound) -> void {
         const auto &rootTag = compound.readNbt<NbtCompound>("Data");
         rootTag.read("DataVersion", dataVersion);
-        const auto registry = getRegistry(dataVersion);
+        const auto &registry = getRegistry(dataVersion);
         if (!registry)
             throw std::runtime_error("Unsupported data version: " + std::to_string(dataVersion));
 
@@ -31,7 +31,7 @@ namespace mc {
     }
 
     auto Level::writeCompound(NbtCompound &compound) const -> void {
-        const auto registry = getRegistry(dataVersion);
+        const auto &registry = getRegistry(dataVersion);
         if (!registry)
             throw std::runtime_error("Unsupported data version: " + std::to_string(dataVersion));
 
