@@ -1,4 +1,5 @@
 #include <mc_cpp/registry/minecraft.hpp>
+#include <fmt/format.h>
 
 namespace mc {
     auto stripMinecraftNamespace(std::string_view *namespacedId) -> void {
@@ -284,6 +285,6 @@ namespace mc {
                 return registry;
             }
         }
-        return nullptr;
+        throw std::invalid_argument{fmt::format("Unsupported data version: {}", dataVersion)};
     }
 }
