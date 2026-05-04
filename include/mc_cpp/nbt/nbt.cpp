@@ -245,7 +245,6 @@ namespace mc {
 
     auto NbtCompound::operator=(const NbtCompound &other) -> NbtCompound& {
         entries.clear();
-        entries.reserve(other.entries.size());
         for (const auto &[key, value] : other.entries) {
             if (value) {
                 entries.emplace(key, value->clone());

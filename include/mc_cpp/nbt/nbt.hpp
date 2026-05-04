@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include <mc_cpp/endian.hpp>
-#include <absl/container/flat_hash_map.h>
+#include <absl/container/btree_map.h>
 #include <fmt/format.h>
 
 namespace mc {
@@ -451,7 +451,7 @@ namespace mc {
 
     public:
         static constexpr auto TypeEnum = NbtType::COMPOUND;
-        absl::flat_hash_map<std::string, NbtElementPtr> entries;
+        absl::btree_map<std::string, NbtElementPtr> entries;
 
         NbtCompound() = default;
 
