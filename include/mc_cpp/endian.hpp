@@ -4,6 +4,7 @@
 #include <iosfwd>
 #include <istream>
 #include <ostream>
+#include <cstdint>
 
 namespace mc {
 
