@@ -58,8 +58,9 @@ namespace mc {
 
     class Logger {
     public:
-        explicit Logger(std::ostream &out): out(out) {
-        }
+        bool enableLogPrefix;
+
+        explicit Logger(std::ostream &out, const bool enableLogPrefix = true): enableLogPrefix(enableLogPrefix), out(out) {}
 
         auto print(const std::string &logMessage, int color, bool newline = false) -> void;
 
@@ -73,7 +74,10 @@ namespace mc {
             if constexpr (L == DEBUG) return;
 #endif
             const auto logMessage = fmt::format(fmt, std::forward<T>(args)...);
-
+            if (!enableLogPrefix) {
+                print(logMessage, logLevelToColor(L), newline);
+                return;
+            }
             std::ostringstream msg;
             msg << "[" << currentTimeFormatted() << "] [" << logLevelToString(L) << "] " << logMessage;
 
