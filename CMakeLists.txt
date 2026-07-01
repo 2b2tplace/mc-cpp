@@ -46,7 +46,7 @@ FetchContent_Declare(abseil
 FetchContent_MakeAvailable(abseil)
 
 FetchContent_Declare(result
-        GIT_REPOSITORY git@github.com:2b2tplace/result-cpp.git
+        GIT_REPOSITORY https://github.com/2b2tplace/result-cpp.git
         GIT_TAG        main
         GIT_PROGRESS TRUE
         GIT_SHALLOW TRUE
